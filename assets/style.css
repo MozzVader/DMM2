@@ -159,6 +159,14 @@ body.light .mag-header {
   gap: 24px;
 }
 
+/* We wrap the logo + title in a flex container to control their spacing */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;       /* Ajusta este valor para acercar o alejar el título del logo */
+  flex: 1;    
+}
+
 /* Left: Logo */
 .mag-header .logo-area {
   flex-shrink: 0;
@@ -210,10 +218,13 @@ body.light .mag-header {
 .mag-header .search-area {
   flex: 1;
   max-width: 400px;
+  display: flex;
+  justify-content: center;
 }
 
 .search-box {
   position: relative;
+  width: 100%;
 }
 
 .search-box input {
@@ -267,9 +278,9 @@ body.light .mag-header {
 
 /* Right: Theme toggle */
 .mag-header .toggle-area {
-  flex-shrink: 0;
+  flex: 1;
   display: flex;
-  align-items: center;
+  justify-content: flex-end;
 }
 
 /* Decorative neon line behind the header */
