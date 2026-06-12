@@ -152,7 +152,6 @@ img {
   z-index: 6;
   display: flex;
   align-items: center;
-
   justify-content: center;
 }
 
@@ -205,12 +204,8 @@ img {
    NAVEGACIÓN
    ============================================ */
 .main-nav {
-<<<<<<< HEAD
-  background: #eee url(images/nav.png) repeat-x left bottom;
-=======
   background: linear-gradient(to bottom, #f2f2f2 0%, #eaeaea 40%, #ddd 75%, #c6c6c6 97%, #aaa 100%);
   border-bottom: 1px solid #999;
->>>>>>> f14bf1f97f26bedcfe5e7edb9f34319bf051366d
   margin-bottom: 10px;
   position: absolute;
   bottom: 0;
@@ -244,14 +239,7 @@ img {
   color: var(--color-text);
   text-align: center;
   line-height: 32px;
-<<<<<<< HEAD
-  background-color: var(--color-nav);
-  background-image: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiwC0ZvtTbJNE_CC2MEoBJz9CUpyma0ywm-aUePxAOR7uzqXZzpoaMdVfCECgNLedz8b0B6aFQVavokRzxtfhrOpNkhl_EgJXCfg-q1NvsP0276jmZ_X0eDR-jnG5ybr3bo4gOjPJDD10U/s1600/nav.png);
-  background-repeat: repeat-x;
-  background-position: left bottom;
-=======
   background: linear-gradient(to bottom, #f2f2f2 0%, #eaeaea 40%, #ddd 75%, #c6c6c6 97%, #aaa 100%);
->>>>>>> f14bf1f97f26bedcfe5e7edb9f34319bf051366d
   transition: background-color 0.2s;
 }
 
@@ -261,7 +249,7 @@ img {
 
 .main-nav > ul > li.active > a {
   background-color: var(--color-nav-active);
-  background-image: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiL86_CuOLeChC0PiSKRClEBGik7nL-VBCq26puFD1gljOblB6dUK6GVdYf5ixiOqz7cw_ICSWP7Ahc4qr83C9TFA0VGKyzbIHGW4FRNyr05N-Vk4uC3csHiG5GRasEeBkSN-ucRnjXQSw/s1600/nav-active.png);
+  background-image: url(/images/nav-active.png);
   color: var(--color-nav-active-text);
   text-shadow: 1px 1px 1px var(--color-dark);
 }
@@ -273,7 +261,7 @@ img {
   left: 0;
   width: 100%;
   height: 7px;
-  background: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiDRapcXDJisgFUPjFo4XLotizHa9d6Rs81RZtemDrX7K5sdJLALyk_ct7pfRNG7i4HE_hB6QTymlpR9hPIBKhDrelBEdDw2fgWXL3icRNhmyVNoBepYMD5tgPZDl_0beF7Aov65P-d6s4/s1600/nav-pointer.gif) no-repeat center top;
+  background: url(/images/nav-pointer.png) no-repeat center top;
 }
 
 /* Submenú dropdown */
