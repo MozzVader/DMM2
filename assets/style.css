@@ -204,7 +204,8 @@ img {
    NAVEGACIÓN
    ============================================ */
 .main-nav {
-  background: #eee url(/images/nav.png) repeat-x left bottom;
+  background: linear-gradient(to bottom, #f2f2f2 0%, #eaeaea 40%, #ddd 75%, #c6c6c6 97%, #aaa 100%);
+  border-bottom: 1px solid #999;
   margin-bottom: 10px;
   position: absolute;
   bottom: 0;
@@ -238,10 +239,7 @@ img {
   color: var(--color-text);
   text-align: center;
   line-height: 32px;
-  background-color: var(--color-nav);
-  background-image: url(/images/nav.png);
-  background-repeat: repeat-x;
-  background-position: left bottom;
+  background: linear-gradient(to bottom, #f2f2f2 0%, #eaeaea 40%, #ddd 75%, #c6c6c6 97%, #aaa 100%);
   transition: background-color 0.2s;
 }
 
