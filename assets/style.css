@@ -1,0 +1,722 @@
+/* ============================================
+   CSS CUSTOM PROPERTIES — Warm Neon Palette
+   ============================================ */
+:root {
+  /* Backgrounds */
+  --bg-dark: #0d0d0d;
+  --bg-card: #1a1a22;
+
+  /* Neon warm accents */
+  --neon-purple: #bf5af2;
+  --neon-red: #ff4757;
+  --neon-yellow: #ffd93d;
+  --neon-green: #4ade80;
+
+  /* Text */
+  --text-primary: #e8e8e8;
+  --text-secondary: #888;
+  --text-body: #b0b0b0;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(191, 90, 242, 0.3);
+
+  /* Dot grid pattern */
+  --dot-color: rgba(255, 255, 255, 0.06);
+  --dot-size: 1px;
+  --dot-gap: 24px;
+}
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-body);
+  line-height: 1.7;
+  font-size: 15px;
+  /* Dot grid background — the signature texture */
+  background-image:
+    radial-gradient(circle, var(--dot-color) var(--dot-size), transparent var(--dot-size));
+  background-size: var(--dot-gap) var(--dot-gap);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ============================================
+   CONTAINER
+   ============================================ */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ============================================
+   HEADER / HERO — Full-width magazine masthead
+   ============================================ */
+.mag-header {
+  width: 100%;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 36px 24px 32px;
+  position: relative;
+  /* Subtle bottom glow line */
+  border-bottom: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+/* Decorative neon line behind the header */
+.mag-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--neon-purple), var(--neon-red), var(--neon-yellow));
+  border-radius: 1px;
+  opacity: 0.7;
+}
+
+/* Blog title — large, neon gradient text */
+.mag-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  /* Neon gradient fill */
+  background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-red) 50%, var(--neon-yellow) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* Subtle glow effect using text-shadow on a pseudo-layer */
+  position: relative;
+}
+
+/* Text-shadow glow can't be applied to gradient text directly,
+   so we add a blurred duplicate behind it */
+.mag-title-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.mag-title-wrapper::before {
+  content: 'Dos Minutos Más';
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--neon-purple);
+  filter: blur(20px);
+  opacity: 0.4;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Tagline below the title */
+.mag-tagline {
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ============================================
+   MAIN CONTENT AREA
+   ============================================ */
+.main-content {
+  padding: 40px 0 60px;
+}
+
+/* ============================================
+   FEATURED POST — Full-width magazine hero article
+   ============================================ */
+.post-featured {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 32px;
+  position: relative;
+  /* Purple top accent bar */
+  border-top: 2px solid var(--neon-purple);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.post-featured:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-hover);
+}
+
+/* Featured image placeholder — large, moody gradient */
+.featured-image-wrap {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d1b4e 40%, #1a1a2e 70%, #1e1035 100%);
+  overflow: hidden;
+}
+
+/* Decorative pattern inside the image placeholder */
+.featured-image-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 60%, rgba(191, 90, 242, 0.12), transparent),
+    radial-gradient(ellipse 40% 40% at 70% 30%, rgba(255, 71, 87, 0.08), transparent);
+}
+
+/* CSS camera icon inside the image placeholder */
+.featured-image-wrap::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 36px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
+}
+
+/* Subtle neon edge glow on the left of the featured image */
+.featured-image-wrap .edge-glow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--neon-purple), var(--neon-red));
+  opacity: 0.6;
+}
+
+/* Featured post text content */
+.featured-body {
+  padding: 32px 36px 36px;
+}
+
+/* Post category / neon badge */
+.post-badge {
+  display: inline-block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 3px 10px;
+  border-radius: 3px;
+  margin-bottom: 14px;
+}
+
+.badge-purple {
+  color: var(--neon-purple);
+  border: 1px solid rgba(191, 90, 242, 0.3);
+  background: rgba(191, 90, 242, 0.08);
+}
+
+.badge-red {
+  color: var(--neon-red);
+  border: 1px solid rgba(255, 71, 87, 0.3);
+  background: rgba(255, 71, 87, 0.08);
+}
+
+.badge-yellow {
+  color: var(--neon-yellow);
+  border: 1px solid rgba(255, 217, 61, 0.3);
+  background: rgba(255, 217, 61, 0.06);
+}
+
+.badge-green {
+  color: var(--neon-green);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  background: rgba(74, 222, 128, 0.06);
+}
+
+/* Featured post title */
+.featured-body h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+/* Meta info (date + author) */
+.post-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.post-meta .dot-sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  opacity: 0.5;
+}
+
+/* Excerpt text */
+.post-excerpt {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text-body);
+  margin-bottom: 22px;
+  max-width: 640px;
+}
+
+/* "Leer más" link */
+.read-more {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--neon-purple);
+  transition: color 0.2s ease, letter-spacing 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.read-more:hover {
+  color: var(--neon-red);
+  letter-spacing: 0.02em;
+}
+
+.read-more .arrow {
+  transition: transform 0.2s ease;
+  font-size: 1.1em;
+}
+
+.read-more:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* ============================================
+   SECTION DIVIDER — Neon accent line
+   ============================================ */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 40px 0 28px;
+}
+
+.section-divider .line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.section-divider .label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ============================================
+   SECOND POST — Horizontal card (image + text)
+   ============================================ */
+.post-standard {
+  display: flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 32px;
+  /* Red top accent bar */
+  border-top: 2px solid var(--neon-red);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.post-standard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 71, 87, 0.25);
+}
+
+/* Horizontal card image — left side */
+.standard-image {
+  flex-shrink: 0;
+  width: 340px;
+  min-height: 260px;
+  background: linear-gradient(135deg, #1a2230 0%, #1b2d4e 45%, #1a2230 80%, #121a2a 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative light in the image */
+.standard-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 50% 60% at 60% 50%, rgba(255, 71, 87, 0.1), transparent);
+}
+
+/* Small camera icon */
+.standard-image::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 28px;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* Horizontal card text — right side */
+.standard-body {
+  padding: 28px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.standard-body h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.2rem, 2.5vw, 1.55rem);
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+}
+
+.standard-body .post-excerpt {
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ============================================
+   BOTTOM SECTION — Grid: Sidebar + Tags
+   ============================================ */
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+/* Generic panel card */
+.panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+  padding: 28px;
+  transition: border-color 0.3s ease;
+}
+
+.panel:hover {
+  border-color: var(--border-hover);
+}
+
+.panel-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Author panel */
+.author-panel {
+  border-top: 2px solid var(--neon-yellow);
+}
+
+.author-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2d1b4e, #1b2d4e);
+  border: 2px solid rgba(191, 90, 242, 0.25);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Initials inside avatar */
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--neon-purple);
+}
+
+.author-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.author-location {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Small location pin dot */
+.author-location::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--neon-red);
+  display: inline-block;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.author-bio {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* Tags panel */
+.tags-panel {
+  border-top: 2px solid var(--neon-green);
+}
+
+.tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-pill {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 3px;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+/* Alternate neon colors on tags */
+.tag-pill:nth-child(odd) {
+  border-color: rgba(191, 90, 242, 0.2);
+  color: rgba(191, 90, 242, 0.8);
+}
+
+.tag-pill:nth-child(even) {
+  border-color: rgba(255, 71, 87, 0.2);
+  color: rgba(255, 71, 87, 0.8);
+}
+
+.tag-pill:nth-child(3n) {
+  border-color: rgba(255, 217, 61, 0.2);
+  color: rgba(255, 217, 61, 0.75);
+}
+
+.tag-pill:nth-child(4n) {
+  border-color: rgba(74, 222, 128, 0.2);
+  color: rgba(74, 222, 128, 0.75);
+}
+
+.tag-pill:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   "ÚLTIMOS POSTS" MINI LIST — Below the grid
+   ============================================ */
+.mini-posts {
+  margin-top: 32px;
+}
+
+.mini-post-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.mini-post-item:last-child {
+  border-bottom: none;
+}
+
+/* Colored dot indicator */
+.mini-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mini-dot.purple { background: var(--neon-purple); box-shadow: 0 0 6px rgba(191, 90, 242, 0.4); }
+.mini-dot.red { background: var(--neon-red); box-shadow: 0 0 6px rgba(255, 71, 87, 0.4); }
+.mini-dot.yellow { background: var(--neon-yellow); box-shadow: 0 0 6px rgba(255, 217, 61, 0.4); }
+.mini-dot.green { background: var(--neon-green); box-shadow: 0 0 6px rgba(74, 222, 128, 0.4); }
+
+.mini-post-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  flex: 1;
+  transition: color 0.2s ease;
+}
+
+.mini-post-item:hover .mini-post-title {
+  color: var(--neon-purple);
+}
+
+.mini-post-date {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.mag-footer {
+  border-top: 1px solid var(--border-subtle);
+  padding: 28px 24px;
+  text-align: center;
+}
+
+.mag-footer p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+/* Neon sparkle on "humo" */
+.mag-footer .neon-word {
+  color: var(--neon-purple);
+  font-weight: 500;
+}
+
+/* ============================================
+   RESPONSIVE — Tablet and below
+   ============================================ */
+@media (max-width: 768px) {
+  /* Horizontal card stacks vertically */
+  .post-standard {
+    flex-direction: column;
+  }
+
+  .standard-image {
+    width: 100%;
+    min-height: 200px;
+    height: 200px;
+  }
+
+  /* Featured image gets shorter on mobile */
+  .featured-image-wrap {
+    height: 260px;
+  }
+
+  /* Featured body padding reduces */
+  .featured-body {
+    padding: 24px 22px 28px;
+  }
+
+  /* Bottom grid stacks */
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Mini post items wrap date below title */
+  .mini-post-item {
+    flex-wrap: wrap;
+    gap: 6px 16px;
+  }
+
+  .mini-post-date {
+    width: 100%;
+    padding-left: 22px;
+  }
+}
+
+/* ============================================
+   RESPONSIVE — Small phones
+   ============================================ */
+@media (max-width: 480px) {
+  .mag-header {
+    padding: 28px 16px 24px;
+    min-height: 160px;
+  }
+
+  .featured-image-wrap {
+    height: 200px;
+  }
+
+  .featured-body {
+    padding: 20px 18px 24px;
+  }
+
+  .standard-body {
+    padding: 22px 18px;
+  }
+
+  .bottom-grid {
+    gap: 16px;
+  }
+
+  .panel {
+    padding: 22px 18px;
+  }
+}
