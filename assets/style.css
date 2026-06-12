@@ -167,6 +167,9 @@ img {
   font-variant: small-caps;
   letter-spacing: -0.04em;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
 }
 
 .site-title a {
