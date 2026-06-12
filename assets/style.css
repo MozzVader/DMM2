@@ -205,7 +205,12 @@ img {
    NAVEGACIÓN
    ============================================ */
 .main-nav {
+<<<<<<< HEAD
   background: #eee url(images/nav.png) repeat-x left bottom;
+=======
+  background: linear-gradient(to bottom, #f2f2f2 0%, #eaeaea 40%, #ddd 75%, #c6c6c6 97%, #aaa 100%);
+  border-bottom: 1px solid #999;
+>>>>>>> f14bf1f97f26bedcfe5e7edb9f34319bf051366d
   margin-bottom: 10px;
   position: absolute;
   bottom: 0;
@@ -239,10 +244,14 @@ img {
   color: var(--color-text);
   text-align: center;
   line-height: 32px;
+<<<<<<< HEAD
   background-color: var(--color-nav);
   background-image: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiwC0ZvtTbJNE_CC2MEoBJz9CUpyma0ywm-aUePxAOR7uzqXZzpoaMdVfCECgNLedz8b0B6aFQVavokRzxtfhrOpNkhl_EgJXCfg-q1NvsP0276jmZ_X0eDR-jnG5ybr3bo4gOjPJDD10U/s1600/nav.png);
   background-repeat: repeat-x;
   background-position: left bottom;
+=======
+  background: linear-gradient(to bottom, #f2f2f2 0%, #eaeaea 40%, #ddd 75%, #c6c6c6 97%, #aaa 100%);
+>>>>>>> f14bf1f97f26bedcfe5e7edb9f34319bf051366d
   transition: background-color 0.2s;
 }
 
