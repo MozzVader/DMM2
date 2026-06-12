@@ -1,340 +1,993 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Dos minutos mas - 2</title>
-<link rel="shortcut icon" href="http://www.fileden.com/files/2010/7/19/2919232//favicon.ico" type="image/x-icon"/>
-<link rel="icon" href="http://www.fileden.com/files/2010/7/19/2919232//favicon.ico" type="image/x-icon"/>
-<link rel="stylesheet" type="text/css" href="assets/styles.css"/>
-   
-<!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dos Minutos Más</title>
+  <meta name="description" content="El blog personal de Mozz. Humor, reflexiones y cosas que pasan cuando te quedas dos minutos más.">
+  <link rel="icon" href="http://www.fileden.com/files/2010/7/19/2919232//favicon.ico" type="image/x-icon">
+  <style>
+    /* ============================================
+       VARIABLES Y RESET
+       ============================================ */
+    :root {
+      --font: 'Segoe UI', Calibri, 'Myriad Pro', Myriad, 'Trebuchet MS', Helvetica, Arial, sans-serif;
+      --color-text: #4e4e4e;
+      --color-white: #fff;
+      --color-link: #0071bb;
+      --color-link-hover: #ed1e24;
+      --color-dark: #000;
+      --color-nav: #eee;
+      --color-nav-active: #000;
+      --color-nav-active-text: #dedede;
+      --color-border: #ddd;
+      --color-bg-light: #f6f6f6;
+      --color-sidebar-heading: #3E81C4;
+      --color-footer-heading: #797979;
+      --max-width: 980px;
+      --min-width: 780px;
+      --content-ratio: 70;
+      --sidebar-ratio: 30;
+      --radius: 8px;
+      --shadow: 0 8px 14px rgba(0, 0, 0, 0.3);
+    }
 
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
+    html {
+      height: 100%;
+      font-size: 100%;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: small;
+      color: var(--color-text);
+      min-height: 100%;
+      line-height: 1.5;
+      background-color: var(--color-dark);
+      background-image: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiwB5aoY0Ju1G1d3seo9JhnFQAqML2CjwDZ8vyVRFn0pHn_LqY4fkQDd7KfCJJRvRDUEsAhK6UiIli6hbr9XHM7qXJbDCNVETFT0mUJAto310MIYywBLWRm6efDKFElcID52ZTHSP1EFYGL/);
+      background-repeat: repeat-x;
+      background-position: center top;
+    }
+
+    /* ============================================
+       TIPOGRAFÍA
+       ============================================ */
+    a {
+      color: var(--color-link);
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: var(--color-link-hover);
+    }
+
+    p {
+      margin: 0.6em 0 0.3em;
+    }
+
+    blockquote {
+      margin: 1em 25% 1em 0;
+      padding: 0.6em 1em 0.6em 2.4em;
+      border: 1px dotted var(--color-border);
+      font-style: italic;
+      color: #474747;
+      background: var(--color-white) url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjnBq0glA5d5bpgNWFO5QBR2YiTWEDBR8tMBY7fWUxgoQZUmzpDVQoNDa1wC4jsdHXZ73VidMmhQ4taKeC1vGVjGj8L0UGHkk5xOdJg2Bpx9wGu9HAeRYDZ0sNiH_PDb-LK3lW0Qon3VBw/s1600/blockquote.png) no-repeat 4px top;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* ============================================
+       LAYOUT GENERAL
+       ============================================ */
+    .container {
+      width: 100%;
+      max-width: var(--max-width);
+      min-width: var(--min-width);
+      margin: 0 auto;
+    }
+
+    #page {
+      background-image: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhoySNBXjW66kZaZWbT0xn42em98qtzYD2ElkLa9gNdTrmQu_Ayn4V1ESDR6OwHihyII8QkgUkO4MuIUpsZdkoae5r6K5s03K5NzKV5qo1bwq5RHH2p3IOcshdlHGhQrYdCpAPBFj7gdX8/s1600/bg.png);
+      background-repeat: repeat-x;
+      background-position: center bottom;
+    }
+
+    .content-wrapper {
+      background-color: var(--color-white);
+      box-shadow: -4px 0 12px rgba(0,0,0,0.1), 4px 0 12px rgba(0,0,0,0.1);
+      padding-bottom: 32px;
+    }
+
+    .content-wrapper::before {
+      content: '';
+      display: block;
+      background: var(--color-white);
+      background-image: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjlD3WobzuyK4b-tgqx__FQc_ouf_sLo3fx7oq9H8OskAJXyMZaal1PJ_e5C05EL-j_wOWn1xSd4CS1AHl6MBm_691Oozp5Mk0cu7Y0ouLmdvRekXo3Gkqyrxz_ViWG8y8OoLkdumw7ZTY/s1600/main-left.jpg);
+      background-repeat: no-repeat;
+      background-position: left top;
+    }
+
+    .layout {
+      display: flex;
+      gap: 0;
+      min-height: 380px;
+      padding: 1em;
+    }
+
+    .posts-section {
+      width: 70%;
+      flex-shrink: 0;
+    }
+
+    .sidebar {
+      width: 30%;
+      flex-shrink: 0;
+      padding-left: 1em;
+      font-family: var(--font);
+    }
+
+    /* ============================================
+       HEADER
+       ============================================ */
+    .site-header {
+      position: relative;
+      z-index: 5;
+      height: 180px;
+      background-color: transparent;
+    }
+
+    .site-header .container {
+      position: relative;
+      height: 100%;
+    }
+
+    .brand {
+      position: absolute;
+      left: 0;
+      top: 40px;
+      z-index: 6;
+    }
+
+    .site-title {
+      font-size: 400%;
+      font-weight: normal;
+      font-variant: small-caps;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .site-title a {
+      color: var(--color-white);
+      text-shadow: 1px 1px 1px var(--color-dark);
+    }
+
+    .site-title a:hover {
+      color: var(--color-link-hover);
+    }
+
+    .rss-link {
+      position: absolute;
+      bottom: 18px;
+      right: 20px;
+      z-index: 10;
+      width: 64px;
+      height: 36px;
+      background: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiu1PbUC_XlA6KshEzEweHPRtDVmambhFNitg1DVAQAFtPkYwsL4rC4Hya8in1lwNuy7H06RT40eg6-ipki8o1OBNPPjL6xISav2R4nOu6K7sJPHW-uvjqAm9RJldObbmx33zCHSMSZ4_w/s1600/rss.png) no-repeat center top;
+    }
+
+    .rss-link span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    /* ============================================
+       NAVEGACIÓN
+       ============================================ */
+    .main-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 15;
+    }
+
+    .main-nav ul {
+      display: flex;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .main-nav > ul > li {
+      position: relative;
+    }
+
+    .main-nav > ul > li + li {
+      border-left: 1px solid #ccc;
+    }
+
+    .main-nav > ul > li > a {
+      display: block;
+      min-height: 32px;
+      padding: 0 14px;
+      font: bold 120% var(--font);
+      text-transform: uppercase;
+      text-shadow: 1px 1px 1px var(--color-white);
+      color: var(--color-text);
+      text-align: center;
+      line-height: 32px;
+      background-color: var(--color-nav);
+      background-image: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiwC0ZvtTbJNE_CC2MEoBJz9CUpyma0ywm-aUePxAOR7uzqXZzpoaMdVfCECgNLedz8b0B6aFQVavokRzxtfhrOpNkhl_EgJXCfg-q1NvsP0276jmZ_X0eDR-jnG5ybr3bo4gOjPJDD10U/s1600/nav.png);
+      background-repeat: repeat-x;
+      background-position: left bottom;
+      transition: background-color 0.2s;
+    }
+
+    .main-nav > ul > li > a:hover {
+      background-color: var(--color-white);
+    }
+
+    .main-nav > ul > li.active > a {
+      background-color: var(--color-nav-active);
+      background-image: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiL86_CuOLeChC0PiSKRClEBGik7nL-VBCq26puFD1gljOblB6dUK6GVdYf5ixiOqz7cw_ICSWP7Ahc4qr83C9TFA0VGKyzbIHGW4FRNyr05N-Vk4uC3csHiG5GRasEeBkSN-ucRnjXQSw/s1600/nav-active.png);
+      color: var(--color-nav-active-text);
+      text-shadow: 1px 1px 1px var(--color-dark);
+    }
+
+    .main-nav > ul > li.active > a::after {
+      content: '';
+      position: absolute;
+      bottom: -7px;
+      left: 0;
+      width: 100%;
+      height: 7px;
+      background: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiDRapcXDJisgFUPjFo4XLotizHa9d6Rs81RZtemDrX7K5sdJLALyk_ct7pfRNG7i4HE_hB6QTymlpR9hPIBKhDrelBEdDw2fgWXL3icRNhmyVNoBepYMD5tgPZDl_0beF7Aov65P-d6s4/s1600/nav-pointer.gif) no-repeat center top;
+    }
+
+    /* Submenú dropdown */
+    .main-nav .submenu {
+      display: none;
+      position: absolute;
+      top: 32px;
+      left: 0;
+      width: 250px;
+      list-style: none;
+      padding: 4px;
+      margin: 0;
+      background-color: var(--color-white);
+      border: 1px solid #ccc;
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: var(--shadow);
+      z-index: 100;
+    }
+
+    .main-nav li:hover .submenu {
+      display: block;
+    }
+
+    .main-nav .submenu li {
+      position: relative;
+    }
+
+    .main-nav .submenu a {
+      display: block;
+      padding: 8px 12px;
+      font-size: inherit;
+      font-weight: normal;
+      text-transform: none;
+      text-shadow: none;
+      color: var(--color-text);
+      line-height: 1.25;
+      transition: background-color 0.15s, color 0.15s;
+    }
+
+    .main-nav .submenu a:hover {
+      background-color: #333;
+      color: var(--color-white);
+      text-shadow: 1px 1px 1px #333;
+    }
+
+    /* ============================================
+       ARTÍCULOS / POSTS
+       ============================================ */
+    .post {
+      margin: 1em 0 2em;
+      padding-bottom: 0.6em;
+      border-bottom: 1px dashed var(--color-border);
+    }
+
+    /* Clearfix for the float-based date + meta row */
+    .post-info-row {
+      overflow: hidden;
+      margin-bottom: 11px; /* space for the speech-bubble pointer below meta bar */
+    }
+
+    .post-title {
+      font: bold 180% var(--font);
+      margin: 0 0 0.2em;
+      text-shadow: 1px 1px 1px var(--color-white);
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+    }
+
+    .post-title a {
+      color: var(--color-text);
+    }
+
+    .post-title a:hover {
+      color: var(--color-link-hover);
+    }
+
+    /* ========================================
+       POST DATE + META INFO BARS (Mystique Style)
+       ========================================
+       Modern CSS speech-bubble technique:
+       clip-path: polygon() for shape + border-image: conic-gradient()
+       with fill + outset to color-fill the clipped triangle.
+       ======================================== */
+
+    /* --- DATE BAR: dark gray ribbon with pointed right edge --- */
+    .post-date {
+      --h: 11px; /* arrow point extends right */
+      --c: #5E5E5E;
+
+      float: left;
+      text-transform: uppercase;
+      font: bold 100% var(--font);
+      color: var(--color-white);
+      height: 33px;
+      line-height: 31px;
+      padding: 0 22px 0 11px;
+      position: relative;
+      z-index: 2;
+
+      /* Subtle 3D highlights matching the original sprite */
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 #e1e1e1;
+
+      /* Ribbon/arrow shape: flat left, pointed right */
+      clip-path: polygon(
+        0 0,
+        calc(100% - var(--h)) 0,
+        100% 50%,
+        calc(100% - var(--h)) 100%,
+        0 100%
+      );
+
+      background: var(--c);
+      /* conic-gradient fill + outset extends color into the clip-path triangle */
+      border-image: conic-gradient(var(--c) 0 0) fill 0/
+        0 0 0 0 /
+        0 var(--h) 0 0;
+    }
+
+    /* --- META BAR: light gray speech bubble with bottom-right pointer --- */
+    .post-meta {
+      --h: 9px;   /* pointer height */
+      --b: 30px;  /* pointer base width */
+      --p: 92%;   /* pointer position (close to right edge) */
+      --c: #f0f0f0;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 42px;
+      margin-left: 11px;
+      padding: 0 14px 0 6px;
+      font-style: italic;
+      color: #bbb;
+      font-size: inherit;
+      position: relative;
+      z-index: 1;
+      text-shadow: 1px 1px 1px rgba(255,255,255,0.8);
+
+      /* Speech bubble with pointer at bottom-right */
+      border-radius: 0 6px 6px 0;
+
+      clip-path: polygon(
+        0 0, 100% 0, 100% 100%,
+        min(100%, var(--p) + var(--b)/2) 100%,
+        var(--p) calc(100% + var(--h)),
+        max(0%,  var(--p) - var(--b)/2) 100%
+      );
+
+      background: var(--c);
+      /* Width: 0 on all sides (don't mess with content box).
+         Outset extends fill color into the bottom pointer area. */
+      border-image: conic-gradient(var(--c) 0 0) fill 0/
+        0 0 0 0 /
+        0 0 var(--h) 0;
+    }
+
+    .post-meta a {
+      font-weight: bold;
+      color: #999;
+    }
+
+    .post-meta a:hover {
+      color: var(--color-link-hover);
+    }
+
+    .post-meta .author {
+      flex: 1;
+    }
+
+    .post-meta .comments {
+      flex-shrink: 0;
+      background: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg2wO9Tbo5JsfNIeN9lpe6donXJbBLQVTM3Roxlq13pHIslrVfhpw1PL1TQ3VVR49vxBWlsavJSDgC6RQOU4BsZT1GAgyOe43f1KjDj9P_oJlsreBHpTukNdaxmRuL_QcJZr6RN5WLmPQc/s1600/icons.png) no-repeat 0 -49px;
+      padding-left: 20px;
+      font: italic bold 110% var(--font);
+    }
+
+    .post-meta .comments.no {
+      background-position: 0 1px;
+    }
+
+    .post-content {
+      padding: 1em 0;
+    }
+
+    .post-content p {
+      margin: 0 0 0.8em;
+    }
+
+    .post-tags {
+      padding: 20px 0 5px 20px;
+      background: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg2wO9Tbo5JsfNIeN9lpe6donXJbBLQVTM3Roxlq13pHIslrVfhpw1PL1TQ3VVR49vxBWlsavJSDgC6RQOU4BsZT1GAgyOe43f1KjDj9P_oJlsreBHpTukNdaxmRuL_QcJZr6RN5WLmPQc/s1600/icons.png) no-repeat 0 -82px;
+      font-size: inherit;
+      line-height: 22px;
+    }
+
+    .read-more {
+      display: inline-block;
+      margin-top: 0.5em;
+    }
+
+    /* ============================================
+       SIDEBAR
+       ============================================ */
+    .sidebar a {
+      color: var(--color-link);
+    }
+
+    .sidebar a:hover {
+      color: var(--color-link-hover);
+    }
+
+    .sidebar-block {
+      list-style: none;
+      margin: 0 0 0 1em;
+      padding: 0;
+    }
+
+    .sidebar-block li {
+      margin: 1em 0 2.6em;
+    }
+
+    .sidebar-block h2 {
+      font: bold 140% var(--font);
+      background-color: var(--color-sidebar-heading);
+      color: var(--color-white);
+      padding: 0 0 0 10px;
+      line-height: 28px;
+      text-transform: uppercase;
+      text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+      letter-spacing: normal;
+    }
+
+    .sidebar-block .block-body {
+      padding: 15px 0 35px;
+    }
+
+    .sidebar-block ul {
+      list-style: none;
+      margin: 0 0 0.4em;
+    }
+
+    .sidebar-block ul li {
+      margin: 0;
+      padding: 0 0 0 18px;
+      background: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg2wO9Tbo5JsfNIeN9lpe6donXJbBLQVTM3Roxlq13pHIslrVfhpw1PL1TQ3VVR49vxBWlsavJSDgC6RQOU4BsZT1GAgyOe43f1KjDj9P_oJlsreBHpTukNdaxmRuL_QcJZr6RN5WLmPQc/s1600/icons.png) no-repeat 4px -816px;
+      transition: background-position 0.15s;
+    }
+
+    .sidebar-block ul li:hover {
+      background-position: 4px -1005px;
+    }
+
+    .sidebar-block ul li li {
+      margin-left: 0.4em;
+    }
+
+    /* Author card */
+    .author-card {
+      text-align: right;
+    }
+
+    .author-card img {
+      float: right;
+      margin: 0 0 10px 10px;
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+    }
+
+    .author-card .name {
+      font-size: 130%;
+      font-weight: bold;
+    }
+
+    .author-card .contact-btn {
+      display: block;
+      text-align: center;
+      margin-top: 1em;
+    }
+
+    /* Search */
+    .search-box {
+      position: relative;
+      margin: 0 8px 0 4px;
+    }
+
+    .search-box input[type="text"] {
+      width: 100%;
+      height: 34px;
+      padding: 0 0 0 34px;
+      margin: 0;
+      border: 0;
+      background: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj3C2UrNamZqwgBLgtxQUmDh9Zpb5hroNsgjA3XHW7m9nkUiEb0rTUkBHr4TfZLkJZKvmCpm1FQG_Q1MOBZTyaBCdyRg5z3Tv83r8wpdcLaFlHKl8PetwQHr0r42_XmIYArk6J0pSAlMAM/s1600/search.png) no-repeat left top;
+      font-family: var(--font);
+      font-size: 100%;
+      color: var(--color-text);
+    }
+
+    .search-box input[type="text"]::placeholder {
+      color: #ccc;
+      font-style: italic;
+    }
+
+    .search-box input[type="text"]:focus {
+      outline: none;
+      color: var(--color-text);
+      font-weight: bold;
+    }
+
+    .search-box input[type="submit"] {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 56px;
+      height: 34px;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      background: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj3C2UrNamZqwgBLgtxQUmDh9Zpb5hroNsgjA3XHW7m9nkUiEb0rTUkBHr4TfZLkJZKvmCpm1FQG_Q1MOBZTyaBCdyRg5z3Tv83r8wpdcLaFlHKl8PetwQHr0r42_XmIYArk6J0pSAlMAM/s1600/search.png) no-repeat right -34px;
+      cursor: pointer;
+      font-size: 0;
+      transition: background-position 0.15s;
+    }
+
+    .search-box input[type="submit"]:hover {
+      background-position: right bottom;
+    }
+
+    /* ============================================
+       FOOTER
+       ============================================ */
+    .site-footer {
+      background-color: var(--color-white);
+    }
+
+    .footer-grid {
+      display: flex;
+      margin-bottom: 1em;
+    }
+
+    .footer-col {
+      width: 25%;
+      flex-shrink: 0;
+      padding: 0 0.6em;
+    }
+
+    .footer-col h2 {
+      font: bold 140% var(--font);
+      background: var(--color-nav) url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh7W8YH6M0vxNfwjNHg8UP7IyAv5vnyq7WicLp0T0NfoiGx4mgG4rg9_lcexuWth1DsHw1uJRiSvV-pfU7ZClYfb6Obs0hSys9bkwOMAH13yz-JZ38RTK03CjVpQrICFIUJJyEh3t3tMuo/s1600/bg-lightgray.png) no-repeat left top;
+      padding: 0.4em 0.6em;
+      margin: 0 0 0.2em;
+      text-shadow: 1px 1px 1px var(--color-white);
+      color: var(--color-footer-heading);
+      line-height: 1;
+    }
+
+    .footer-col a {
+      color: var(--color-link);
+    }
+
+    .footer-col a:hover {
+      color: var(--color-link-hover);
+    }
+
+    .footer-col ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .footer-col ul li {
+      margin: 0;
+      padding: 0 0 0 18px;
+      background: url(https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg2wO9Tbo5JsfNIeN9lpe6donXJbBLQVTM3Roxlq13pHIslrVfhpw1PL1TQ3VVR49vxBWlsavJSDgC6RQOU4BsZT1GAgyOe43f1KjDj9P_oJlsreBHpTukNdaxmRuL_QcJZr6RN5WLmPQc/s1600/icons.png) no-repeat 4px -816px;
+      transition: background-position 0.15s;
+    }
+
+    .footer-col ul li:hover {
+      background-position: 4px -1005px;
+    }
+
+    .site-credits {
+      text-align: center;
+      padding: 1em 2em;
+      border-top: 1px solid var(--color-border);
+      line-height: 2;
+      font-size: inherit;
+    }
+
+    /* ============================================
+       UTILIDADES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    .clearfix::after {
+      content: '';
+      display: table;
+      clear: both;
+    }
+
+    /* ============================================
+       RESPONSIVE (mínimo)
+       ============================================ */
+    @media screen and (max-width: 780px) {
+      .container {
+        min-width: 0;
+        width: 100%;
+        padding: 0 0.5em;
+      }
+
+      .layout {
+        flex-direction: column;
+      }
+
+      .posts-section,
+      .sidebar {
+        width: 100%;
+      }
+
+      .sidebar {
+        padding-left: 0;
+        border-top: 2px solid var(--color-border);
+        margin-top: 1em;
+      }
+
+      .footer-grid {
+        flex-wrap: wrap;
+      }
+
+      .footer-col {
+        width: 50%;
+        margin-bottom: 1em;
+      }
+
+      .site-title {
+        font-size: 250%;
+      }
+
+      .main-nav > ul {
+        flex-wrap: wrap;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .footer-col {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
-<body class="home blog col-2-right">
-<div id="page">
+<body>
+  <div id="page">
 
-  <!-- Header -->
-  <div class="shadow-left page-content">
-  <div class="shadow-right">
-    <div id="header">
-      <div id="site-title">
-        <div id="logo">
-          <a href="#" title="Dos minutos mas">Dos minutos mas</a>
+    <!-- ========== HEADER ========== -->
+    <header class="site-header">
+      <div class="container">
+        <div class="brand">
+          <h1 class="site-title">
+            <a href="#">Dos Minutos Mas</a>
+          </h1>
         </div>
-      </div>
-      <a class="rss" href="http://feeds.feedburner.com/dosminutosmas" title="RSS Feeds"><span>RSS Feeds</span></a>
 
-      <ul id="navigation">
-        <li class="current_page_item" id="nav-home">
-          <a class="home fadeThis" href="#" title="You are Home">
-            <span class="title">Home</span><span class="pointer"></span>
-          </a>
-        </li>
-        <li class="page_item">
-          <a class="fadeThis" href="#" title="Contacto">
-            <span class="title">Contacto</span><span class="pointer"></span>
-          </a>
+        <a class="rss-link" href="http://feeds.feedburner.com/dosminutosmas" title="RSS Feeds">
+          <span>RSS Feeds</span>
+        </a>
+
+        <nav class="main-nav">
           <ul>
-            <li class="page_item">
-              <a class="fadeThis" href="http://www.emailmeform.com/fid.php?formid=130337" title="Mandame un correo" target="_new">
-                <span class="title">Formulario de contacto</span><span class="pointer"></span>
-              </a>
+            <li class="active">
+              <a href="#">Home</a>
             </li>
-            <li class="page_item">
-              <a class="fadeThis" href="http://twitter.com/Dosminutosmas" title="Seguime en Twitter">
-                <span class="title">Twitter</span><span class="pointer"></span>
-              </a>
-            </li>
-            <li class="page_item">
-              <a class="fadeThis" href="http://www.facebook.com/Mozz.Smith" title="Facebook">
-                <span class="title">Facebook</span><span class="pointer"></span>
-              </a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-  </div>
-  </div>
-
-  <!-- Main -->
-  <div class="shadow-left page-content">
-  <div class="shadow-right">
-  <div id="main-left">
-    <div id="main-inside">
-      <div class="clearfix">
-
-        <div id="primary-content">
-
-          <div class="post hentry" id="post-1">
-            <h2 class="title">
-              <a href="#">Cosas que pasan cuando te quedas dos minutos mas en cualquier lado</a>
-            </h2>
-            <div class="post-date">
-              <p>15 de enero de 2024</p>
-            </div>
-            <div class="post-info clearfix">
-              <p class="author alignleft">Lo dijo: <span class="fn">Mozz</span></p>
-              <p class="comments alignright">
-                <a class="comments" href="#">3 Comentarios</a>
-              </p>
-            </div>
-            <div class="post-content clearfix" id="post-1-content">
-              <p>Siempre me paso que cuando digo "voy dos minutitos mas" termine quedandome una hora. Es una ley no escrita, como cuando decis "voy a dormir temprano" y son las tres de la manana y todavia estas viendo videos de gatos cayendose de cosas en YouTube. La otra vez fui al super a comprar pan, me cruce con un conocido y terminamos charlando en la puerta dos horas. Mi senora ya no me cree cuando digo que voy a volver rapido. Tiene razon.</p>
-            </div>
-            <div class="post-tags">
-              <a href="#" rel="tag">Humor</a>, <a href="#" rel="tag">Varios</a>
-            </div>
-            <a href="#">Leer mas &gt;&gt;</a>
-          </div>
-
-          <div class="post hentry" id="post-2">
-            <h2 class="title">
-              <a href="#">La gente que habla sola en la calle ya no es tan rara como antes</a>
-            </h2>
-            <div class="post-date">
-              <p>10 de enero de 2024</p>
-            </div>
-            <div class="post-info clearfix">
-              <p class="author alignleft">Lo dijo: <span class="fn">Mozz</span></p>
-              <p class="comments alignright">
-                <a class="comments" href="#">7 Comentarios</a>
-              </p>
-            </div>
-            <div class="post-content clearfix" id="post-2-content">
-              <p>Antes si veias a alguien hablando solo en la calle, inmediatamente lo marcabas como persona con problemas. Hoy ves a un tipo con auriculares gritandole al aire y pensas "ah, esta en un llamado" o "esta grabando un reel". El otro dia vi a un senor discutiendo con un arbol y resulto que estaba haciendo un directo para sus cinco seguidores en TikTok. Los tiempos cambian, amigos, y la locura se fue democratizando. Ahora cualquiera puede ser el loco de la cuadra sin necesidad de internarse.</p>
-            </div>
-            <div class="post-tags">
-              <a href="#" rel="tag">Internet</a>, <a href="#" rel="tag">Humor</a>
-            </div>
-            <a href="#">Leer mas &gt;&gt;</a>
-          </div>
-
-          <div class="post hentry" id="post-3">
-            <h2 class="title">
-              <a href="#">Por que los argentinos somos expertos en hacer colas</a>
-            </h2>
-            <div class="post-date">
-              <p>5 de enero de 2024</p>
-            </div>
-            <div class="post-info clearfix">
-              <p class="author alignleft">Lo dijo: <span class="fn">Mozz</span></p>
-              <p class="comments alignright">
-                <a class="comments no comments" href="#">0 Comentarios</a>
-              </p>
-            </div>
-            <div class="post-content clearfix" id="post-3-content">
-              <p>Hacer cola es practicamente un deporte nacional. Nos especializamos desde chiquitos: la fila del recreo, la fila del colectivo, la fila del ANSES, la fila para pagar los servicios. Tenemos un sexto sentido para detectar cual fila se mueve mas rapido y una diplomatura en poner a otro en la fila mientras vamos al bano. El tema es que cuando viajas al exterior y no hay fila, te quedas parado como un boludo sin saber que hacer. Extranas la fila. Te da ansiedad no tener una persona adelante tuyo revisando el celular cada tres segundos.</p>
-            </div>
-            <div class="post-tags">
-              <a href="#" rel="tag">Humor</a>, <a href="#" rel="tag">Internet</a>, <a href="#" rel="tag">Varios</a>
-            </div>
-            <a href="#">Leer mas &gt;&gt;</a>
-          </div>
-
-        </div>
-
-        <div id="sidebar">
-          <ul class="sidebar-blocks">
-
-            <!-- Search -->
-            <li class="block">
-              <div class="block-widget_search" id="instance-search-3">
-                <div class="search-form">
-                  <form action="#" class="clearfix" id="searchform" method="get">
-                    <fieldset>
-                      <div id="searchfield">
-                        <input class="text clearField" id="searchbox" name="q" type="text" value="Buscar..."/>
-                      </div>
-                      <input class="submit" type="submit" value=""/>
-                    </fieldset>
-                  </form>
-                </div>
-              </div>
-            </li>
-
-            <!-- Author -->
-            <li class="block">
-              <h2>El autor</h2>
-              <div class="widget-content">
-                <div style="text-align:right;">
-                  <a href="http://www.blogger.com/profile/11231782711076545669" target="_blank">
-                    <img style="margin:0 0 10px 10px;float:right;cursor:pointer;width:100px;height:100px;" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjyL_uH92-f-F3_bSq49Sb-Co6GofRr2ie3jQY2-4gHWsjXXumMR0Rr6EXOWKqN1s9bee3EvcDd8BdMdGUXAKM5FTsvwE5moE0ZPVYSziexe5egTBe7cs8px9f3f58Av6xJo4CgP1VgWgSP/s400/avatarbuddy.jpg" alt="Mozz"/>
-                  </a>
-                  <br/>
-                  <span style="font-size:130%;"><span style="font-weight:bold;">Mozz</span></span>
-                  <br/>Buenos Aires,
-                  <br/>Argentina
-                </div>
-                <br/>
-                <div style="text-align:center;">
-                  <a href="mailto:2minutosmas@gmail.com" target="_blank">
-                    <img alt="Escribime!" src="http://i32.tinypic.com/2d77lzt.jpg"/>
-                  </a>
-                </div>
-              </div>
-            </li>
-
-            <!-- Twitter -->
-            <li class="block">
-              <h2>Mozz en twitter</h2>
-              <div class="widget-content">
-                <div id="twitter_div">
-                  <ul id="twitter_update_list">
-                    <li>Seguime en Twitter para enterarte de las ultimas novedades del blog y otras cosas random que se me ocurren a las tres de la manana.</li>
-                  </ul>
-                  <a id="twitter-link" href="http://twitter.com/Dosminutosmas">
-                    <img width="180" src="http://www.twitterbuttons.com/images/ex/twit7.gif" height="37" title="Seguime en Twitter"/>
-                  </a>
-                </div>
-              </div>
-            </li>
-
-            <!-- Feed -->
-            <li class="block">
-              <h2>Suscribite al feed</h2>
-              <div class="widget-content">
-                <form action="http://www.feedburner.com/fb/a/emailverify" style="border:1px solid #ccc;padding:3px;text-align:center;" target="popupwindow" method="post" onsubmit="window.open('http://www.feedburner.com/fb/a/emailverifySubmit?feedId=1934039','popupwindow','scrollbars=yes,width=550,height=520');return true">
-                  <p>Recibi las entradas en tu correo:</p>
-                  <p><input style="width:140px" name="email" type="text"/></p>
-                  <input value="http://feeds.feedburner.com/~e?ffid=1934039" name="url" type="hidden"/>
-                  <input value="Dos minutos mas" name="title" type="hidden"/>
-                  <input value="en_US" name="loc" type="hidden"/>
-                  <input value="Suscribite" type="submit"/>
-                </form>
-                <br/>
-                <center>
-                  <p><a href="http://feeds.feedburner.com/DosMinutosMas">
-                    <img width="88" style="border:0" alt="" src="http://feeds.feedburner.com/~fc/DosMinutosMas?bg=99CCFF&amp;fg=444444&amp;anim=0" height="26"/>
-                  </a></p>
-                </center>
-              </div>
-            </li>
-
-            <!-- Tags -->
-            <li class="block">
-              <h2>Etiquetas</h2>
-              <div class="widget-content list-label-widget-content">
-                <ul>
-                  <li><a href="#">Humor</a> (45)</li>
-                  <li><a href="#">Internet</a> (32)</li>
-                  <li><a href="#">Varios</a> (28)</li>
-                  <li><a href="#">Musica</a> (15)</li>
-                  <li><a href="#">Videos</a> (22)</li>
-                  <li><a href="#">Politica</a> (10)</li>
-                  <li><a href="#">Futbol</a> (8)</li>
-                  <li><a href="#">Tecnologia</a> (18)</li>
-                  <li><a href="#">Personal</a> (12)</li>
-                  <li><a href="#">Recetas</a> (5)</li>
-                </ul>
-              </div>
-            </li>
-
-            <!-- Archive -->
-            <li class="block">
-              <h2>Archivo</h2>
-              <div class="widget-content">
-                <ul>
-                  <li><a href="#">2024</a> (5)</li>
-                  <li><a href="#">2023</a> (48)</li>
-                  <li><a href="#">2022</a> (62)</li>
-                  <li><a href="#">2021</a> (55)</li>
-                  <li><a href="#">2020</a> (41)</li>
-                  <li><a href="#">2019</a> (38)</li>
-                  <li><a href="#">2018</a> (44)</li>
-                  <li><a href="#">2017</a> (52)</li>
-                  <li><a href="#">2016</a> (47)</li>
-                  <li><a href="#">2015</a> (39)</li>
-                </ul>
-              </div>
-            </li>
-
-          </ul>
-        </div>
-
-      </div><!-- clearfix -->
-    </div><!-- main-inside -->
-  </div><!-- main-left -->
-  </div><!-- shadow-right -->
-  </div><!-- shadow-left -->
-
-  <!-- Footer -->
-  <div id="footer">
-    <div class="page-content" id="footer-blocks">
-      <div class="slide-container clearfix">
-        <ul class="slides">
-          <li class="slide slide-1 page-content">
-            <div class="slide-content">
-              <ul class="blocks widgetcount-4">
-                <li class="block">
-                  <div class="block-content">
-                    <h2>Stats</h2>
-                    <b>127</b> posts |
-                    <b>2450</b> comentarios.
-                    <br/>
-                    <b>5872</b> Dias Online
-                  </div>
-                </li>
-                <li class="block">
-                  <div class="block-content">
-                    <h2>Visitas</h2>
-                    <center>
-                      Gracias por visitar este blog. Los contadores se fueron con la migracion, pero la buena onda quedo.
-                    </center>
-                  </div>
-                </li>
-                <li class="block">
-                  <div class="block-content">
-                    <h2>Top Comentaristas</h2>
-                    <ul>
-                      <li><a href="#">Anonimo</a></li>
-                      <li><a href="#">El Loco de la esquina</a></li>
-                      <li><a href="#">Maria</a></li>
-                      <li><a href="#">Juan Perez</a></li>
-                      <li><a href="#">Gordo Contento</a></li>
-                    </ul>
-                  </div>
-                </li>
-                <li class="block">
-                  <div class="block-content">
-                    <h2>Links</h2>
-                    <ul>
-                      <li><a href="http://www.cocoluchi.com.ar/">Coconut</a></li>
-                      <li><a href="http://cosechadel66.es/">Cosecha del 66</a></li>
-                      <li><a href="http://cromatismodivino.blogspot.com/">Cromatismo divino</a></li>
-                      <li><a href="http://blog.elrincondemariano.com.ar/">El rincon de Mariano</a></li>
-                      <li><a href="http://www.geekzeitung.com/">Geek Zeitung</a></li>
-                      <li><a href="http://notasperdidasenlaweb.blogspot.com/">Notas perdidas en la Web</a></li>
-                      <li><a href="http://www.andressmerkin.com.ar/">Perkin's World</a></li>
-                      <li><a href="http://www.quehariasinti.blogspot.com/">Que haria yo sin ti?</a></li>
-                      <li><a href="http://www.quieromascerveza.com.ar/">Quiero mas cerveza</a></li>
-                      <li><a href="http://www.quierounanaranja.com.ar/">Quiero una naranja</a></li>
-                      <li><a href="http://www.tgon.com.ar/ppal.php">TGON - Te guste o no</a></li>
-                      <li><a href="http://www.tintinenargentina.com.ar/">TinTin en Argentina</a></li>
-                    </ul>
-                  </div>
-                </li>
+            <li>
+              <a href="#">Contacto</a>
+              <ul class="submenu">
+                <li><a href="http://www.emailmeform.com/fid.php?formid=130337" target="_blank">Formulario de contacto</a></li>
+                <li><a href="http://twitter.com/Dosminutosmas">Twitter</a></li>
+                <li><a href="http://www.facebook.com/Mozz.Smith">Facebook</a></li>
               </ul>
-            </div>
-          </li>
-        </ul>
+            </li>
+          </ul>
+        </nav>
       </div>
-    </div>
+    </header>
 
-    <div class="page-content">
-      <div id="copyright">
-        Mystique theme by <a href="http://digitalnature.ro">digitalnature</a> | Converted by <a href="http://themecraft.net">Theme Craft</a> | Tweaked by <b>Mozz</b>
+    <!-- ========== CONTENIDO PRINCIPAL ========== -->
+    <main>
+      <div class="container">
+        <div class="content-wrapper">
+          <div class="layout">
+
+            <!-- Posts -->
+            <section class="posts-section">
+
+              <article class="post">
+                <h2 class="post-title">
+                  <a href="#">Cosas que pasan cuando te quedas dos minutos mas en cualquier lado</a>
+                </h2>
+
+                <div class="post-info-row">
+                  <div class="post-date">15 ENE 2024</div>
+                  <div class="post-meta">
+                    <span class="author">Lo dijo: <strong>Mozz</strong></span>
+                    <a class="comments" href="#">3 Comentarios</a>
+                  </div>
+                </div>
+
+                <div class="post-content">
+                  <p>Siempre me paso que cuando digo "voy dos minutitos mas" termine quedandome una hora. Es una ley no escrita, como cuando decis "voy a dormir temprano" y son las tres de la manana y todavia estas viendo videos de gatos cayendose de cosas en YouTube. La otra vez fui al super a comprar pan, me cruce con un conocido y terminamos charlando en la puerta dos horas. Mi senora ya no me cree cuando digo que voy a volver rapido. Tiene razon.</p>
+                </div>
+
+                <div class="post-tags">
+                  <a href="#" rel="tag">Humor</a>, <a href="#" rel="tag">Varios</a>
+                </div>
+                <a class="read-more" href="#">Leer mas &gt;&gt;</a>
+              </article>
+
+              <article class="post">
+                <h2 class="post-title">
+                  <a href="#">La gente que habla sola en la calle ya no es tan rara como antes</a>
+                </h2>
+
+                <div class="post-info-row">
+                  <div class="post-date">10 ENE 2024</div>
+                  <div class="post-meta">
+                    <span class="author">Lo dijo: <strong>Mozz</strong></span>
+                    <a class="comments" href="#">7 Comentarios</a>
+                  </div>
+                </div>
+
+                <div class="post-content">
+                  <p>Antes si veias a alguien hablando solo en la calle, inmediatamente lo marcabas como persona con problemas. Hoy ves a un tipo con auriculares gritandole al aire y pensas "ah, esta en un llamado" o "esta grabando un reel". El otro dia vi a un senor discutiendo con un arbol y resulto que estaba haciendo un directo para sus cinco seguidores en TikTok. Los tiempos cambian, amigos, y la locura se fue democratizando. Ahora cualquiera puede ser el loco de la cuadra sin necesidad de internarse.</p>
+                </div>
+
+                <div class="post-tags">
+                  <a href="#" rel="tag">Internet</a>, <a href="#" rel="tag">Humor</a>
+                </div>
+                <a class="read-more" href="#">Leer mas &gt;&gt;</a>
+              </article>
+
+              <article class="post">
+                <h2 class="post-title">
+                  <a href="#">Por que los argentinos somos expertos en hacer colas</a>
+                </h2>
+
+                <div class="post-info-row">
+                  <div class="post-date">05 ENE 2024</div>
+                  <div class="post-meta">
+                    <span class="author">Lo dijo: <strong>Mozz</strong></span>
+                    <a class="comments no" href="#">0 Comentarios</a>
+                  </div>
+                </div>
+
+                <div class="post-content">
+                  <p>Hacer cola es practicamente un deporte nacional. Nos especializamos desde chiquitos: la fila del recreo, la fila del colectivo, la fila del ANSES, la fila para pagar los servicios. Tenemos un sexto sentido para detectar cual fila se mueve mas rapido y una diplomatura en poner a otro en la fila mientras vamos al bano. El tema es que cuando viajas al exterior y no hay fila, te quedas parado como un boludo sin saber que hacer. Extranas la fila. Te da ansiedad no tener una persona adelante tuyo revisando el celular cada tres segundos.</p>
+                </div>
+
+                <div class="post-tags">
+                  <a href="#" rel="tag">Humor</a>, <a href="#" rel="tag">Internet</a>, <a href="#" rel="tag">Varios</a>
+                </div>
+                <a class="read-more" href="#">Leer mas &gt;&gt;</a>
+              </article>
+
+            </section>
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+              <ul class="sidebar-block">
+
+                <li>
+                  <h2>Buscar</h2>
+                  <div class="block-body">
+                    <form class="search-box" action="#" method="get">
+                      <input type="text" name="q" placeholder="Buscar...">
+                      <input type="submit" value="Buscar">
+                    </form>
+                  </div>
+                </li>
+
+                <li>
+                  <h2>El autor</h2>
+                  <div class="block-body">
+                    <div class="author-card">
+                      <a href="http://www.blogger.com/profile/11231782711076545669" target="_blank">
+                        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjyL_uH92-f-F3_bSq49Sb-Co6GofRr2ie3jQY2-4gHWsjXXumMR0Rr6EXOWKqN1s9bee3EvcDd8BdMdGUXAKM5FTsvwE5moE0ZPVYSziexe5egTBe7cs8px9f3f58Av6xJo4CgP1VgWgSP/s400/avatarbuddy.jpg" alt="Mozz">
+                      </a>
+                      <span class="name">Mozz</span><br>
+                      Buenos Aires,<br>
+                      Argentina
+                    </div>
+                    <div class="contact-btn">
+                      <a href="mailto:2minutosmas@gmail.com">
+                        <img src="http://i32.tinypic.com/2d77lzt.jpg" alt="Escribime!">
+                      </a>
+                    </div>
+                  </div>
+                </li>
+
+                <li>
+                  <h2>Mozz en Twitter</h2>
+                  <div class="block-body">
+                    <p>Seguime en Twitter para enterarte de las ultimas novedades del blog y otras cosas random que se me ocurren a las tres de la manana.</p>
+                    <a href="http://twitter.com/Dosminutosmas">
+                      <img width="180" height="37" src="http://www.twitterbuttons.com/images/ex/twit7.gif" alt="Seguime en Twitter">
+                    </a>
+                  </div>
+                </li>
+
+                <li>
+                  <h2>Suscribite al feed</h2>
+                  <div class="block-body">
+                    <form action="http://www.feedburner.com/fb/a/emailverify" style="border:1px solid #ccc;padding:3px;text-align:center;" target="popupwindow" method="post" onsubmit="window.open('http://www.feedburner.com/fb/a/emailverifySubmit?feedId=1934039','popupwindow','scrollbars=yes,width=550,height=520');return true;">
+                      <p>Recibi las entradas en tu correo:</p>
+                      <p><input style="width:140px" name="email" type="text"></p>
+                      <input value="http://feeds.feedburner.com/~e?ffid=1934039" name="url" type="hidden">
+                      <input value="Dos minutos mas" name="title" type="hidden">
+                      <input value="en_US" name="loc" type="hidden">
+                      <input value="Suscribite" type="submit">
+                    </form>
+                    <br>
+                    <p style="text-align:center;">
+                      <a href="http://feeds.feedburner.com/DosMinutosMas">
+                        <img width="88" style="border:0" alt="" src="http://feeds.feedburner.com/~fc/DosMinutosMas?bg=99CCFF&amp;fg=444444&amp;anim=0" height="26">
+                      </a>
+                    </p>
+                  </div>
+                </li>
+
+                <li>
+                  <h2>Etiquetas</h2>
+                  <div class="block-body">
+                    <ul>
+                      <li><a href="#">Humor</a> (45)</li>
+                      <li><a href="#">Internet</a> (32)</li>
+                      <li><a href="#">Varios</a> (28)</li>
+                      <li><a href="#">Musica</a> (15)</li>
+                      <li><a href="#">Videos</a> (22)</li>
+                      <li><a href="#">Politica</a> (10)</li>
+                      <li><a href="#">Futbol</a> (8)</li>
+                      <li><a href="#">Tecnologia</a> (18)</li>
+                      <li><a href="#">Personal</a> (12)</li>
+                      <li><a href="#">Recetas</a> (5)</li>
+                    </ul>
+                  </div>
+                </li>
+
+                <li>
+                  <h2>Archivo</h2>
+                  <div class="block-body">
+                    <ul>
+                      <li><a href="#">2024</a> (5)</li>
+                      <li><a href="#">2023</a> (48)</li>
+                      <li><a href="#">2022</a> (62)</li>
+                      <li><a href="#">2021</a> (55)</li>
+                      <li><a href="#">2020</a> (41)</li>
+                      <li><a href="#">2019</a> (38)</li>
+                      <li><a href="#">2018</a> (44)</li>
+                      <li><a href="#">2017</a> (52)</li>
+                      <li><a href="#">2016</a> (47)</li>
+                      <li><a href="#">2015</a> (39)</li>
+                    </ul>
+                  </div>
+                </li>
+
+              </ul>
+            </aside>
+
+          </div>
+        </div>
       </div>
-    </div>
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-grid">
+
+          <div class="footer-col">
+            <h2>Stats</h2>
+            <p>
+              <strong>127</strong> posts | <strong>2450</strong> comentarios.<br>
+              <strong>5872</strong> Dias Online
+            </p>
+          </div>
+
+          <div class="footer-col">
+            <h2>Visitas</h2>
+            <p>Gracias por visitar este blog. Los contadores se fueron con la migracion, pero la buena onda quedo.</p>
+          </div>
+
+          <div class="footer-col">
+            <h2>Top Comentaristas</h2>
+            <ul>
+              <li><a href="#">Anonimo</a></li>
+              <li><a href="#">El Loco de la esquina</a></li>
+              <li><a href="#">Maria</a></li>
+              <li><a href="#">Juan Perez</a></li>
+              <li><a href="#">Gordo Contento</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Links</h2>
+            <ul>
+              <li><a href="http://www.cocoluchi.com.ar/">Coconut</a></li>
+              <li><a href="http://cosechadel66.es/">Cosecha del 66</a></li>
+              <li><a href="http://cromatismodivino.blogspot.com/">Cromatismo divino</a></li>
+              <li><a href="http://blog.elrincondemariano.com.ar/">El rincon de Mariano</a></li>
+              <li><a href="http://www.geekzeitung.com/">Geek Zeitung</a></li>
+              <li><a href="http://notasperdidasenlaweb.blogspot.com/">Notas perdidas en la Web</a></li>
+              <li><a href="http://www.andressmerkin.com.ar/">Perkin's World</a></li>
+              <li><a href="http://www.quehariasinti.blogspot.com/">Que haria yo sin ti?</a></li>
+              <li><a href="http://www.quieromascerveza.com.ar/">Quiero mas cerveza</a></li>
+              <li><a href="http://www.quierounanaranja.com.ar/">Quiero una naranja</a></li>
+              <li><a href="http://www.tgon.com.ar/ppal.php">TGON - Te guste o no</a></li>
+              <li><a href="http://www.tintinenargentina.com.ar/">TinTin en Argentina</a></li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="site-credits">
+          Mystique theme by <a href="http://digitalnature.ro">digitalnature</a> | Converted by <a href="http://themecraft.net">Theme Craft</a> | Tweaked by <strong>Mozz</strong>
+        </div>
+      </div>
+    </footer>
+
   </div>
-
-</div><!-- page -->
-
 </body>
 </html>
