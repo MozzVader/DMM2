@@ -18,7 +18,14 @@
   <header class="mag-header">
     <div class="container">
 
-      <!-- Left: Blog title -->
+      <!-- Left: Logo -->
+      <div class="logo-area">
+        <div class="logo-placeholder" title="Logo">
+          <span class="logo-initials">DM</span>
+        </div>
+      </div>
+
+      <!-- Center-left: Blog title -->
       <div class="title-area">
         <div class="mag-title-wrapper">
           <h1 class="mag-title">Dos Minutos Más</h1>
@@ -273,7 +280,14 @@
   </footer>
 
   <!-- ==========================================
-       SCRIPTS — Theme Toggle
+       BACK TO TOP BUTTON
+       ========================================== -->
+  <button class="back-to-top" id="backToTop" aria-label="Volver arriba" title="Volver arriba">
+    <span class="btt-arrow">&#8593;</span>
+  </button>
+
+  <!-- ==========================================
+       SCRIPTS — Theme Toggle + Back to Top
        ========================================== -->
   <script>
     // Theme toggle
@@ -297,6 +311,19 @@
         e.preventDefault();
         toggle.click();
       }
+    });
+
+    // Back to top button
+    const btt = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 400) {
+        btt.classList.add('visible');
+      } else {
+        btt.classList.remove('visible');
+      }
+    });
+    btt.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   </script>
 
