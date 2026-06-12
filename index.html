@@ -13,13 +13,36 @@
 <body>
 
   <!-- ==========================================
-       HEADER — Magazine masthead with neon glow
+       HEADER — Title + Search + Theme Toggle
        ========================================== -->
   <header class="mag-header">
-    <div class="mag-title-wrapper">
-      <h1 class="mag-title">Dos Minutos Más</h1>
+    <div class="container">
+
+      <!-- Left: Blog title -->
+      <div class="title-area">
+        <div class="mag-title-wrapper">
+          <h1 class="mag-title">Dos Minutos Más</h1>
+        </div>
+      </div>
+
+      <!-- Center: Search -->
+      <div class="search-area">
+        <div class="search-box">
+          <input type="text" placeholder="Buscar...">
+        </div>
+      </div>
+
+      <!-- Right: Theme toggle -->
+      <div class="toggle-area">
+        <div class="toggle-track" id="themeToggle" role="button" tabindex="0" aria-label="Cambiar tema claro/oscuro">
+          <div class="toggle-thumb">
+            <span class="toggle-icon-moon">&#9790;</span>
+            <span class="toggle-icon-sun">&#9728;</span>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <p class="mag-tagline">Humor — Observaciones — Cosas que pasan</p>
   </header>
 
   <!-- ==========================================
@@ -124,24 +147,64 @@
       </div>
 
       <!-- ======================================
-           BOTTOM GRID — Author + Tags
+           SECTION DIVIDER
+           ====================================== -->
+      <div class="section-divider">
+        <span class="line"></span>
+        <span class="label">Explorar</span>
+        <span class="line"></span>
+      </div>
+
+      <!-- ======================================
+           BOTTOM GRID — 4 panels
            ====================================== -->
       <div class="bottom-grid">
 
-        <!-- Author card -->
+        <!-- Panel 1: Author (yellow accent) -->
         <div class="panel author-panel">
           <div class="panel-title">Sobre el autor</div>
           <div class="author-avatar">Mz</div>
           <div class="author-name">Mozz</div>
           <div class="author-location">Buenos Aires, Argentina</div>
           <p class="author-bio">
-            Escribiendo sobre cosas que pasan cuando te quedas dos minutos más. Observador profesional de las pequeñas tragedias cotidianas y las grandes verdades del rotiserio.
+            Escribiendo sobre cosas que pasan cuando te quedas dos minutos más. Observador profesional de las pequeñas tragedias cotidianas.
           </p>
         </div>
 
-        <!-- Tags / Topics -->
+        <!-- Panel 2: Contact + Social (red accent) -->
+        <div class="panel contact-panel">
+          <div class="panel-title">Contacto</div>
+          <ul class="contact-list">
+            <li>
+              <a href="mailto:2minutosmas@gmail.com">
+                <span class="social-icon">@</span>
+                <span class="contact-label">2minutosmas@gmail.com</span>
+              </a>
+            </li>
+            <li>
+              <a href="http://twitter.com/Dosminutosmas" target="_blank">
+                <span class="social-icon">X</span>
+                <span class="contact-label">Twitter / X</span>
+              </a>
+            </li>
+            <li>
+              <a href="http://www.facebook.com/Mozz.Smith" target="_blank">
+                <span class="social-icon">f</span>
+                <span class="contact-label">Facebook</span>
+              </a>
+            </li>
+            <li>
+              <a href="http://feeds.feedburner.com/dosminutosmas" target="_blank">
+                <span class="social-icon">()</span>
+                <span class="contact-label">RSS Feed</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Panel 3: Tags (green accent) -->
         <div class="panel tags-panel">
-          <div class="panel-title">Temas</div>
+          <div class="panel-title">Tags</div>
           <div class="tags-wrap">
             <span class="tag-pill">Humor</span>
             <span class="tag-pill">Vida cotidiana</span>
@@ -154,9 +217,45 @@
             <span class="tag-pill">Ansiedad</span>
             <span class="tag-pill">YouTube</span>
             <span class="tag-pill">Reflexiones</span>
-            <span class="tag-pill">Verdades universales</span>
             <span class="tag-pill">Mates</span>
           </div>
+        </div>
+
+        <!-- Panel 4: Archive (purple accent) -->
+        <div class="panel archive-panel">
+          <div class="panel-title">Archivo</div>
+          <ul class="archive-list">
+            <li>
+              <a href="#"><span class="archive-year">2024</span><span class="archive-count">(12)</span></a>
+            </li>
+            <li>
+              <a href="#"><span class="archive-year">2023</span><span class="archive-count">(48)</span></a>
+            </li>
+            <li>
+              <a href="#"><span class="archive-year">2022</span><span class="archive-count">(62)</span></a>
+            </li>
+            <li>
+              <a href="#"><span class="archive-year">2021</span><span class="archive-count">(55)</span></a>
+            </li>
+            <li>
+              <a href="#"><span class="archive-year">2020</span><span class="archive-count">(41)</span></a>
+            </li>
+            <li>
+              <a href="#"><span class="archive-year">2019</span><span class="archive-count">(38)</span></a>
+            </li>
+            <li>
+              <a href="#"><span class="archive-year">2018</span><span class="archive-count">(44)</span></a>
+            </li>
+            <li>
+              <a href="#"><span class="archive-year">2017</span><span class="archive-count">(52)</span></a>
+            </li>
+            <li>
+              <a href="#"><span class="archive-year">2016</span><span class="archive-count">(47)</span></a>
+            </li>
+            <li>
+              <a href="#"><span class="archive-year">2015</span><span class="archive-count">(39)</span></a>
+            </li>
+          </ul>
         </div>
 
       </div>
@@ -172,6 +271,34 @@
   <footer class="mag-footer">
     <p>Dos Minutos Más &copy; 2024 — Hecho con <span class="neon-word">humo</span> y mirrors.</p>
   </footer>
+
+  <!-- ==========================================
+       SCRIPTS — Theme Toggle
+       ========================================== -->
+  <script>
+    // Theme toggle
+    const toggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    // Load saved preference (default: dark)
+    if (localStorage.getItem('dmm-theme') === 'light') {
+      body.classList.add('light');
+    }
+
+    toggle.addEventListener('click', () => {
+      body.classList.toggle('light');
+      const isLight = body.classList.contains('light');
+      localStorage.setItem('dmm-theme', isLight ? 'light' : 'dark');
+    });
+
+    // Keyboard accessibility
+    toggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle.click();
+      }
+    });
+  </script>
 
 </body>
 </html>
