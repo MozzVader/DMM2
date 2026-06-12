@@ -248,8 +248,7 @@ img {
 }
 
 .main-nav > ul > li.active > a {
-  background-color: var(--color-nav-active);
-  background-image: url(/images/nav-active.png);
+  background: linear-gradient(to bottom, #6a6a6a 0%, #606060 40%, #555 75%, #444 100%);
   color: var(--color-nav-active-text);
   text-shadow: 1px 1px 1px var(--color-dark);
 }
