@@ -15,8 +15,22 @@ a{color:#0071bb;outline:none;}
 a:hover{color:#ed1e24;text-decoration:none;}
 
 /* headings */
-h2{font-weight:normal;font-size:200%;letter-spacing:-.04em;line-height:110%;margin:.7em 0 .2em;}
-h3{font-size:160%;font-weight:normal;letter-spacing:-.04em;line-height:110%;margin:.7em 0 .2em;text-shadow:#fff 1px 1px 1px;}
+h2{
+    font-weight:normal;
+    font-size:200%;
+    letter-spacing:-.04em;
+    line-height:110%;
+    margin:.7em 0 .2em;
+}
+
+h3{
+    font-size:160%;
+    font-weight:normal;
+    letter-spacing:-.04em;
+    line-height:110%;
+    margin:.7em 0 .2em;
+    text-shadow:#fff 1px 1px 1px;
+}
 
 /* lists */
 ul,ol{margin:.4em 0 1em;line-height:150%;}

@@ -3,34 +3,17 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Dos minutos mas</title>
+<title>Dos minutos mas - 2</title>
 <link rel="shortcut icon" href="http://www.fileden.com/files/2010/7/19/2919232//favicon.ico" type="image/x-icon"/>
 <link rel="icon" href="http://www.fileden.com/files/2010/7/19/2919232//favicon.ico" type="image/x-icon"/>
 <link rel="stylesheet" type="text/css" href="assets/styles.css"/>
+   
+<!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-<script>
-$(document).ready(function(){
-  $('a.fadeThis').each(function(){
-    if(!$(this).find('span.hover').length){
-      $(this).prepend('<span class="hover"></span>');
-    }
-  });
-  $('a.fadeThis').hover(
-    function(){ $(this).find('span.hover').stop(true,true).fadeIn(200); },
-    function(){ $(this).find('span.hover').stop(true,true).fadeOut(400); }
-  );
-  $('.clearField').on('focus',function(){
-    if($(this).val()==$(this)[0].defaultValue){
-      $(this).val('').removeClass('clearFieldBlurred').addClass('clearFieldActive');
-    }
-  }).on('blur',function(){
-    if($(this).val()===''){
-      $(this).val($(this)[0].defaultValue).removeClass('clearFieldActive').addClass('clearFieldBlurred');
-    }
-  });
-});
-</script>
+
 </head>
 
 <body class="home blog col-2-right">
