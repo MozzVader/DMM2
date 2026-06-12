@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dos minutos mas</title>
+<link rel="shortcut icon" href="http://www.fileden.com/files/2010/7/19/2919232//favicon.ico" type="image/x-icon"/>
+<link rel="icon" href="http://www.fileden.com/files/2010/7/19/2919232//favicon.ico" type="image/x-icon"/>
+<link rel="stylesheet" type="text/css" href="assets/styles.css"/>
+
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script>
+$(document).ready(function(){
+  $('a.fadeThis').each(function(){
+    if(!$(this).find('span.hover').length){
+      $(this).prepend('<span class="hover"></span>');
+    }
+  });
+  $('a.fadeThis').hover(
+    function(){ $(this).find('span.hover').stop(true,true).fadeIn(200); },
+    function(){ $(this).find('span.hover').stop(true,true).fadeOut(400); }
+  );
+  $('.clearField').on('focus',function(){
+    if($(this).val()==$(this)[0].defaultValue){
+      $(this).val('').removeClass('clearFieldBlurred').addClass('clearFieldActive');
+    }
+  }).on('blur',function(){
+    if($(this).val()===''){
+      $(this).val($(this)[0].defaultValue).removeClass('clearFieldActive').addClass('clearFieldBlurred');
+    }
+  });
+});
+</script>
+</head>
+
+<body class="home blog col-2-right">
+<div id="page">
+
+  <!-- Header -->
+  <div class="shadow-left page-content">
+  <div class="shadow-right">
+    <div id="header">
+      <div id="site-title">
+        <div id="logo">
+          <a href="#" title="Dos minutos mas">Dos minutos mas</a>
+        </div>
+      </div>
+      <a class="rss" href="http://feeds.feedburner.com/dosminutosmas" title="RSS Feeds"><span>RSS Feeds</span></a>
+
+      <ul id="navigation">
+        <li class="current_page_item" id="nav-home">
+          <a class="home fadeThis" href="#" title="You are Home">
+            <span class="title">Home</span><span class="pointer"></span>
+          </a>
+        </li>
+        <li class="page_item">
+          <a class="fadeThis" href="#" title="Contacto">
+            <span class="title">Contacto</span><span class="pointer"></span>
+          </a>
+          <ul>
+            <li class="page_item">
+              <a class="fadeThis" href="http://www.emailmeform.com/fid.php?formid=130337" title="Mandame un correo" target="_new">
+                <span class="title">Formulario de contacto</span><span class="pointer"></span>
+              </a>
+            </li>
+            <li class="page_item">
+              <a class="fadeThis" href="http://twitter.com/Dosminutosmas" title="Seguime en Twitter">
+                <span class="title">Twitter</span><span class="pointer"></span>
+              </a>
+            </li>
+            <li class="page_item">
+              <a class="fadeThis" href="http://www.facebook.com/Mozz.Smith" title="Facebook">
+                <span class="title">Facebook</span><span class="pointer"></span>
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+  </div>
+
+  <!-- Main -->
+  <div class="shadow-left page-content">
+  <div class="shadow-right">
+  <div id="main-left">
+    <div id="main-inside">
+      <div class="clearfix">
+
+        <div id="primary-content">
+
+          <div class="post hentry" id="post-1">
+            <h2 class="title">
+              <a href="#">Cosas que pasan cuando te quedas dos minutos mas en cualquier lado</a>
+            </h2>
+            <div class="post-date">
+              <p>15 de enero de 2024</p>
+            </div>
+            <div class="post-info clearfix">
+              <p class="author alignleft">Lo dijo: <span class="fn">Mozz</span></p>
+              <p class="comments alignright">
+                <a class="comments" href="#">3 Comentarios</a>
+              </p>
+            </div>
+            <div class="post-content clearfix" id="post-1-content">
+              <p>Siempre me paso que cuando digo "voy dos minutitos mas" termine quedandome una hora. Es una ley no escrita, como cuando decis "voy a dormir temprano" y son las tres de la manana y todavia estas viendo videos de gatos cayendose de cosas en YouTube. La otra vez fui al super a comprar pan, me cruce con un conocido y terminamos charlando en la puerta dos horas. Mi senora ya no me cree cuando digo que voy a volver rapido. Tiene razon.</p>
+            </div>
+            <div class="post-tags">
+              <a href="#" rel="tag">Humor</a>, <a href="#" rel="tag">Varios</a>
+            </div>
+            <a href="#">Leer mas &gt;&gt;</a>
+          </div>
+
+          <div class="post hentry" id="post-2">
+            <h2 class="title">
+              <a href="#">La gente que habla sola en la calle ya no es tan rara como antes</a>
+            </h2>
+            <div class="post-date">
+              <p>10 de enero de 2024</p>
+            </div>
+            <div class="post-info clearfix">
+              <p class="author alignleft">Lo dijo: <span class="fn">Mozz</span></p>
+              <p class="comments alignright">
+                <a class="comments" href="#">7 Comentarios</a>
+              </p>
+            </div>
+            <div class="post-content clearfix" id="post-2-content">
+              <p>Antes si veias a alguien hablando solo en la calle, inmediatamente lo marcabas como persona con problemas. Hoy ves a un tipo con auriculares gritandole al aire y pensas "ah, esta en un llamado" o "esta grabando un reel". El otro dia vi a un senor discutiendo con un arbol y resulto que estaba haciendo un directo para sus cinco seguidores en TikTok. Los tiempos cambian, amigos, y la locura se fue democratizando. Ahora cualquiera puede ser el loco de la cuadra sin necesidad de internarse.</p>
+            </div>
+            <div class="post-tags">
+              <a href="#" rel="tag">Internet</a>, <a href="#" rel="tag">Humor</a>
+            </div>
+            <a href="#">Leer mas &gt;&gt;</a>
+          </div>
+
+          <div class="post hentry" id="post-3">
+            <h2 class="title">
+              <a href="#">Por que los argentinos somos expertos en hacer colas</a>
+            </h2>
+            <div class="post-date">
+              <p>5 de enero de 2024</p>
+            </div>
+            <div class="post-info clearfix">
+              <p class="author alignleft">Lo dijo: <span class="fn">Mozz</span></p>
+              <p class="comments alignright">
+                <a class="comments no comments" href="#">0 Comentarios</a>
+              </p>
+            </div>
+            <div class="post-content clearfix" id="post-3-content">
+              <p>Hacer cola es practicamente un deporte nacional. Nos especializamos desde chiquitos: la fila del recreo, la fila del colectivo, la fila del ANSES, la fila para pagar los servicios. Tenemos un sexto sentido para detectar cual fila se mueve mas rapido y una diplomatura en poner a otro en la fila mientras vamos al bano. El tema es que cuando viajas al exterior y no hay fila, te quedas parado como un boludo sin saber que hacer. Extranas la fila. Te da ansiedad no tener una persona adelante tuyo revisando el celular cada tres segundos.</p>
+            </div>
+            <div class="post-tags">
+              <a href="#" rel="tag">Humor</a>, <a href="#" rel="tag">Internet</a>, <a href="#" rel="tag">Varios</a>
+            </div>
+            <a href="#">Leer mas &gt;&gt;</a>
+          </div>
+
+        </div>
+
+        <div id="sidebar">
+          <ul class="sidebar-blocks">
+
+            <!-- Search -->
+            <li class="block">
+              <div class="block-widget_search" id="instance-search-3">
+                <div class="search-form">
+                  <form action="#" class="clearfix" id="searchform" method="get">
+                    <fieldset>
+                      <div id="searchfield">
+                        <input class="text clearField" id="searchbox" name="q" type="text" value="Buscar..."/>
+                      </div>
+                      <input class="submit" type="submit" value=""/>
+                    </fieldset>
+                  </form>
+                </div>
+              </div>
+            </li>
+
+            <!-- Author -->
+            <li class="block">
+              <h2>El autor</h2>
+              <div class="widget-content">
+                <div style="text-align:right;">
+                  <a href="http://www.blogger.com/profile/11231782711076545669" target="_blank">
+                    <img style="margin:0 0 10px 10px;float:right;cursor:pointer;width:100px;height:100px;" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjyL_uH92-f-F3_bSq49Sb-Co6GofRr2ie3jQY2-4gHWsjXXumMR0Rr6EXOWKqN1s9bee3EvcDd8BdMdGUXAKM5FTsvwE5moE0ZPVYSziexe5egTBe7cs8px9f3f58Av6xJo4CgP1VgWgSP/s400/avatarbuddy.jpg" alt="Mozz"/>
+                  </a>
+                  <br/>
+                  <span style="font-size:130%;"><span style="font-weight:bold;">Mozz</span></span>
+                  <br/>Buenos Aires,
+                  <br/>Argentina
+                </div>
+                <br/>
+                <div style="text-align:center;">
+                  <a href="mailto:2minutosmas@gmail.com" target="_blank">
+                    <img alt="Escribime!" src="http://i32.tinypic.com/2d77lzt.jpg"/>
+                  </a>
+                </div>
+              </div>
+            </li>
+
+            <!-- Twitter -->
+            <li class="block">
+              <h2>Mozz en twitter</h2>
+              <div class="widget-content">
+                <div id="twitter_div">
+                  <ul id="twitter_update_list">
+                    <li>Seguime en Twitter para enterarte de las ultimas novedades del blog y otras cosas random que se me ocurren a las tres de la manana.</li>
+                  </ul>
+                  <a id="twitter-link" href="http://twitter.com/Dosminutosmas">
+                    <img width="180" src="http://www.twitterbuttons.com/images/ex/twit7.gif" height="37" title="Seguime en Twitter"/>
+                  </a>
+                </div>
+              </div>
+            </li>
+
+            <!-- Feed -->
+            <li class="block">
+              <h2>Suscribite al feed</h2>
+              <div class="widget-content">
+                <form action="http://www.feedburner.com/fb/a/emailverify" style="border:1px solid #ccc;padding:3px;text-align:center;" target="popupwindow" method="post" onsubmit="window.open('http://www.feedburner.com/fb/a/emailverifySubmit?feedId=1934039','popupwindow','scrollbars=yes,width=550,height=520');return true">
+                  <p>Recibi las entradas en tu correo:</p>
+                  <p><input style="width:140px" name="email" type="text"/></p>
+                  <input value="http://feeds.feedburner.com/~e?ffid=1934039" name="url" type="hidden"/>
+                  <input value="Dos minutos mas" name="title" type="hidden"/>
+                  <input value="en_US" name="loc" type="hidden"/>
+                  <input value="Suscribite" type="submit"/>
+                </form>
+                <br/>
+                <center>
+                  <p><a href="http://feeds.feedburner.com/DosMinutosMas">
+                    <img width="88" style="border:0" alt="" src="http://feeds.feedburner.com/~fc/DosMinutosMas?bg=99CCFF&amp;fg=444444&amp;anim=0" height="26"/>
+                  </a></p>
+                </center>
+              </div>
+            </li>
+
+            <!-- Tags -->
+            <li class="block">
+              <h2>Etiquetas</h2>
+              <div class="widget-content list-label-widget-content">
+                <ul>
+                  <li><a href="#">Humor</a> (45)</li>
+                  <li><a href="#">Internet</a> (32)</li>
+                  <li><a href="#">Varios</a> (28)</li>
+                  <li><a href="#">Musica</a> (15)</li>
+                  <li><a href="#">Videos</a> (22)</li>
+                  <li><a href="#">Politica</a> (10)</li>
+                  <li><a href="#">Futbol</a> (8)</li>
+                  <li><a href="#">Tecnologia</a> (18)</li>
+                  <li><a href="#">Personal</a> (12)</li>
+                  <li><a href="#">Recetas</a> (5)</li>
+                </ul>
+              </div>
+            </li>
+
+            <!-- Archive -->
+            <li class="block">
+              <h2>Archivo</h2>
+              <div class="widget-content">
+                <ul>
+                  <li><a href="#">2024</a> (5)</li>
+                  <li><a href="#">2023</a> (48)</li>
+                  <li><a href="#">2022</a> (62)</li>
+                  <li><a href="#">2021</a> (55)</li>
+                  <li><a href="#">2020</a> (41)</li>
+                  <li><a href="#">2019</a> (38)</li>
+                  <li><a href="#">2018</a> (44)</li>
+                  <li><a href="#">2017</a> (52)</li>
+                  <li><a href="#">2016</a> (47)</li>
+                  <li><a href="#">2015</a> (39)</li>
+                </ul>
+              </div>
+            </li>
+
+          </ul>
+        </div>
+
+      </div><!-- clearfix -->
+    </div><!-- main-inside -->
+  </div><!-- main-left -->
+  </div><!-- shadow-right -->
+  </div><!-- shadow-left -->
+
+  <!-- Footer -->
+  <div id="footer">
+    <div class="page-content" id="footer-blocks">
+      <div class="slide-container clearfix">
+        <ul class="slides">
+          <li class="slide slide-1 page-content">
+            <div class="slide-content">
+              <ul class="blocks widgetcount-4">
+                <li class="block">
+                  <div class="block-content">
+                    <h2>Stats</h2>
+                    <b>127</b> posts |
+                    <b>2450</b> comentarios.
+                    <br/>
+                    <b>5872</b> Dias Online
+                  </div>
+                </li>
+                <li class="block">
+                  <div class="block-content">
+                    <h2>Visitas</h2>
+                    <center>
+                      Gracias por visitar este blog. Los contadores se fueron con la migracion, pero la buena onda quedo.
+                    </center>
+                  </div>
+                </li>
+                <li class="block">
+                  <div class="block-content">
+                    <h2>Top Comentaristas</h2>
+                    <ul>
+                      <li><a href="#">Anonimo</a></li>
+                      <li><a href="#">El Loco de la esquina</a></li>
+                      <li><a href="#">Maria</a></li>
+                      <li><a href="#">Juan Perez</a></li>
+                      <li><a href="#">Gordo Contento</a></li>
+                    </ul>
+                  </div>
+                </li>
+                <li class="block">
+                  <div class="block-content">
+                    <h2>Links</h2>
+                    <ul>
+                      <li><a href="http://www.cocoluchi.com.ar/">Coconut</a></li>
+                      <li><a href="http://cosechadel66.es/">Cosecha del 66</a></li>
+                      <li><a href="http://cromatismodivino.blogspot.com/">Cromatismo divino</a></li>
+                      <li><a href="http://blog.elrincondemariano.com.ar/">El rincon de Mariano</a></li>
+                      <li><a href="http://www.geekzeitung.com/">Geek Zeitung</a></li>
+                      <li><a href="http://notasperdidasenlaweb.blogspot.com/">Notas perdidas en la Web</a></li>
+                      <li><a href="http://www.andressmerkin.com.ar/">Perkin's World</a></li>
+                      <li><a href="http://www.quehariasinti.blogspot.com/">Que haria yo sin ti?</a></li>
+                      <li><a href="http://www.quieromascerveza.com.ar/">Quiero mas cerveza</a></li>
+                      <li><a href="http://www.quierounanaranja.com.ar/">Quiero una naranja</a></li>
+                      <li><a href="http://www.tgon.com.ar/ppal.php">TGON - Te guste o no</a></li>
+                      <li><a href="http://www.tintinenargentina.com.ar/">TinTin en Argentina</a></li>
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div id="copyright">
+        Mystique theme by <a href="http://digitalnature.ro">digitalnature</a> | Converted by <a href="http://themecraft.net">Theme Craft</a> | Tweaked by <b>Mozz</b>
+      </div>
+    </div>
+  </div>
+
+</div><!-- page -->
+
+</body>
+</html>
