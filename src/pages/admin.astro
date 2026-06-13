@@ -690,8 +690,8 @@
             </div>
             <div class="upload-area" id="uploadArea">
               <p>📷 Hacé click o arrastrá una imagen para subirla</p>
-              <input type="file" id="imageUpload" accept="image/*" />
             </div>
+            <input type="file" id="imageUpload" accept="image/*" style="display:none;" />
             <div class="upload-preview" id="uploadPreview"></div>
             <button class="btn btn-sm btn-danger" id="removeImageBtn" style="margin-top:8px;display:none;">Eliminar imagen</button>
           </div>
@@ -953,6 +953,9 @@ async function uploadImage(file) {
   showToast('Subiendo imagen...', 'success');
   const ext = file.name.split('.').pop();
   const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+  // Reset input so same file can be selected again
+  document.getElementById('imageUpload').value = '';
 
   const { data, error } = await sb.storage
     .from(BUCKET)
