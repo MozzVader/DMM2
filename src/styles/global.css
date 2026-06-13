@@ -319,6 +319,22 @@ body.light .mag-header {
   display: inline-block;
 }
 
+.error-404 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 8.1rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  /* Neon gradient fill */
+  background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-red) 50%, var(--neon-yellow) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  white-space: nowrap;
+}
+
+
 .mag-title-wrapper::before {
   content: 'Dos Minutos Más';
   position: absolute;
