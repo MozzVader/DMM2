@@ -6,7 +6,7 @@ on:
 
   # Webhook from Supabase Database Webhook
   repository_dispatch:
-    types: [webhook_update_blog]
+    types: [INSERT, UPDATE, DELETE]
 
   # Build on pushes to main (code/design changes)
   push:
