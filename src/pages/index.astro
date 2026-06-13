@@ -16,11 +16,11 @@ import {
 const featured = await getFeaturedPost();
 const allPosts = await getAllPosts();
 
-// Second post for the horizontal card
-const secondPost: Post | undefined = allPosts[0];
+// Next 3 posts as horizontal cards
+const standardPosts = allPosts.slice(0, 3);
 
 // Remaining posts for the mini list
-const miniPosts = allPosts.slice(1, 6);
+const miniPosts = allPosts.slice(3, 8);
 
 
 ---
@@ -35,8 +35,10 @@ const miniPosts = allPosts.slice(1, 6);
 
     <SectionDivider label="Más reciente" />
 
-    <!-- Second post: horizontal card -->
-    {secondPost && <PostStandard post={secondPost} />}
+    <!-- Next 3 posts as horizontal cards -->
+    {standardPosts.map((post) => (
+      <PostStandard post={post} />
+    ))}
 
     <SectionDivider label="Últimos posts" />
 
