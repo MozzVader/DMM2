@@ -8,7 +8,7 @@ const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
       <div class="logo-area">
         <a href={astroBase}>
           <div class="logo-placeholder" title="Logo">
-            <img src="/public/logo.png" />
+            <img src={`${astroBase}logo.png`} />
           </div>
         </a>
       </div>
