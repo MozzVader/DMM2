@@ -190,6 +190,25 @@ export async function getAllPosts(): Promise<Post[]> {
   }
 }
 
+/** Get all posts (featured + regular) for pagination, newest first */
+export async function getAllPostsForPagination(): Promise<Post[]> {
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*, tags:post_tags(tags(id, name, slug))')
+      .order('published_at', { ascending: false });
+
+    if (error) throw error;
+    return ((data as Post[]) || []).map((p) => ({
+      ...p,
+      tags: normalizeTags(p.tags),
+    }));
+  } catch {
+    console.warn('[supabase] getAllPostsForPagination failed — using demo data');
+    return [DEMO_FEATURED, ...DEMO_POSTS];
+  }
+}
+
 /** Get the featured post */
 export async function getFeaturedPost(): Promise<Post | null> {
   try {

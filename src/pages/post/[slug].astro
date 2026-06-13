@@ -3,7 +3,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import BottomGrid from '../../components/BottomGrid.astro';
-import { getPostBySlug, getAllPosts, getFeaturedPost } from '../../lib/supabase';
+import { getAllPosts, getFeaturedPost } from '../../lib/supabase';
+import type { Post } from '../../lib/supabase';
+
+const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
 
 export async function getStaticPaths() {
   const [regularPosts, featuredPost] = await Promise.all([
@@ -11,17 +14,21 @@ export async function getStaticPaths() {
     getFeaturedPost(),
   ]);
 
-  const allPosts = featuredPost
+  const allPosts: Post[] = featuredPost
     ? [featuredPost, ...regularPosts]
     : regularPosts;
 
-  return allPosts.map((post) => ({
+  return allPosts.map((post, index) => ({
     params: { slug: post.slug },
-    props: { post },
+    props: {
+      post,
+      prevPost: index < allPosts.length - 1 ? allPosts[index + 1] : null,
+      nextPost: index > 0 ? allPosts[index - 1] : null,
+    },
   }));
 }
 
-const { post } = Astro.props;
+const { post, prevPost, nextPost } = Astro.props;
 
 const dateStr = new Date(post.published_at).toLocaleDateString('es-AR', {
   day: 'numeric',
@@ -55,7 +62,7 @@ const dateStr = new Date(post.published_at).toLocaleDateString('es-AR', {
         {post.tags && post.tags.length > 0 && (
           <div class="post-tags">
             {post.tags.map((tag) => (
-              <a href={`${(import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/'}tag/${tag.slug}`} class="tag-pill" style="border-color: rgba(191, 90, 242, 0.2); color: rgba(191, 90, 242, 0.8);">
+              <a href={`${astroBase}tag/${tag.slug}`} class="tag-pill" style="border-color: rgba(191, 90, 242, 0.2); color: rgba(191, 90, 242, 0.8);">
                 {tag.name}
               </a>
             ))}
@@ -63,6 +70,24 @@ const dateStr = new Date(post.published_at).toLocaleDateString('es-AR', {
         )}
       </div>
     </article>
+
+    <!-- Post navigation -->
+    {(prevPost || nextPost) && (
+      <nav class="post-nav">
+        {prevPost && (
+          <a href={`${astroBase}post/${prevPost.slug}`} class="post-nav-link post-nav-prev">
+            <span class="post-nav-label">← Anterior</span>
+            <span class="post-nav-title">{prevPost.title}</span>
+          </a>
+        )}
+        {nextPost && (
+          <a href={`${astroBase}post/${nextPost.slug}`} class="post-nav-link post-nav-next">
+            <span class="post-nav-label">Siguiente →</span>
+            <span class="post-nav-title">{nextPost.title}</span>
+          </a>
+        )}
+      </nav>
+    )}
 
     <BottomGrid />
   </div>
@@ -193,9 +218,71 @@ const dateStr = new Date(post.published_at).toLocaleDateString('es-AR', {
     transform: translateY(-1px);
   }
 
+  /* Post navigation */
+  .post-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .post-nav-link {
+    padding: 20px 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 5px;
+    text-decoration: none;
+    transition: border-color 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .post-nav-link:hover {
+    border-color: var(--neon-purple);
+  }
+
+  .post-nav-prev {
+    text-align: left;
+  }
+
+  .post-nav-next {
+    text-align: right;
+  }
+
+  .post-nav-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+  }
+
+  .post-nav-title {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .post-nav-link:hover .post-nav-title {
+    color: var(--neon-purple);
+  }
+
   @media (max-width: 768px) {
     .post-single-body {
       padding: 24px 22px 32px;
+    }
+
+    .post-nav {
+      grid-template-columns: 1fr;
+    }
+
+    .post-nav-next {
+      text-align: left;
     }
   }
 

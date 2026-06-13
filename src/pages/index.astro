@@ -13,6 +13,8 @@ import {
   type Post,
 } from '../lib/supabase';
 
+const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
+
 const featured = await getFeaturedPost();
 const allPosts = await getAllPosts();
 
@@ -45,6 +47,12 @@ const miniPosts = allPosts.slice(3, 8);
     <!-- Mini posts list -->
     {miniPosts.length > 0 && <MiniPosts posts={miniPosts} />}
 
+    <div class="view-all-wrap">
+      <a href={`${astroBase}posts`} class="view-all-btn">
+        Ver todos los posts <span class="arrow">→</span>
+      </a>
+    </div>
+
     <SectionDivider label="Explorar" />
 
     <!-- Bottom grid -->
@@ -54,3 +62,32 @@ const miniPosts = allPosts.slice(3, 8);
 
   <Footer slot="footer" />
 </BaseLayout>
+
+<style>
+  .view-all-wrap {
+    text-align: center;
+    margin: 32px 0 0;
+  }
+
+  .view-all-btn {
+    display: inline-block;
+    padding: 12px 32px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 5px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    background: var(--bg-card);
+  }
+
+  .view-all-btn:hover {
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+  }
+
+  .view-all-btn .arrow {
+    margin-left: 4px;
+  }
+</style>
