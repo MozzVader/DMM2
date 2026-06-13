@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Dos Minutos Más</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-body: #0d0d0d;
+      --bg-card: #131313;
+      --bg-input: #1a1a1a;
+      --bg-hover: #1e1e2a;
+      --text-primary: #e8e8e8;
+      --text-secondary: #888;
+      --text-muted: #555;
+      --border-subtle: #1f1f2f;
+      --border-input: #2a2a3a;
+      --neon-purple: #bf5af2;
+      --neon-red: #ff4757;
+      --neon-yellow: #ffd32a;
+      --neon-green: #2ed573;
+      --danger: #ff4757;
+      --shadow-card: 0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-body);
+      color: var(--text-primary);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ===== LOGIN ===== */
+    .login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 40px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .login-card h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-red));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .login-card p {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-input);
+      border-radius: 5px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: var(--neon-purple);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border: 1px solid var(--border-input);
+      border-radius: 5px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn:hover { border-color: var(--neon-purple); color: var(--neon-purple); }
+
+    .btn-primary {
+      background: var(--neon-purple);
+      border-color: var(--neon-purple);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover { background: #a040d0; color: #fff; }
+
+    .btn-danger {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .btn-danger:hover { background: rgba(255,71,87,0.1); }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    .btn-block { width: 100%; justify-content: center; }
+
+    .login-error {
+      color: var(--danger);
+      font-size: 0.8rem;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ===== ADMIN LAYOUT ===== */
+    .admin-layout { display: none; }
+    .admin-layout.active { display: block; }
+    .login-screen.hidden { display: none; }
+
+    .admin-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .admin-header h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .admin-header h2 span {
+      color: var(--text-secondary);
+      font-weight: 400;
+      font-size: 0.85rem;
+      margin-left: 8px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .admin-content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* ===== DASHBOARD ===== */
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .dashboard-header h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.2rem;
+    }
+
+    .posts-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .posts-table th {
+      text-align: left;
+      padding: 10px 12px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .posts-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: middle;
+    }
+
+    .posts-table tr:hover {
+      background: var(--bg-hover);
+    }
+
+    .post-title-cell {
+      max-width: 400px;
+    }
+
+    .post-title-cell a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 500;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .post-title-cell a:hover {
+      color: var(--neon-purple);
+    }
+
+    .badge-sm {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-sm.purple { background: rgba(191,90,242,0.15); color: var(--neon-purple); }
+    .badge-sm.red { background: rgba(255,71,87,0.15); color: var(--neon-red); }
+    .badge-sm.yellow { background: rgba(255,211,42,0.15); color: var(--neon-yellow); }
+    .badge-sm.green { background: rgba(46,213,115,0.15); color: var(--neon-green); }
+
+    .featured-star {
+      color: var(--neon-yellow);
+      font-size: 1rem;
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 6px;
+    }
+
+    .date-cell {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+
+    /* ===== EDITOR ===== */
+    .editor-screen { display: none; }
+    .editor-screen.active { display: block; }
+    .dashboard-screen.hidden { display: none; }
+
+    .editor-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .editor-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .editor-grid .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .editor-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 20px;
+    }
+
+    .editor-section h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .editor-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    /* Tags selector */
+    .tags-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .tag-option {
+      padding: 5px 12px;
+      border: 1px solid var(--border-input);
+      border-radius: 20px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .tag-option:hover { border-color: var(--neon-purple); }
+
+    .tag-option.selected {
+      border-color: var(--neon-purple);
+      background: rgba(191,90,242,0.15);
+      color: var(--neon-purple);
+    }
+
+    /* Toggle switch */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .toggle-switch {
+      width: 40px;
+      height: 22px;
+      background: var(--border-input);
+      border-radius: 11px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle-switch.active { background: var(--neon-purple); }
+
+    .toggle-switch::after {
+      content: '';
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s;
+    }
+
+    .toggle-switch.active::after {
+      transform: translateX(18px);
+    }
+
+    /* Quill overrides */
+    #editor-container {
+      min-height: 300px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-primary);
+    }
+
+    .ql-toolbar.ql-snow {
+      border: 1px solid var(--border-input) !important;
+      border-radius: 5px 5px 0 0;
+      background: var(--bg-input);
+    }
+
+    .ql-container.ql-snow {
+      border: 1px solid var(--border-input) !important;
+      border-top: none !important;
+      border-radius: 0 0 5px 5px;
+      background: var(--bg-input);
+      color: var(--text-primary);
+      font-size: 15px;
+    }
+
+    .ql-editor {
+      min-height: 280px;
+      color: var(--text-primary);
+    }
+
+    .ql-editor.ql-blank::before {
+      color: var(--text-muted);
+      font-style: normal;
+    }
+
+    .ql-snow .ql-stroke { stroke: var(--text-secondary); }
+    .ql-snow .ql-fill { fill: var(--text-secondary); }
+    .ql-snow .ql-picker-label { color: var(--text-secondary); }
+    .ql-snow .ql-picker-options {
+      background: var(--bg-card);
+      border-color: var(--border-input);
+    }
+
+    /* Upload area */
+    .upload-area {
+      border: 2px dashed var(--border-input);
+      border-radius: 6px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      margin-top: 8px;
+    }
+
+    .upload-area:hover { border-color: var(--neon-purple); }
+
+    .upload-area p {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    .upload-area input[type="file"] { display: none; }
+
+    .upload-preview {
+      margin-top: 12px;
+    }
+
+    .upload-preview img {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 4px;
+    }
+
+    .image-url-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .image-url-row input { flex: 1; }
+
+    /* Status messages */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 14px 24px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      background: rgba(46,213,115,0.15);
+      border: 1px solid var(--neon-green);
+      color: var(--neon-green);
+    }
+
+    .toast.error {
+      background: rgba(255,71,87,0.15);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    /* Delete confirmation */
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      display: none;
+    }
+
+    .confirm-overlay.active { display: flex; }
+
+    .confirm-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .confirm-card p {
+      margin-bottom: 24px;
+      color: var(--text-secondary);
+    }
+
+    .confirm-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .editor-grid {
+        grid-template-columns: 1fr;
+      }
+      .posts-table { font-size: 0.8rem; }
+      .posts-table th:nth-child(3), .posts-table td:nth-child(3) { display: none; }
+      .admin-content { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <h1>Dos Minutos Más</h1>
+      <p>Panel de administración</p>
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="loginPassword" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Iniciar sesión</button>
+      </form>
+      <div class="login-error" id="loginError"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="admin-layout" id="adminLayout">
+    <header class="admin-header">
+      <h2>DMM Admin <span>Panel</span></h2>
+      <div class="header-actions">
+        <a href="/" target="_blank" class="btn btn-sm">Ver blog →</a>
+        <button class="btn btn-sm" id="logoutBtn">Salir</button>
+      </div>
+    </header>
+
+    <div class="admin-content">
+      <!-- DASHBOARD -->
+      <div class="dashboard-screen" id="dashboardScreen">
+        <div class="dashboard-header">
+          <h3>Posts</h3>
+          <button class="btn btn-primary" id="newPostBtn">+ Nuevo post</button>
+        </div>
+        <table class="posts-table">
+          <thead>
+            <tr>
+              <th>⭐</th>
+              <th>Título</th>
+              <th>Badge</th>
+              <th>Fecha</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="postsTableBody">
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-secondary);">Cargando posts...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- EDITOR -->
+      <div class="editor-screen" id="editorScreen">
+        <div class="editor-header">
+          <button class="btn btn-sm" id="backBtn">← Volver</button>
+          <h3 id="editorTitle" style="font-family:'Space Grotesk',sans-serif;">Nuevo post</h3>
+        </div>
+
+        <div class="editor-grid">
+          <!-- Title + Slug -->
+          <div class="editor-section full-width">
+            <div class="form-group">
+              <label>Título</label>
+              <input type="text" id="postTitle" placeholder="Título del post" />
+            </div>
+            <div class="form-group">
+              <label>Slug</label>
+              <input type="text" id="postSlug" placeholder="auto-generado-desde-el-titulo" />
+            </div>
+          </div>
+
+          <!-- Meta -->
+          <div class="editor-section">
+            <h4>Metadatos</h4>
+            <div class="form-group">
+              <label>Badge</label>
+              <select id="postBadge">
+                <option value="General">General</option>
+                <option value="Opinión">Opinión</option>
+                <option value="Destacado">Destacado</option>
+                <option value="Humor">Humor</option>
+                <option value="Reflexión">Reflexión</option>
+                <option value="Tutorial">Tutorial</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Color del badge</label>
+              <select id="postBadgeColor">
+                <option value="purple">Morado</option>
+                <option value="red">Rojo</option>
+                <option value="yellow">Amarillo</option>
+                <option value="green">Verde</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <div class="toggle-row">
+                <div class="toggle-switch" id="toggleFeatured"></div>
+                <span style="font-size:0.85rem;">Post destacado</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Featured Image -->
+          <div class="editor-section">
+            <h4>Imagen destacada</h4>
+            <div class="image-url-row">
+              <input type="text" id="postImageUrl" placeholder="URL de imagen externa" />
+              <button class="btn btn-sm" id="setImageBtn">Usar</button>
+            </div>
+            <div class="upload-area" id="uploadArea">
+              <p>📷 Hacé click o arrastrá una imagen para subirla</p>
+              <input type="file" id="imageUpload" accept="image/*" />
+            </div>
+            <div class="upload-preview" id="uploadPreview"></div>
+          </div>
+
+          <!-- Tags -->
+          <div class="editor-section full-width">
+            <h4>Tags</h4>
+            <div class="tags-selector" id="tagsSelector"></div>
+          </div>
+
+          <!-- Excerpt -->
+          <div class="editor-section full-width">
+            <h4>Extracto</h4>
+            <div class="form-group">
+              <textarea id="postExcerpt" placeholder="Breve descripción del post (opcional — se genera automáticamente si lo dejás vacío)" rows="3"></textarea>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="editor-section full-width">
+            <h4>Contenido</h4>
+            <div id="editor-container"></div>
+          </div>
+
+          <!-- Actions -->
+          <div class="editor-actions full-width">
+            <button class="btn btn-primary" id="savePostBtn">Guardar post</button>
+            <button class="btn" id="cancelBtn">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-card">
+      <p id="confirmMsg">¿Estás seguro?</p>
+      <div class="confirm-actions">
+        <button class="btn" id="confirmCancel">Cancelar</button>
+        <button class="btn btn-danger" id="confirmOk">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://ftfpsxvobigayeqmqrac.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0ZnBzeHZvYmlnYXllcW1xcmFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyOTkyOTAsImV4cCI6MjA5Njg3NTI5MH0.jyuUXc9vvZ5WWf7qcLf-Z0_Zn10foHZtAWHPdMF6JoY';
+const BUCKET = 'Dosminutosmas';
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ===== STATE =====
+let currentUser = null;
+let allTags = [];
+let editingPostId = null;
+let selectedTags = new Set();
+let quill = null;
+
+// ===== HELPERS =====
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+function formatDate(dateStr) {
+  return new Date(dateStr).toLocaleDateString('es-AR', {
+    day: 'numeric', month: 'short', year: 'numeric'
+  });
+}
+
+function showScreen(screen) {
+  document.getElementById('dashboardScreen').classList.toggle('hidden', screen !== 'dashboard');
+  document.getElementById('editorScreen').classList.toggle('active', screen === 'editor');
+  document.getElementById('editorTitle').textContent = editingPostId ? 'Editar post' : 'Nuevo post';
+}
+
+// ===== AUTH =====
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const errorEl = document.getElementById('loginError');
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    errorEl.textContent = error.message;
+    errorEl.style.display = 'block';
+  } else {
+    currentUser = data.user;
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('adminLayout').classList.add('active');
+    loadDashboard();
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  location.reload();
+});
+
+// ===== DASHBOARD =====
+async function loadDashboard() {
+  const tbody = document.getElementById('postsTableBody');
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-secondary);">Cargando...</td></tr>';
+
+  const { data: posts, error } = await sb
+    .from('posts')
+    .select('*')
+    .order('published_at', { ascending: false });
+
+  if (error || !posts) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--danger);">Error al cargar posts</td></tr>';
+    return;
+  }
+
+  if (posts.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-secondary);">No hay posts aún</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = posts.map(post => `
+    <tr>
+      <td>${post.is_featured ? '<span class="featured-star">★</span>' : ''}</td>
+      <td class="post-title-cell"><a href="/post/${post.slug}" target="_blank">${post.title}</a></td>
+      <td><span class="badge-sm ${post.badge_color || 'purple'}">${post.badge || 'General'}</span></td>
+      <td class="date-cell">${formatDate(post.published_at)}</td>
+      <td class="actions-cell">
+        <button class="btn btn-sm" onclick="editPost('${post.id}')">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="confirmDelete('${post.id}', '${post.title.replace(/'/g, "\\'")}')">Eliminar</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ===== NEW POST =====
+document.getElementById('newPostBtn').addEventListener('click', () => {
+  editingPostId = null;
+  clearEditor();
+  loadTags();
+  showScreen('editor');
+});
+
+document.getElementById('backBtn').addEventListener('click', () => {
+  showScreen('dashboard');
+  loadDashboard();
+});
+
+document.getElementById('cancelBtn').addEventListener('click', () => {
+  showScreen('dashboard');
+  loadDashboard();
+});
+
+function clearEditor() {
+  document.getElementById('postTitle').value = '';
+  document.getElementById('postSlug').value = '';
+  document.getElementById('postBadge').value = 'General';
+  document.getElementById('postBadgeColor').value = 'purple';
+  document.getElementById('postImageUrl').value = '';
+  document.getElementById('postExcerpt').value = '';
+  document.getElementById('uploadPreview').innerHTML = '';
+  document.getElementById('toggleFeatured').classList.remove('active');
+  selectedTags.clear();
+  if (quill) quill.setContents([]);
+}
+
+// ===== TAGS =====
+async function loadTags() {
+  const { data, error } = await sb.from('tags').select('*').order('name');
+  if (!error && data) {
+    allTags = data;
+  }
+
+  const container = document.getElementById('tagsSelector');
+  container.innerHTML = allTags.map(tag => `
+    <div class="tag-option ${selectedTags.has(tag.id) ? 'selected' : ''}" data-id="${tag.id}" onclick="toggleTag(this, '${tag.id}')">
+      ${tag.name}
+    </div>
+  `).join('');
+}
+
+function toggleTag(el, tagId) {
+  if (selectedTags.has(tagId)) {
+    selectedTags.delete(tagId);
+    el.classList.remove('selected');
+  } else {
+    selectedTags.add(tagId);
+    el.classList.add('selected');
+  }
+}
+
+// ===== SLUG AUTO-GENERATE =====
+document.getElementById('postTitle').addEventListener('input', (e) => {
+  if (!editingPostId) {
+    document.getElementById('postSlug').value = slugify(e.target.value);
+  }
+});
+
+// ===== FEATURED TOGGLE =====
+document.getElementById('toggleFeatured').addEventListener('click', function() {
+  this.classList.toggle('active');
+});
+
+// ===== IMAGE UPLOAD =====
+document.getElementById('uploadArea').addEventListener('click', () => {
+  document.getElementById('imageUpload').click();
+});
+
+document.getElementById('uploadArea').addEventListener('dragover', (e) => {
+  e.preventDefault();
+  e.currentTarget.style.borderColor = 'var(--neon-purple)';
+});
+
+document.getElementById('uploadArea').addEventListener('dragleave', () => {
+  document.getElementById('uploadArea').style.borderColor = '';
+});
+
+document.getElementById('uploadArea').addEventListener('drop', async (e) => {
+  e.preventDefault();
+  document.getElementById('uploadArea').style.borderColor = '';
+  const file = e.dataTransfer.files[0];
+  if (file) await uploadImage(file);
+});
+
+document.getElementById('imageUpload').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (file) await uploadImage(file);
+});
+
+async function uploadImage(file) {
+  showToast('Subiendo imagen...', 'success');
+  const ext = file.name.split('.').pop();
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+  const { data, error } = await sb.storage
+    .from(BUCKET)
+    .upload(filename, file, { cacheControl: '31536000', upsert: false });
+
+  if (error) {
+    showToast('Error al subir: ' + error.message, 'error');
+    return;
+  }
+
+  const { data: { publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(data.path);
+  document.getElementById('postImageUrl').value = publicUrl;
+  document.getElementById('uploadPreview').innerHTML = `<img src="${publicUrl}" alt="Preview" />`;
+  showToast('Imagen subida correctamente');
+}
+
+document.getElementById('setImageBtn').addEventListener('click', () => {
+  const url = document.getElementById('postImageUrl').value;
+  if (url) {
+    document.getElementById('uploadPreview').innerHTML = `<img src="${url}" alt="Preview" onerror="this.parentElement.innerHTML='<p style=color:var(--danger)>No se pudo cargar la imagen</p>'" />`;
+  }
+});
+
+// ===== SAVE POST =====
+document.getElementById('savePostBtn').addEventListener('click', async () => {
+  const title = document.getElementById('postTitle').value.trim();
+  const slug = document.getElementById('postSlug').value.trim();
+  const badge = document.getElementById('postBadge').value;
+  const badge_color = document.getElementById('postBadgeColor').value;
+  const is_featured = document.getElementById('toggleFeatured').classList.contains('active');
+  const featured_image = document.getElementById('postImageUrl').value.trim() || null;
+  const excerpt = document.getElementById('postExcerpt').value.trim() || null;
+  const content = quill ? quill.root.innerHTML : '';
+
+  if (!title) { showToast('El título es obligatorio', 'error'); return; }
+  if (!slug) { showToast('El slug es obligatorio', 'error'); return; }
+
+  const btn = document.getElementById('savePostBtn');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+
+  try {
+    if (editingPostId) {
+      // UPDATE
+      const { error } = await sb.from('posts').update({
+        title, slug, badge, badge_color, is_featured, featured_image, excerpt, content,
+        updated_at: new Date().toISOString()
+      }).eq('id', editingPostId);
+
+      if (error) throw error;
+
+      // Update tags
+      await sb.from('post_tags').delete().eq('post_id', editingPostId);
+      for (const tagId of selectedTags) {
+        await sb.from('post_tags').insert({ post_id: editingPostId, tag_id: tagId });
+      }
+
+      showToast('Post actualizado correctamente');
+    } else {
+      // INSERT
+      const { data: newPost, error } = await sb.from('posts').insert({
+        title, slug, badge, badge_color, is_featured, featured_image, excerpt, content,
+        published_at: new Date().toISOString()
+      }).select().single();
+
+      if (error) throw error;
+
+      // Insert tags
+      for (const tagId of selectedTags) {
+        await sb.from('post_tags').insert({ post_id: newPost.id, tag_id: tagId });
+      }
+
+      showToast('Post creado correctamente');
+    }
+
+    showScreen('dashboard');
+    loadDashboard();
+  } catch (err) {
+    showToast('Error: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar post';
+  }
+});
+
+// ===== EDIT POST =====
+async function editPost(id) {
+  editingPostId = id;
+  clearEditor();
+
+  const { data: post, error } = await sb.from('posts').select('*').eq('id', id).single();
+  if (error) { showToast('Error al cargar el post', 'error'); return; }
+
+  document.getElementById('postTitle').value = post.title;
+  document.getElementById('postSlug').value = post.slug;
+  document.getElementById('postBadge').value = post.badge;
+  document.getElementById('postBadgeColor').value = post.badge_color;
+  document.getElementById('postImageUrl').value = post.featured_image || '';
+  document.getElementById('postExcerpt').value = post.excerpt || '';
+
+  if (post.is_featured) {
+    document.getElementById('toggleFeatured').classList.add('active');
+  }
+
+  if (post.featured_image) {
+    document.getElementById('uploadPreview').innerHTML = `<img src="${post.featured_image}" alt="Preview" onerror="this.parentElement.innerHTML=''" />`;
+  }
+
+  if (quill) quill.root.innerHTML = post.content || '';
+
+  // Load post tags
+  const { data: postTags } = await sb.from('post_tags').select('tag_id').eq('post_id', id);
+  if (postTags) {
+    selectedTags = new Set(postTags.map(t => t.tag_id));
+  }
+
+  await loadTags();
+  showScreen('editor');
+}
+
+// ===== DELETE POST =====
+let deleteTargetId = null;
+
+function confirmDelete(id, title) {
+  deleteTargetId = id;
+  document.getElementById('confirmMsg').textContent = `¿Eliminás "${title}"? Esta acción no se puede deshacer.`;
+  document.getElementById('confirmOverlay').classList.add('active');
+}
+
+document.getElementById('confirmCancel').addEventListener('click', () => {
+  document.getElementById('confirmOverlay').classList.remove('active');
+  deleteTargetId = null;
+});
+
+document.getElementById('confirmOk').addEventListener('click', async () => {
+  if (!deleteTargetId) return;
+
+  // Delete post_tags first
+  await sb.from('post_tags').delete().eq('post_id', deleteTargetId);
+  // Delete post
+  const { error } = await sb.from('posts').delete().eq('id', deleteTargetId);
+
+  if (error) {
+    showToast('Error al eliminar: ' + error.message, 'error');
+  } else {
+    showToast('Post eliminado');
+    loadDashboard();
+  }
+
+  document.getElementById('confirmOverlay').classList.remove('active');
+  deleteTargetId = null;
+});
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  quill = new Quill('#editor-container', {
+    theme: 'snow',
+    placeholder: 'Escribí el contenido del post...',
+    modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'header': [1, 2, 3, false] }],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        ['blockquote', 'code-block'],
+        ['link', 'image', 'video'],
+        ['clean']
+      ]
+    }
+  });
+
+  // Check existing session
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      currentUser = session.user;
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('adminLayout').classList.add('active');
+      loadDashboard();
+    }
+  });
+});
+</script>
+</body>
+</html>
