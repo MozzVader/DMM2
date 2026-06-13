@@ -1,3 +1,8 @@
+---
+// Admin CMS page — rendered as Astro page to guarantee it's in the build output
+// All logic is client-side (Supabase Auth, Quill editor, image upload)
+---
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -52,29 +57,63 @@
       border: 1px solid var(--border-subtle);
       border-radius: 8px;
       padding: 40px;
+      max-width: 400px;
       width: 100%;
-      max-width: 380px;
-      box-shadow: var(--shadow-card);
+      text-align: center;
     }
 
     .login-card h1 {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.4rem;
-      margin-bottom: 8px;
-      background: linear-gradient(135deg, var(--neon-purple), var(--neon-red));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      font-size: 1.8rem;
+      color: var(--neon-purple);
+      margin-bottom: 4px;
     }
 
     .login-card p {
       color: var(--text-secondary);
-      font-size: 0.85rem;
       margin-bottom: 24px;
+      font-size: 0.9rem;
     }
 
+    .login-error {
+      display: none;
+      color: var(--danger);
+      margin-top: 16px;
+      font-size: 0.85rem;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border: 1px solid var(--border-input);
+      border-radius: 6px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .btn:hover { background: var(--bg-hover); }
+    .btn-sm { padding: 4px 10px; font-size: 0.8rem; }
+    .btn-block { width: 100%; padding: 12px; }
+    .btn-primary {
+      background: var(--neon-purple);
+      border-color: var(--neon-purple);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #a84ae0; }
+    .btn-danger {
+      background: transparent;
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .btn-danger:hover { background: rgba(255,71,87,0.1); }
+
+    /* ===== FORMS ===== */
     .form-group {
       margin-bottom: 16px;
+      text-align: left;
     }
 
     .form-group label {
@@ -82,117 +121,68 @@
       font-size: 0.8rem;
       color: var(--text-secondary);
       margin-bottom: 6px;
-      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    .form-group input, .form-group select, .form-group textarea {
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
       width: 100%;
-      padding: 10px 14px;
+      padding: 10px 12px;
       background: var(--bg-input);
       border: 1px solid var(--border-input);
-      border-radius: 5px;
+      border-radius: 6px;
       color: var(--text-primary);
       font-family: 'Inter', sans-serif;
       font-size: 0.9rem;
       transition: border-color 0.2s;
     }
 
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
       outline: none;
       border-color: var(--neon-purple);
     }
 
-    .form-group textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 20px;
-      border: 1px solid var(--border-input);
-      border-radius: 5px;
-      background: var(--bg-card);
-      color: var(--text-primary);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-    }
-
-    .btn:hover { border-color: var(--neon-purple); color: var(--neon-purple); }
-
-    .btn-primary {
-      background: var(--neon-purple);
-      border-color: var(--neon-purple);
-      color: #fff;
-      font-weight: 600;
-    }
-
-    .btn-primary:hover { background: #a040d0; color: #fff; }
-
-    .btn-danger {
-      border-color: var(--danger);
-      color: var(--danger);
-    }
-
-    .btn-danger:hover { background: rgba(255,71,87,0.1); }
-
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 0.8rem;
-    }
-
-    .btn-block { width: 100%; justify-content: center; }
-
-    .login-error {
-      color: var(--danger);
-      font-size: 0.8rem;
-      margin-top: 12px;
-      display: none;
-    }
+    .form-group textarea { resize: vertical; }
 
     /* ===== ADMIN LAYOUT ===== */
-    .admin-layout { display: none; }
+    .admin-layout {
+      display: none;
+      min-height: 100vh;
+    }
+
     .admin-layout.active { display: block; }
-    .login-screen.hidden { display: none; }
 
     .admin-header {
       background: var(--bg-card);
       border-bottom: 1px solid var(--border-subtle);
-      padding: 12px 24px;
+      padding: 16px 24px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      align-items: center;
     }
 
     .admin-header h2 {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 600;
+      font-size: 1.2rem;
     }
 
     .admin-header h2 span {
-      color: var(--text-secondary);
+      color: var(--neon-purple);
       font-weight: 400;
-      font-size: 0.85rem;
-      margin-left: 8px;
     }
 
     .header-actions {
       display: flex;
+      gap: 8px;
       align-items: center;
-      gap: 12px;
     }
 
     .admin-content {
-      max-width: 960px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 32px 24px;
     }
@@ -200,69 +190,65 @@
     /* ===== DASHBOARD ===== */
     .dashboard-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 12px;
+      align-items: center;
+      margin-bottom: 20px;
     }
 
     .dashboard-header h3 {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
 
     .posts-table {
       width: 100%;
       border-collapse: collapse;
+      background: var(--bg-card);
+      border-radius: 8px;
+      overflow: hidden;
     }
 
     .posts-table th {
       text-align: left;
-      padding: 10px 12px;
+      padding: 12px 16px;
+      background: var(--bg-input);
       font-size: 0.75rem;
-      color: var(--text-secondary);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
       border-bottom: 1px solid var(--border-subtle);
     }
 
     .posts-table td {
-      padding: 12px;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--border-subtle);
-      vertical-align: middle;
+      font-size: 0.85rem;
     }
 
-    .posts-table tr:hover {
-      background: var(--bg-hover);
-    }
-
-    .post-title-cell {
-      max-width: 400px;
-    }
+    .posts-table tr:hover td { background: var(--bg-hover); }
 
     .post-title-cell a {
       color: var(--text-primary);
       text-decoration: none;
-      font-weight: 500;
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
-    .post-title-cell a:hover {
-      color: var(--neon-purple);
+    .post-title-cell a:hover { color: var(--neon-purple); }
+
+    .date-cell { color: var(--text-secondary); font-size: 0.8rem; }
+
+    .actions-cell {
+      display: flex;
+      gap: 6px;
     }
+
+    .featured-star { color: var(--neon-yellow); }
 
     .badge-sm {
       display: inline-block;
       padding: 2px 8px;
-      border-radius: 3px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
     }
 
     .badge-sm.purple { background: rgba(191,90,242,0.15); color: var(--neon-purple); }
@@ -270,83 +256,88 @@
     .badge-sm.yellow { background: rgba(255,211,42,0.15); color: var(--neon-yellow); }
     .badge-sm.green { background: rgba(46,213,115,0.15); color: var(--neon-green); }
 
-    .featured-star {
-      color: var(--neon-yellow);
-      font-size: 1rem;
-    }
-
-    .actions-cell {
-      display: flex;
-      gap: 6px;
-    }
-
-    .date-cell {
-      color: var(--text-secondary);
-      font-size: 0.8rem;
-      white-space: nowrap;
-    }
-
     /* ===== EDITOR ===== */
-    .editor-screen { display: none; }
+    .editor-screen {
+      display: none;
+    }
+
     .editor-screen.active { display: block; }
-    .dashboard-screen.hidden { display: none; }
 
     .editor-header {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
       margin-bottom: 24px;
     }
 
     .editor-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .editor-grid .full-width {
-      grid-column: 1 / -1;
+      gap: 20px;
     }
 
     .editor-section {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      border-radius: 6px;
+      border-radius: 8px;
       padding: 20px;
     }
 
+    .editor-section.full-width { grid-column: 1 / -1; }
+
     .editor-section h4 {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-size: 0.95rem;
       margin-bottom: 16px;
       color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
     }
 
-    .editor-actions {
+    .image-url-row {
       display: flex;
-      gap: 12px;
-      margin-top: 24px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border-subtle);
+      gap: 8px;
+      margin-bottom: 12px;
     }
 
-    /* Tags selector */
-    .tags-selector {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
+    .image-url-row input { flex: 1; }
+
+    .upload-area {
+      border: 2px dashed var(--border-input);
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      margin-bottom: 12px;
+    }
+
+    .upload-area:hover { border-color: var(--neon-purple); }
+
+    .upload-preview img {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 6px;
       margin-top: 8px;
     }
 
+    .upload-preview {
+      position: relative;
+    }
+
+    .upload-preview input[type="file"] { display: none; }
+
+    /* Tags */
+    .tags-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
     .tag-option {
-      padding: 5px 12px;
+      padding: 6px 14px;
       border: 1px solid var(--border-input);
       border-radius: 20px;
-      font-size: 0.78rem;
       cursor: pointer;
+      font-size: 0.85rem;
       transition: all 0.2s;
       user-select: none;
     }
@@ -354,16 +345,16 @@
     .tag-option:hover { border-color: var(--neon-purple); }
 
     .tag-option.selected {
+      background: var(--neon-purple);
       border-color: var(--neon-purple);
-      background: rgba(191,90,242,0.15);
-      color: var(--neon-purple);
+      color: #fff;
     }
 
-    /* Toggle switch */
+    /* Toggle */
     .toggle-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .toggle-switch {
@@ -371,126 +362,82 @@
       height: 22px;
       background: var(--border-input);
       border-radius: 11px;
-      position: relative;
       cursor: pointer;
+      position: relative;
       transition: background 0.2s;
     }
 
-    .toggle-switch.active { background: var(--neon-purple); }
-
     .toggle-switch::after {
       content: '';
+      position: absolute;
       width: 18px;
       height: 18px;
       background: #fff;
       border-radius: 50%;
-      position: absolute;
       top: 2px;
       left: 2px;
       transition: transform 0.2s;
+    }
+
+    .toggle-switch.active {
+      background: var(--neon-purple);
     }
 
     .toggle-switch.active::after {
       transform: translateX(18px);
     }
 
-    /* Quill overrides */
-    #editor-container {
-      min-height: 300px;
-      font-family: 'Inter', sans-serif;
-      font-size: 15px;
-      line-height: 1.7;
-      color: var(--text-primary);
-    }
-
+    /* Quill */
     .ql-toolbar.ql-snow {
-      border: 1px solid var(--border-input) !important;
-      border-radius: 5px 5px 0 0;
+      border-color: var(--border-input) !important;
       background: var(--bg-input);
+      border-radius: 8px 8px 0 0;
     }
 
     .ql-container.ql-snow {
-      border: 1px solid var(--border-input) !important;
-      border-top: none !important;
-      border-radius: 0 0 5px 5px;
+      border-color: var(--border-input) !important;
+      border-radius: 0 0 8px 8px;
       background: var(--bg-input);
       color: var(--text-primary);
-      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      min-height: 300px;
     }
 
-    .ql-editor {
-      min-height: 280px;
-      color: var(--text-primary);
-    }
-
-    .ql-editor.ql-blank::before {
-      color: var(--text-muted);
-      font-style: normal;
-    }
+    .ql-editor.ql-blank::before { color: var(--text-muted); }
 
     .ql-snow .ql-stroke { stroke: var(--text-secondary); }
     .ql-snow .ql-fill { fill: var(--text-secondary); }
     .ql-snow .ql-picker-label { color: var(--text-secondary); }
-    .ql-snow .ql-picker-options {
-      background: var(--bg-card);
-      border-color: var(--border-input);
-    }
 
-    /* Upload area */
-    .upload-area {
-      border: 2px dashed var(--border-input);
-      border-radius: 6px;
-      padding: 24px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.2s;
-      margin-top: 8px;
-    }
-
-    .upload-area:hover { border-color: var(--neon-purple); }
-
-    .upload-area p {
-      color: var(--text-secondary);
-      font-size: 0.85rem;
-    }
-
-    .upload-area input[type="file"] { display: none; }
-
-    .upload-preview {
-      margin-top: 12px;
-    }
-
-    .upload-preview img {
-      max-width: 100%;
-      max-height: 200px;
-      border-radius: 4px;
-    }
-
-    .image-url-row {
+    /* Editor actions */
+    .editor-actions {
       display: flex;
-      gap: 8px;
-      margin-top: 8px;
+      gap: 12px;
+      padding-top: 8px;
     }
 
-    .image-url-row input { flex: 1; }
+    /* Hidden */
+    .hidden { display: none !important; }
 
-    /* Status messages */
+    /* Toast */
     .toast {
       position: fixed;
       bottom: 24px;
       right: 24px;
-      padding: 14px 24px;
-      border-radius: 6px;
+      padding: 12px 20px;
+      border-radius: 8px;
       font-size: 0.85rem;
       z-index: 9999;
-      transform: translateY(100px);
       opacity: 0;
-      transition: all 0.3s ease;
+      transform: translateY(10px);
+      transition: all 0.3s;
+      pointer-events: none;
     }
 
     .toast.show {
-      transform: translateY(0);
       opacity: 1;
+      transform: translateY(0);
     }
 
     .toast.success {
@@ -578,7 +525,7 @@
     <header class="admin-header">
       <h2>DMM Admin <span>Panel</span></h2>
       <div class="header-actions">
-        <a href="/" target="_blank" class="btn btn-sm">Ver blog →</a>
+        <a href={Astro.url.origin + import.meta.env.BASE_URL} target="_blank" class="btn btn-sm">Ver blog →</a>
         <button class="btn btn-sm" id="logoutBtn">Salir</button>
       </div>
     </header>
@@ -715,10 +662,11 @@
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-<script>
+<script is:inline>
 const SUPABASE_URL = 'https://ftfpsxvobigayeqmqrac.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0ZnBzeHZvYmlnYXllcW1xcmFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyOTkyOTAsImV4cCI6MjA5Njg3NTI5MH0.jyuUXc9vvZ5WWf7qcLf-Z0_Zn10foHZtAWHPdMF6JoY';
 const BUCKET = 'Dosminutosmas';
+const BASE = '/DMM2';
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -805,7 +753,7 @@ async function loadDashboard() {
   tbody.innerHTML = posts.map(post => `
     <tr>
       <td>${post.is_featured ? '<span class="featured-star">★</span>' : ''}</td>
-      <td class="post-title-cell"><a href="/post/${post.slug}" target="_blank">${post.title}</a></td>
+      <td class="post-title-cell"><a href="${BASE}/post/${post.slug}" target="_blank">${post.title}</a></td>
       <td><span class="badge-sm ${post.badge_color || 'purple'}">${post.badge || 'General'}</span></td>
       <td class="date-cell">${formatDate(post.published_at)}</td>
       <td class="actions-cell">
