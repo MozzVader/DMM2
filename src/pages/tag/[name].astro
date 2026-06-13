@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import PostStandard from '../../components/PostStandard.astro';
+import { getPostsByTag, getAllTags } from '../../lib/supabase';
+
+export async function getStaticPaths() {
+  const tags = await getAllTags();
+  return tags.map((tag) => ({
+    params: { name: tag.slug },
+  }));
+}
+
+const { name } = Astro.params;
+const posts = await getPostsByTag(name);
+const tagName = posts[0]?.tags?.find((t: any) => t.slug === name)?.name || name;
+---
+
+<BaseLayout title={`Tag: ${tagName} — Dos Minutos Más`}>
+  <Header slot="header" />
+
+  <div class="container">
+    <div class="tag-header">
+      <h1>#{tagName}</h1>
+      <p>{posts.length} post{posts.length !== 1 ? 's' : ''}</p>
+    </div>
+
+    {posts.map((post: any) => (
+      <PostStandard post={post} />
+    ))}
+
+    {posts.length === 0 && (
+      <div class="empty-state">
+        <p>No hay posts con este tag todavía.</p>
+      </div>
+    )}
+  </div>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  .tag-header {
+    margin-bottom: 32px;
+  }
+
+  .tag-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-red));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+
+  .tag-header p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+  }
+</style>

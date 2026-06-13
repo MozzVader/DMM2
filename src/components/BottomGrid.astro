@@ -1,0 +1,70 @@
+---
+import type { Tag } from '../lib/supabase';
+import TagCloud from './TagCloud.astro';
+import ArchiveList from './ArchiveList.astro';
+
+interface Props {
+  tags: Tag[];
+  archiveData: { year: number; count: number }[];
+}
+
+const { tags, archiveData } = Astro.props;
+---
+
+<div class="bottom-grid">
+
+  <!-- Panel 1: Author (yellow accent) -->
+  <div class="panel author-panel">
+    <div class="panel-title">Sobre el autor</div>
+    <div class="author-avatar">Mz</div>
+    <div class="author-name">Mozz</div>
+    <div class="author-location">Buenos Aires, Argentina</div>
+    <p class="author-bio">
+      Escribiendo sobre cosas que pasan cuando te quedas dos minutos más. Observador profesional de las pequeñas tragedias cotidianas.
+    </p>
+  </div>
+
+  <!-- Panel 2: Contact + Social (red accent) -->
+  <div class="panel contact-panel">
+    <div class="panel-title">Contacto</div>
+    <ul class="contact-list">
+      <li>
+        <a href="mailto:2minutosmas@gmail.com">
+          <span class="social-icon">@</span>
+          <span class="contact-label">2minutosmas@gmail.com</span>
+        </a>
+      </li>
+      <li>
+        <a href="http://twitter.com/Dosminutosmas" target="_blank" rel="noopener">
+          <span class="social-icon">X</span>
+          <span class="contact-label">Twitter / X</span>
+        </a>
+      </li>
+      <li>
+        <a href="http://www.facebook.com/Mozz.Smith" target="_blank" rel="noopener">
+          <span class="social-icon">f</span>
+          <span class="contact-label">Facebook</span>
+        </a>
+      </li>
+      <li>
+        <a href="http://feeds.feedburner.com/dosminutosmas" target="_blank" rel="noopener">
+          <span class="social-icon">()</span>
+          <span class="contact-label">RSS Feed</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Panel 3: Tags (green accent) -->
+  <div class="panel tags-panel">
+    <div class="panel-title">Tags</div>
+    <TagCloud tags={tags} />
+  </div>
+
+  <!-- Panel 4: Archive (purple accent) -->
+  <div class="panel archive-panel">
+    <div class="panel-title">Archivo</div>
+    <ArchiveList archiveData={archiveData} />
+  </div>
+
+</div>

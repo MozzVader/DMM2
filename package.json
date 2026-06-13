@@ -1,0 +1,27 @@
+{
+  "name": "dmm2-repo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MozzVader/DMM2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/MozzVader/DMM2/issues"
+  },
+  "homepage": "https://github.com/MozzVader/DMM2#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.1",
+    "astro": "^6.4.6"
+  }
+}

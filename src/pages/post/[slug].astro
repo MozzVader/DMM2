@@ -1,0 +1,196 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getPostBySlug, getAllPosts } from '../../lib/supabase';
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+
+const dateStr = new Date(post.published_at).toLocaleDateString('es-AR', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+<BaseLayout title={`${post.title} — Dos Minutos Más`} description={post.excerpt || post.content.slice(0, 160)}>
+  <Header slot="header" />
+
+  <div class="container">
+    <article class="post-single">
+      <div class="post-single-image">
+        {post.featured_image && (
+          <img src={post.featured_image} alt={post.title} loading="lazy" />
+        )}
+      </div>
+
+      <div class="post-single-body">
+        <span class={`post-badge badge-${post.badge_color || 'purple'}`}>{post.badge || 'General'}</span>
+        <h1 class="post-single-title">{post.title}</h1>
+        <div class="post-meta">
+          <span>{dateStr}</span>
+          <span class="dot-sep"></span>
+          <span>Mozz</span>
+        </div>
+
+        <div class="post-content" set:html={post.content} />
+
+        {post.tags && post.tags.length > 0 && (
+          <div class="post-tags">
+            {post.tags.map((tag) => (
+              <a href={`${(import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/'}tag/${tag.slug}`} class="tag-pill" style="border-color: rgba(191, 90, 242, 0.2); color: rgba(191, 90, 242, 0.8);">
+                {tag.name}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </article>
+  </div>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  .post-single {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 32px;
+    border-top: 2px solid var(--neon-purple);
+    box-shadow: var(--shadow-card);
+  }
+
+  .post-single-image {
+    width: 100%;
+    max-height: 420px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a1a2e, #2d1b4e, #1a1a2e);
+  }
+
+  .post-single-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .post-single-body {
+    padding: 36px 40px 48px;
+  }
+
+  .post-single-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+    line-height: 1.2;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .post-content {
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--text-body);
+    margin-top: 24px;
+  }
+
+  .post-content :global(h2),
+  .post-content :global(h3) {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 32px 0 12px;
+  }
+
+  .post-content :global(h2) { font-size: 1.4rem; }
+  .post-content :global(h3) { font-size: 1.15rem; }
+
+  .post-content :global(p) {
+    margin-bottom: 16px;
+  }
+
+  .post-content :global(a) {
+    color: var(--neon-purple);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .post-content :global(a:hover) {
+    color: var(--neon-red);
+  }
+
+  .post-content :global(blockquote) {
+    border-left: 3px solid var(--neon-purple);
+    padding-left: 16px;
+    margin: 20px 0;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  .post-content :global(code) {
+    background: var(--bg-input);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+
+  .post-content :global(pre) {
+    background: var(--bg-input);
+    padding: 16px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+
+  .post-content :global(pre code) {
+    background: none;
+    padding: 0;
+  }
+
+  .post-content :global(img) {
+    max-width: 100%;
+    border-radius: 5px;
+    margin: 16px 0;
+  }
+
+  .post-tags {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .post-tags a {
+    text-decoration: none;
+    transition: transform 0.2s ease;
+  }
+
+  .post-tags a:hover {
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 768px) {
+    .post-single-body {
+      padding: 24px 22px 32px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .post-single-body {
+      padding: 20px 18px 28px;
+    }
+  }
+</style>

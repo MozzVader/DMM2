@@ -1,0 +1,272 @@
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = import.meta.env.SUPABASE_URL || 'https://ftfpsxvobigayeqmqrac.supabase.co';
+const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+/* ==============================================
+   TYPE DEFINITIONS
+   ============================================== */
+
+export interface Post {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  content: string;
+  featured_image: string | null;
+  badge: string;
+  badge_color: 'purple' | 'red' | 'yellow' | 'green';
+  is_featured: boolean;
+  published_at: string;
+  created_at: string;
+  updated_at: string;
+  tags?: Tag[];
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+/* ==============================================
+   FALLBACK DEMO DATA (used when Supabase is empty)
+   ============================================== */
+
+const DEMO_FEATURED: Post = {
+  id: 'demo-1',
+  slug: 'cosas-que-pasan-dos-minutos-mas',
+  title: 'Cosas que pasan cuando te quedas dos minutos más en cualquier lado',
+  excerpt: 'Siempre me pasa que cuando digo "voy dos minutitos más" termine quedándome una hora. Es una ley no escrita, como cuando decís "voy a dormir temprano" y son las tres de la mañana y todavía estás viendo videos de gatos cayéndose de cosas en YouTube.',
+  content: '<p>Siempre me pasa que cuando digo "voy dos minutitos más" termine quedándome una hora. Es una ley no escrita, como cuando decís "voy a dormir temprano" y son las tres de la mañana y todavía estás viendo videos de gatos cayéndose de cosas en YouTube.</p><p>Lo mismo pasa en el asado. "Voy a dar una vuelta rápida por la parrilla" terminan siendo cuarenta minutos de contemplación existencial frente a las brasas mientras te preguntás si la vida tiene algún sentido o si el chorizo ya está listo.</p>',
+  featured_image: null,
+  badge: 'Destacado',
+  badge_color: 'purple',
+  is_featured: true,
+  published_at: '2024-01-15T12:00:00Z',
+  created_at: '2024-01-15T12:00:00Z',
+  updated_at: '2024-01-15T12:00:00Z',
+  tags: [],
+};
+
+const DEMO_POSTS: Post[] = [
+  {
+    id: 'demo-2',
+    slug: 'gente-que-habla-sola',
+    title: 'La gente que habla sola en la calle ya no es tan rara como antes',
+    excerpt: 'Antes si veías a alguien hablando solo en la calle, inmediatamente lo marcabas como persona con problemas. Hoy ves a un tipo con auriculares gritándole al aire y pensás "ah, está en un llamado".',
+    content: '<p>Antes si veías a alguien hablando solo en la calle, inmediatamente lo marcabas como persona con problemas. Hoy ves a un tipo con auriculares gritándole al aire y pensás "ah, está en un llamado".</p>',
+    featured_image: null,
+    badge: 'Opinión',
+    badge_color: 'red',
+    is_featured: false,
+    published_at: '2024-01-10T12:00:00Z',
+    created_at: '2024-01-10T12:00:00Z',
+    updated_at: '2024-01-10T12:00:00Z',
+    tags: [],
+  },
+  {
+    id: 'demo-3',
+    slug: 'carteles-prohibido-estacionar',
+    title: 'Por qué los carteles de "prohibido estacionar" son solo sugerencias decorativas',
+    excerpt: 'Todo el mundo sabe que esos carteles son más una recomendación que una prohibición real.',
+    content: '<p>Todo el mundo sabe que esos carteles son más una recomendación que una prohibición real.</p>',
+    featured_image: null,
+    badge: 'General',
+    badge_color: 'purple',
+    is_featured: false,
+    published_at: '2024-01-05T12:00:00Z',
+    created_at: '2024-01-05T12:00:00Z',
+    updated_at: '2024-01-05T12:00:00Z',
+    tags: [],
+  },
+  {
+    id: 'demo-4',
+    slug: 'asado-punto',
+    title: 'El momento exacto en que el asado se pasa de punto',
+    excerpt: 'Existe un instante, un segundo preciso, en el que el asado pasa de "perfecto" a "piedra".',
+    content: '<p>Existe un instante, un segundo preciso, en el que el asado pasa de "perfecto" a "piedra".</p>',
+    featured_image: null,
+    badge: 'General',
+    badge_color: 'red',
+    is_featured: false,
+    published_at: '2023-12-28T12:00:00Z',
+    created_at: '2023-12-28T12:00:00Z',
+    updated_at: '2023-12-28T12:00:00Z',
+    tags: [],
+  },
+  {
+    id: 'demo-5',
+    slug: 'hacer-parecer-que-trabajaste',
+    title: 'Cómo hacer que parezca que trabajaste todo el día',
+    excerpt: 'Arte puro de la procrastinación profesional.',
+    content: '<p>Arte puro de la procrastinación profesional.</p>',
+    featured_image: null,
+    badge: 'General',
+    badge_color: 'yellow',
+    is_featured: false,
+    published_at: '2023-12-20T12:00:00Z',
+    created_at: '2023-12-20T12:00:00Z',
+    updated_at: '2023-12-20T12:00:00Z',
+    tags: [],
+  },
+  {
+    id: 'demo-6',
+    slug: 'teoria-ya-voy',
+    title: 'La teoría del "ya voy" y su relación con el tiempo relativo',
+    excerpt: '"Ya voy" es la mentira piadosa más extendida del universo.',
+    content: '<p>"Ya voy" es la mentira piadosa más extendida del universo.</p>',
+    featured_image: null,
+    badge: 'General',
+    badge_color: 'green',
+    is_featured: false,
+    published_at: '2023-12-14T12:00:00Z',
+    created_at: '2023-12-14T12:00:00Z',
+    updated_at: '2023-12-14T12:00:00Z',
+    tags: [],
+  },
+];
+
+const DEMO_TAGS: Tag[] = [
+  { id: 't1', name: 'Humor', slug: 'humor' },
+  { id: 't2', name: 'Vida cotidiana', slug: 'vida-cotidiana' },
+  { id: 't3', name: 'Buenos Aires', slug: 'buenos-aires' },
+  { id: 't4', name: 'Observaciones', slug: 'observaciones' },
+  { id: 't5', name: 'Procrastinación', slug: 'procrastinacion' },
+  { id: 't6', name: 'Asado', slug: 'asado' },
+  { id: 't7', name: 'Internet', slug: 'internet' },
+  { id: 't8', name: 'Feriados', slug: 'feriados' },
+  { id: 't9', name: 'Ansiedad', slug: 'ansiedad' },
+  { id: 't10', name: 'YouTube', slug: 'youtube' },
+  { id: 't11', name: 'Reflexiones', slug: 'reflexiones' },
+  { id: 't12', name: 'Mates', slug: 'mates' },
+];
+
+const DEMO_ARCHIVE = [
+  { year: 2024, count: 12 },
+  { year: 2023, count: 48 },
+  { year: 2022, count: 62 },
+  { year: 2021, count: 55 },
+  { year: 2020, count: 41 },
+  { year: 2019, count: 38 },
+  { year: 2018, count: 44 },
+  { year: 2017, count: 52 },
+  { year: 2016, count: 47 },
+  { year: 2015, count: 39 },
+];
+
+/* ==============================================
+   DATA FETCHING HELPERS (with fallback)
+   ============================================== */
+
+/** Get all published non-featured posts, newest first */
+export async function getAllPosts(): Promise<Post[]> {
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*, tags:post_tags(tags(id, name, slug))')
+      .eq('is_featured', false)
+      .order('published_at', { ascending: false });
+
+    if (error) throw error;
+    return (data as Post[]) || [];
+  } catch {
+    console.warn('[supabase] getAllPosts failed — using demo data');
+    return DEMO_POSTS;
+  }
+}
+
+/** Get the featured post */
+export async function getFeaturedPost(): Promise<Post | null> {
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*, tags:post_tags(tags(id, name, slug))')
+      .eq('is_featured', true)
+      .order('published_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+    return data as Post || null;
+  } catch {
+    console.warn('[supabase] getFeaturedPost failed — using demo data');
+    return DEMO_FEATURED;
+  }
+}
+
+/** Get all tags */
+export async function getAllTags(): Promise<Tag[]> {
+  try {
+    const { data, error } = await supabase
+      .from('tags')
+      .select('*')
+      .order('name', { ascending: true });
+
+    if (error) throw error;
+    return (data as Tag[]) || [];
+  } catch {
+    console.warn('[supabase] getAllTags failed — using demo data');
+    return DEMO_TAGS;
+  }
+}
+
+/** Get posts by tag slug */
+export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
+  try {
+    const { data, error } = await supabase
+      .from('tags')
+      .select('*, posts:post_tags(posts(id, slug, title, excerpt, content, featured_image, badge, badge_color, is_featured, published_at, created_at, updated_at))')
+      .eq('slug', tagSlug)
+      .single();
+
+    if (error) throw error;
+    return data?.posts as Post[] || [];
+  } catch {
+    console.warn(`[supabase] getPostsByTag("${tagSlug}") failed — using demo data`);
+    return DEMO_POSTS;
+  }
+}
+
+/** Get a single post by slug */
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*, tags:post_tags(tags(id, name, slug))')
+      .eq('slug', slug)
+      .single();
+
+    if (error) throw error;
+    return data as Post || null;
+  } catch {
+    console.warn(`[supabase] getPostBySlug("${slug}") failed — looking in demo data`);
+    return DEMO_POSTS.find(p => p.slug === slug) || DEMO_FEATURED;
+  }
+}
+
+/** Get archive data grouped by year */
+export async function getArchiveData(): Promise<{ year: number; count: number }[]> {
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('published_at');
+
+    if (error) throw error;
+
+    const years: Record<number, number> = {};
+    (data || []).forEach((post: { published_at: string }) => {
+      const year = new Date(post.published_at).getFullYear();
+      years[year] = (years[year] || 0) + 1;
+    });
+
+    return Object.entries(years)
+      .map(([year, count]) => ({ year: parseInt(year), count }))
+      .sort((a, b) => b.year - a.year);
+  } catch {
+    console.warn('[supabase] getArchiveData failed — using demo data');
+    return DEMO_ARCHIVE;
+  }
+}

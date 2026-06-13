@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SectionDivider from '../components/SectionDivider.astro';
+import PostFeatured from '../components/PostFeatured.astro';
+import PostStandard from '../components/PostStandard.astro';
+import MiniPosts from '../components/MiniPosts.astro';
+import BottomGrid from '../components/BottomGrid.astro';
+import {
+  getFeaturedPost,
+  getAllPosts,
+  getAllTags,
+  getArchiveData,
+  type Post,
+} from '../lib/supabase';
+
+const featured = await getFeaturedPost();
+const allPosts = await getAllPosts();
+
+// Second post for the horizontal card
+const secondPost: Post | undefined = allPosts[0];
+
+// Remaining posts for the mini list
+const miniPosts = allPosts.slice(1, 6);
+
+const tags = await getAllTags();
+const archiveData = await getArchiveData();
+---
+
+<BaseLayout title="Dos Minutos Más">
+  <Header slot="header" />
+
+  <div class="container">
+
+    <!-- Featured post -->
+    {featured && <PostFeatured post={featured} />}
+
+    <SectionDivider label="Más reciente" />
+
+    <!-- Second post: horizontal card -->
+    {secondPost && <PostStandard post={secondPost} />}
+
+    <SectionDivider label="Últimos posts" />
+
+    <!-- Mini posts list -->
+    {miniPosts.length > 0 && <MiniPosts posts={miniPosts} />}
+
+    <SectionDivider label="Explorar" />
+
+    <!-- Bottom grid -->
+    <BottomGrid tags={tags} archiveData={archiveData} />
+
+  </div>
+
+  <Footer slot="footer" />
+</BaseLayout>

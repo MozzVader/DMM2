@@ -1,0 +1,45 @@
+---
+const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
+---
+
+<header class="mag-header">
+  <div class="container">
+    <div class="header-left">
+      <div class="logo-area">
+        <a href={astroBase}>
+          <div class="logo-placeholder" title="Logo">
+            <span class="logo-initials">DM</span>
+          </div>
+        </a>
+      </div>
+      <div class="title-area">
+        <a href={astroBase} class="mag-title-link">
+          <div class="mag-title-wrapper">
+            <h1 class="mag-title">Dos Minutos Más</h1>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="search-area">
+      <form class="search-box" action="/buscar" method="get">
+        <input type="text" name="q" placeholder="Buscar..." />
+      </form>
+    </div>
+
+    <div class="toggle-area">
+      <div class="toggle-track" id="themeToggle" role="button" tabindex="0" aria-label="Cambiar tema claro/oscuro">
+        <div class="toggle-thumb">
+          <span class="toggle-icon-moon">&#9790;</span>
+          <span class="toggle-icon-sun">&#9728;</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .mag-title-link {
+    text-decoration: none;
+  }
+</style>

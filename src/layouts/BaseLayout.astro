@@ -1,0 +1,69 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Dos Minutos Más',
+  description = 'Escribiendo sobre cosas que pasan cuando te quedas dos minutos más.',
+} = Astro.props;
+
+import '../styles/global.css';
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <meta name="description" content={description}>
+    <link rel="canonical" href={Astro.url.href} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={Astro.url.href} />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Favicon placeholder -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <slot name="header" />
+    <main class="main-content">
+      <slot />
+    </main>
+    <slot name="footer" />
+
+    <!-- Back to top -->
+    <button class="back-to-top" id="backToTop" aria-label="Volver arriba" title="Volver arriba">
+      <span class="btt-arrow">&#8593;</span>
+    </button>
+
+    <!-- Theme Toggle + Back to Top scripts -->
+    <script is:inline>
+      const toggle = document.getElementById('themeToggle');
+      const body = document.body;
+      if (localStorage.getItem('dmm-theme') === 'light') body.classList.add('light');
+      toggle.addEventListener('click', () => {
+        body.classList.toggle('light');
+        localStorage.setItem('dmm-theme', body.classList.contains('light') ? 'light' : 'dark');
+      });
+      toggle.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
+      });
+      const btt = document.getElementById('backToTop');
+      window.addEventListener('scroll', () => {
+        btt.classList.toggle('visible', window.scrollY > 400);
+      });
+      btt.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    </script>
+  </body>
+</html>

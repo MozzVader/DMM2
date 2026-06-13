@@ -1,0 +1,18 @@
+---
+interface Props {
+  archiveData: { year: number; count: number }[];
+}
+
+const { archiveData } = Astro.props;
+---
+
+<ul class="archive-list">
+  {archiveData.map((item) => (
+    <li>
+      <a href="#">
+        <span class="archive-year">{item.year}</span>
+        <span class="archive-count">({item.count})</span>
+      </a>
+    </li>
+  ))}
+</ul>

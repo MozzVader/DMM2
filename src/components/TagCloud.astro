@@ -1,0 +1,39 @@
+---
+import type { Tag } from '../lib/supabase';
+
+interface Props {
+  tags: Tag[];
+}
+
+const { tags } = Astro.props;
+
+const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
+
+const neonColors = [
+  { border: 'rgba(191, 90, 242, 0.2)', color: 'rgba(191, 90, 242, 0.8)' },
+  { border: 'rgba(255, 71, 87, 0.2)', color: 'rgba(255, 71, 87, 0.8)' },
+  { border: 'rgba(255, 217, 61, 0.2)', color: 'rgba(255, 217, 61, 0.75)' },
+  { border: 'rgba(74, 222, 128, 0.2)', color: 'rgba(74, 222, 128, 0.75)' },
+];
+---
+
+<div class="tags-wrap">
+  {tags.map((tag, i) => {
+    const c = neonColors[i % neonColors.length];
+    return (
+      <a href={`${astroBase}tag/${tag.slug}`} class="tag-pill" style={`border-color: ${c.border}; color: ${c.color};`}>
+        {tag.name}
+      </a>
+    );
+  })}
+</div>
+
+<style>
+  .tags-wrap a {
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .tags-wrap a:hover {
+    transform: translateY(-1px);
+  }
+</style>
