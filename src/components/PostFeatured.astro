@@ -18,39 +18,56 @@ const link = `${astroBase}post/${post.slug}`;
 const excerpt = post.excerpt || (post.content ? post.content.slice(0, 200) + '...' : '');
 ---
 
-<article class="post-featured">
-  {post.featured_image ? (
-    <div class="featured-image-wrap">
-      <img src={post.featured_image} alt={post.title} loading="lazy" />
-      <span class="edge-glow"></span>
+<a href={link} class="post-featured-link">
+  <article class="post-featured">
+    {post.featured_image ? (
+      <div class="featured-image-wrap">
+        <img src={post.featured_image} alt={post.title} loading="lazy" />
+        <span class="edge-glow"></span>
+      </div>
+    ) : (
+      <div class="featured-image-wrap">
+        <span class="edge-glow"></span>
+      </div>
+    )}
+    <div class="featured-body">
+      <span class={`post-badge badge-${post.badge_color || 'purple'}`}>{post.badge || 'Destacado'}</span>
+      <h2>{post.title}</h2>
+      <div class="post-meta">
+        <span>{dateStr}</span>
+        <span class="dot-sep"></span>
+        <span>Mozz</span>
+      </div>
+      <p class="post-excerpt">{excerpt}</p>
+      <span class="read-more">
+        Leer más <span class="arrow">→</span>
+      </span>
     </div>
-  ) : (
-    <div class="featured-image-wrap">
-      <span class="edge-glow"></span>
-    </div>
-  )}
-  <div class="featured-body">
-    <span class={`post-badge badge-${post.badge_color || 'purple'}`}>{post.badge || 'Destacado'}</span>
-    <h2><a href={link}>{post.title}</a></h2>
-    <div class="post-meta">
-      <span>{dateStr}</span>
-      <span class="dot-sep"></span>
-      <span>Mozz</span>
-    </div>
-    <p class="post-excerpt">{excerpt}</p>
-    <a href={link} class="read-more">
-      Leer más <span class="arrow">→</span>
-    </a>
-  </div>
-</article>
+  </article>
+</a>
 
 <style>
-  .featured-body h2 a {
-    color: var(--text-primary);
+  .post-featured-link {
+    display: block;
     text-decoration: none;
-    transition: color 0.2s ease;
+    color: inherit;
   }
-  .featured-body h2 a:hover {
+
+  .post-featured-link:hover .post-featured {
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.1);
+  }
+
+  .post-featured-link:hover h2 {
     color: var(--neon-purple);
+  }
+
+  .post-featured {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .featured-body h2 {
+    color: var(--text-primary);
+    transition: color 0.2s ease;
   }
 </style>

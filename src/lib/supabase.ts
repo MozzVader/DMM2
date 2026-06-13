@@ -161,6 +161,12 @@ const DEMO_ARCHIVE = [
    DATA FETCHING HELPERS (with fallback)
    ============================================== */
 
+/** Normalize tags array — filter out null entries from Supabase joins */
+function normalizeTags(tags: any[] | undefined): Tag[] {
+  if (!tags || !Array.isArray(tags)) return [];
+  return tags.filter((t) => t && t.slug && t.name) as Tag[];
+}
+
 /** Get all published non-featured posts, newest first */
 export async function getAllPosts(): Promise<Post[]> {
   try {
@@ -171,7 +177,11 @@ export async function getAllPosts(): Promise<Post[]> {
       .order('published_at', { ascending: false });
 
     if (error) throw error;
-    return (data as Post[]) || [];
+    const posts = ((data as Post[]) || []).map((p) => ({
+      ...p,
+      tags: normalizeTags(p.tags),
+    }));
+    return posts;
   } catch {
     console.warn('[supabase] getAllPosts failed — using demo data');
     return DEMO_POSTS;
@@ -190,7 +200,8 @@ export async function getFeaturedPost(): Promise<Post | null> {
       .single();
 
     if (error && error.code !== 'PGRST116') throw error;
-    return data as Post || null;
+    if (!data) return null;
+    return { ...(data as Post), tags: normalizeTags((data as Post).tags) };
   } catch {
     console.warn('[supabase] getFeaturedPost failed — using demo data');
     return DEMO_FEATURED;
@@ -223,7 +234,13 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
       .single();
 
     if (error) throw error;
-    return data?.posts as Post[] || [];
+
+    // Filter out posts with no slug or title (orphaned post_tags rows)
+    const rawPosts = (data?.posts as Post[] || []).filter(
+      (p) => p && p.slug && p.title
+    );
+
+    return rawPosts;
   } catch {
     console.warn(`[supabase] getPostsByTag("${tagSlug}") failed — using demo data`);
     return DEMO_POSTS;
@@ -240,7 +257,8 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
       .single();
 
     if (error) throw error;
-    return data as Post || null;
+    if (!data) return null;
+    return { ...(data as Post), tags: normalizeTags((data as Post).tags) };
   } catch {
     console.warn(`[supabase] getPostBySlug("${slug}") failed — looking in demo data`);
     return DEMO_POSTS.find(p => p.slug === slug) || DEMO_FEATURED;

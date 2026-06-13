@@ -9,12 +9,13 @@ export async function getStaticPaths() {
   const tags = await getAllTags();
   return tags.map((tag) => ({
     params: { name: tag.slug },
+    props: { tagName: tag.name },
   }));
 }
 
 const { name } = Astro.params;
+const { tagName } = Astro.props;
 const posts = await getPostsByTag(name);
-const tagName = posts[0]?.tags?.find((t: any) => t.slug === name)?.name || name;
 ---
 
 <BaseLayout title={`Tag: ${tagName} — Dos Minutos Más`}>
