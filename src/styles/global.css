@@ -1211,3 +1211,18 @@ body.light .badge-green {
     padding: 20px 18px;
   }
 }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--neon-purple); }
+* { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.15) var(--bg-dark); }
+
+body.light::-webkit-scrollbar-track { background: var(--bg-light); }
+body.light::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); }
+body.light::-webkit-scrollbar-thumb:hover { background: var(--neon-purple); }
+body.light { scrollbar-color: rgba(0, 0, 0, 0.2) var(--bg-light); }
