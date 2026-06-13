@@ -15,6 +15,7 @@ const dateStr = new Date(post.published_at).toLocaleDateString('es-AR', {
 
 const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
 const link = `${astroBase}post/${post.slug}`;
+const excerpt = post.excerpt || (post.content ? post.content.slice(0, 160) + '...' : '');
 ---
 
 <article class="post-standard">
@@ -31,7 +32,7 @@ const link = `${astroBase}post/${post.slug}`;
       <span class="dot-sep"></span>
       <span>Mozz</span>
     </div>
-    <p class="post-excerpt">{post.excerpt || post.content.slice(0, 160) + '...'}</p>
+    <p class="post-excerpt">{excerpt}</p>
     <a href={link} class="read-more" style="margin-top: 8px;">
       Leer más <span class="arrow">→</span>
     </a>
