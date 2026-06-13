@@ -229,20 +229,38 @@ export async function getAllTags(): Promise<Tag[]> {
 /** Get posts by tag slug */
 export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
   try {
-    const { data, error } = await supabase
+    // Step 1: Get tag ID from slug
+    const { data: tag, error: tagErr } = await supabase
       .from('tags')
-      .select('*, posts:post_tags(posts(id, slug, title, excerpt, content, featured_image, badge, badge_color, is_featured, published_at, created_at, updated_at))')
+      .select('id')
       .eq('slug', tagSlug)
       .single();
 
+    if (tagErr || !tag) return [];
+
+    // Step 2: Get post IDs from junction table
+    const { data: relations, error: relErr } = await supabase
+      .from('post_tags')
+      .select('post_id')
+      .eq('tag_id', tag.id);
+
+    if (relErr) throw relErr;
+    const postIds = (relations || []).map((r) => r.post_id);
+    if (postIds.length === 0) return [];
+
+    // Step 3: Fetch actual posts with their tags
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*, tags:post_tags(tags(id, name, slug))')
+      .in('id', postIds)
+      .order('published_at', { ascending: false });
+
     if (error) throw error;
 
-    // Unwrap Supabase nested join: posts come as [{ posts: {...} }, ...]
-    const rawPosts = (data?.posts as any[] || [])
-      .map((p) => p?.posts || p)
-      .filter((p) => p && p.slug && p.title);
-
-    return rawPosts as Post[];
+    return ((data as Post[]) || []).map((p) => ({
+      ...p,
+      tags: normalizeTags(p.tags),
+    }));
   } catch {
     console.warn(`[supabase] getPostsByTag("${tagSlug}") failed — using demo data`);
     return DEMO_POSTS;
