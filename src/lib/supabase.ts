@@ -169,13 +169,14 @@ function normalizeTags(tags: any[] | undefined): Tag[] {
     .filter((t) => t && t.slug && t.name) as Tag[];
 }
 
-/** Get all published non-featured posts, newest first */
+/** Get all published non-featured posts, newest first (scheduled posts excluded) */
 export async function getAllPosts(): Promise<Post[]> {
   try {
     const { data, error } = await supabase
       .from('posts')
       .select('*, tags:post_tags(tags(id, name, slug))')
       .eq('is_featured', false)
+      .lte('published_at', new Date().toISOString())
       .order('published_at', { ascending: false });
 
     if (error) throw error;
@@ -190,12 +191,13 @@ export async function getAllPosts(): Promise<Post[]> {
   }
 }
 
-/** Get all posts (featured + regular) for pagination, newest first */
+/** Get all posts (featured + regular) for pagination, newest first (scheduled posts excluded) */
 export async function getAllPostsForPagination(): Promise<Post[]> {
   try {
     const { data, error } = await supabase
       .from('posts')
       .select('*, tags:post_tags(tags(id, name, slug))')
+      .lte('published_at', new Date().toISOString())
       .order('published_at', { ascending: false });
 
     if (error) throw error;
@@ -209,13 +211,14 @@ export async function getAllPostsForPagination(): Promise<Post[]> {
   }
 }
 
-/** Get the featured post */
+/** Get the featured post (scheduled posts excluded) */
 export async function getFeaturedPost(): Promise<Post | null> {
   try {
     const { data, error } = await supabase
       .from('posts')
       .select('*, tags:post_tags(tags(id, name, slug))')
       .eq('is_featured', true)
+      .lte('published_at', new Date().toISOString())
       .order('published_at', { ascending: false })
       .limit(1)
       .single();
@@ -267,11 +270,12 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
     const postIds = (relations || []).map((r) => r.post_id);
     if (postIds.length === 0) return [];
 
-    // Step 3: Fetch actual posts with their tags
+    // Step 3: Fetch actual posts with their tags (scheduled posts excluded)
     const { data, error } = await supabase
       .from('posts')
       .select('*, tags:post_tags(tags(id, name, slug))')
       .in('id', postIds)
+      .lte('published_at', new Date().toISOString())
       .order('published_at', { ascending: false });
 
     if (error) throw error;
@@ -286,7 +290,7 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
   }
 }
 
-/** Get a single post by slug */
+/** Get a single post by slug (allows scheduled posts so direct links work) */
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   try {
     const { data, error } = await supabase
@@ -328,7 +332,7 @@ export async function getArchiveData(): Promise<{ year: number; count: number }[
   }
 }
 
-/** Get all posts published in a given year */
+/** Get all posts published in a given year (scheduled posts excluded) */
 export async function getPostsByYear(year: number): Promise<Post[]> {
   const start = new Date(year, 0, 1).toISOString();
   const end = new Date(year + 1, 0, 1).toISOString();
@@ -338,6 +342,7 @@ export async function getPostsByYear(year: number): Promise<Post[]> {
       .select('*, tags:post_tags(tags(id, name, slug))')
       .gte('published_at', start)
       .lt('published_at', end)
+      .lte('published_at', new Date().toISOString())
       .order('published_at', { ascending: false });
 
     if (error) throw error;

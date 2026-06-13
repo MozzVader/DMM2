@@ -702,6 +702,11 @@
                 <span style="font-size:0.85rem;">Post destacado</span>
               </div>
             </div>
+            <div class="form-group">
+              <label>Fecha de publicación</label>
+              <input type="datetime-local" id="postDate" />
+              <small style="color:var(--text-muted);font-size:0.75rem;margin-top:4px;display:block;">Dejar vacío = ahora. Podés poner fechas pasadas o futuras.</small>
+            </div>
           </div>
 
           <!-- Featured Image -->
@@ -889,6 +894,7 @@ function clearEditor() {
   document.getElementById('postBadgeColor').value = 'purple';
   document.getElementById('postImageUrl').value = '';
   document.getElementById('postExcerpt').value = '';
+  document.getElementById('postDate').value = '';
   document.getElementById('uploadPreview').innerHTML = '';
   document.getElementById('toggleFeatured').classList.remove('active');
   selectedTags.clear();
@@ -995,6 +1001,8 @@ document.getElementById('savePostBtn').addEventListener('click', async () => {
   const featured_image = document.getElementById('postImageUrl').value.trim() || null;
   const excerpt = document.getElementById('postExcerpt').value.trim() || null;
   const content = quill ? quill.root.innerHTML : '';
+  const dateInput = document.getElementById('postDate').value;
+  const published_at = dateInput ? new Date(dateInput).toISOString() : new Date().toISOString();
 
   if (!title) { showToast('El título es obligatorio', 'error'); return; }
   if (!slug) { showToast('El slug es obligatorio', 'error'); return; }
@@ -1007,7 +1015,7 @@ document.getElementById('savePostBtn').addEventListener('click', async () => {
     if (editingPostId) {
       // UPDATE
       const { error } = await sb.from('posts').update({
-        title, slug, badge, badge_color, is_featured, featured_image, excerpt, content,
+        title, slug, badge, badge_color, is_featured, featured_image, excerpt, content, published_at,
         updated_at: new Date().toISOString()
       }).eq('id', editingPostId);
 
@@ -1023,8 +1031,7 @@ document.getElementById('savePostBtn').addEventListener('click', async () => {
     } else {
       // INSERT
       const { data: newPost, error } = await sb.from('posts').insert({
-        title, slug, badge, badge_color, is_featured, featured_image, excerpt, content,
-        published_at: new Date().toISOString()
+        title, slug, badge, badge_color, is_featured, featured_image, excerpt, content, published_at
       }).select().single();
 
       if (error) throw error;
@@ -1062,6 +1069,15 @@ async function editPost(id) {
   document.getElementById('postBadgeColor').value = post.badge_color;
   document.getElementById('postImageUrl').value = post.featured_image || '';
   document.getElementById('postExcerpt').value = post.excerpt || '';
+
+  // Set date
+  if (post.published_at) {
+    const d = new Date(post.published_at);
+    // Format for datetime-local: YYYY-MM-DDTHH:MM
+    const pad = (n) => String(n).padStart(2, '0');
+    document.getElementById('postDate').value =
+      `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
 
   if (post.is_featured) {
     document.getElementById('toggleFeatured').classList.add('active');
