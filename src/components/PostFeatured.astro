@@ -15,7 +15,8 @@ const dateStr = new Date(post.published_at).toLocaleDateString('es-AR', {
 
 const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
 const link = `${astroBase}post/${post.slug}`;
-const excerpt = post.excerpt || (post.content ? post.content.slice(0, 200) + '...' : '');
+const stripHTML = (html: string) => html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
+const excerpt = post.excerpt || (post.content ? stripHTML(post.content).slice(0, 200) + '...' : '');
 ---
 
 <a href={link} class="post-featured-link">

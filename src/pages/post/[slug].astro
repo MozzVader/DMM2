@@ -37,7 +37,7 @@ const dateStr = new Date(post.published_at).toLocaleDateString('es-AR', {
 });
 ---
 
-<BaseLayout title={`${post.title} — Dos Minutos Más`} description={post.excerpt || (post.content ? post.content.slice(0, 160) : '')}>
+<BaseLayout title={`${post.title} — Dos Minutos Más`} description={post.excerpt || (post.content ? post.content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim().slice(0, 160) : '')}>
   <Header slot="header" />
 
   <div class="container">
