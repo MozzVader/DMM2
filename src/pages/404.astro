@@ -1,0 +1,23 @@
+---
+// Importa tu Layout maestro (ajusta la ruta si es necesario)
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Página no encontrada - 404">
+  <main style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; padding: 2rem;">
+    
+    <span style="font-size: 6rem; font-weight: bold; opacity: 0.3;">404</span>
+    
+    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">¡Ups! Esta página se ha mudado o no existe</h1>
+    
+    <p style="font-size: 1.2rem; max-width: 500px; margin-bottom: 2rem; opacity: 0.8;">
+      Parece que el enlace que seguiste está roto o el post de Blogger cambió de dirección durante el revamp.
+    </p>
+    
+    <!-- Este botón usará los estilos de enlace nativos de tu blog -->
+    <a href="/" style="padding: 0.8rem 1.5rem; background-color: var(--primary-color, #000); color: #fff; border-radius: 8px; text-decoration: none; font-weight: bold; transition: opacity 0.2s;">
+      Volver al Inicio
+    </a>
+    
+  </main>
+</BaseLayout>
