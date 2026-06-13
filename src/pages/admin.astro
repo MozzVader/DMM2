@@ -510,6 +510,80 @@
       position: relative;
       z-index: 10;
     }
+
+    /* ===== TAGS MANAGER ===== */
+    .tags-manager {
+      margin-top: 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .tags-manager-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .tags-manager-header h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+    }
+    .tags-manager-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .tags-manager-row input {
+      flex: 1;
+      padding: 10px 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-input);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+    }
+    .tags-manager-row input:focus {
+      outline: none;
+      border-color: var(--neon-purple);
+    }
+    .tags-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .tags-list-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border: 1px solid var(--border-input);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .tags-list-item:hover {
+      border-color: var(--neon-purple);
+    }
+    .tag-delete {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .tag-delete:hover {
+      color: var(--danger);
+    }
+    .tag-slug {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
   </style>
 </head>
 <body>
@@ -565,6 +639,18 @@
             <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-secondary);">Cargando posts...</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- TAGS MANAGER -->
+      <div class="tags-manager" id="tagsManager">
+        <div class="tags-manager-header">
+          <h3>Tags</h3>
+        </div>
+        <div class="tags-manager-row">
+          <input type="text" id="newTagName" placeholder="Nombre del nuevo tag" />
+          <button class="btn btn-primary" id="addTagBtn">Agregar</button>
+        </div>
+        <div class="tags-list" id="tagsList"></div>
       </div>
 
       <!-- EDITOR -->
@@ -953,6 +1039,7 @@ document.getElementById('savePostBtn').addEventListener('click', async () => {
 
     showScreen('dashboard');
     loadDashboard();
+    loadTagsManager();
   } catch (err) {
     showToast('Error: ' + err.message, 'error');
   } finally {
@@ -1029,6 +1116,57 @@ document.getElementById('confirmOk').addEventListener('click', async () => {
   deleteTargetId = null;
 });
 
+// ===== TAGS MANAGER =====
+async function loadTagsManager() {
+  const { data: tags, error } = await sb.from('tags').select('*').order('name');
+  if (error || !tags) return;
+
+  const container = document.getElementById('tagsList');
+  container.innerHTML = tags.map(tag => `
+    <div class="tags-list-item">
+      <span>${tag.name}</span>
+      <span class="tag-slug">${tag.slug}</span>
+      <button class="tag-delete" onclick="deleteTag('${tag.id}', '${tag.name}')" title="Eliminar tag">×</button>
+    </div>
+  `).join('');
+}
+
+document.getElementById('addTagBtn').addEventListener('click', async () => {
+  const name = document.getElementById('newTagName').value.trim();
+  if (!name) { showToast('Ingresá un nombre para el tag', 'error'); return; }
+
+  const slug = slugify(name);
+  const { data, error } = await sb.from('tags').insert({ name, slug }).select().single();
+
+  if (error) {
+    showToast('Error: ' + error.message, 'error');
+  } else {
+    showToast(`Tag "${name}" creado`);
+    document.getElementById('newTagName').value = '';
+    loadTagsManager();
+  }
+});
+
+document.getElementById('newTagName').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    document.getElementById('addTagBtn').click();
+  }
+});
+
+async function deleteTag(id, name) {
+  // Delete post_tags references first
+  await sb.from('post_tags').delete().eq('tag_id', id);
+  const { error } = await sb.from('tags').delete().eq('id', id);
+
+  if (error) {
+    showToast('Error: ' + error.message, 'error');
+  } else {
+    showToast(`Tag "${name}" eliminado`);
+    loadTagsManager();
+  }
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
   quill = new Quill('#editor-container', {
@@ -1053,6 +1191,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('adminLayout').classList.add('active');
       loadDashboard();
+      loadTagsManager();
     }
   });
 });
