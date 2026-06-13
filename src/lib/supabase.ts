@@ -23,6 +23,7 @@ export interface Post {
   created_at: string;
   updated_at: string;
   tags?: Tag[];
+  likes?: number;
 }
 
 export interface Tag {
