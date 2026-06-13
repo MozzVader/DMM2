@@ -4,11 +4,7 @@ on:
   # Manual trigger from GitHub UI
   workflow_dispatch:
 
-  # Webhook from Supabase via repository_dispatch
-  repository_dispatch:
-    types: [content-update]
-
-  # Also build on pushes to main (for code/design changes)
+  # Build on pushes to main (code/design changes)
   push:
     branches: [main]
     paths-ignore:
