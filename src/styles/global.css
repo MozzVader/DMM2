@@ -593,6 +593,17 @@ body.light .badge-green {
   opacity: 0.5;
 }
 
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.meta-icon {
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
 /* Excerpt text */
 .post-excerpt {
   font-size: 15px;
