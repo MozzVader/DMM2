@@ -2,11 +2,19 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import { getPostBySlug, getAllPosts } from '../../lib/supabase';
+import { getPostBySlug, getAllPosts, getFeaturedPost } from '../../lib/supabase';
 
 export async function getStaticPaths() {
-  const posts = await getAllPosts();
-  return posts.map((post) => ({
+  const [regularPosts, featuredPost] = await Promise.all([
+    getAllPosts(),
+    getFeaturedPost(),
+  ]);
+
+  const allPosts = featuredPost
+    ? [featuredPost, ...regularPosts]
+    : regularPosts;
+
+  return allPosts.map((post) => ({
     params: { slug: post.slug },
     props: { post },
   }));
