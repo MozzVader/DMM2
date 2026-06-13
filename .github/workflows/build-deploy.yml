@@ -4,6 +4,10 @@ on:
   # Manual trigger from GitHub UI
   workflow_dispatch:
 
+  # Webhook from Supabase Database Webhook
+  repository_dispatch:
+    types: [webhook_update_blog]
+
   # Build on pushes to main (code/design changes)
   push:
     branches: [main]
