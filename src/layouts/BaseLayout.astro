@@ -30,8 +30,8 @@ import '../styles/global.css';
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Favicon placeholder -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href={new URL('favicon.svg', Astro.url).href} />
   </head>
   <body>
     <slot name="header" />
