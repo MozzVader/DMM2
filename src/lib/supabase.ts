@@ -308,3 +308,26 @@ export async function getArchiveData(): Promise<{ year: number; count: number }[
     return DEMO_ARCHIVE;
   }
 }
+
+/** Get all posts published in a given year */
+export async function getPostsByYear(year: number): Promise<Post[]> {
+  const start = new Date(year, 0, 1).toISOString();
+  const end = new Date(year + 1, 0, 1).toISOString();
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*, tags:post_tags(tags(id, name, slug))')
+      .gte('published_at', start)
+      .lt('published_at', end)
+      .order('published_at', { ascending: false });
+
+    if (error) throw error;
+    return ((data as Post[]) || []).map((p) => ({
+      ...p,
+      tags: normalizeTags(p.tags),
+    }));
+  } catch {
+    console.warn(`[supabase] getPostsByYear(${year}) failed — using demo data`);
+    return DEMO_POSTS;
+  }
+}
