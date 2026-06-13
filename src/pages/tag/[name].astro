@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import PostStandard from '../../components/PostStandard.astro';
+import BottomGrid from '../../components/BottomGrid.astro';
 import { getPostsByTag, getAllTags } from '../../lib/supabase';
 
 export async function getStaticPaths() {
@@ -36,6 +37,8 @@ const posts = await getPostsByTag(name);
         <p>No hay posts con este tag todavía.</p>
       </div>
     )}
+
+    <BottomGrid />
   </div>
 
   <Footer slot="footer" />

@@ -1,14 +1,10 @@
 ---
-import type { Tag } from '../lib/supabase';
 import TagCloud from './TagCloud.astro';
 import ArchiveList from './ArchiveList.astro';
+import { getAllTags, getArchiveData } from '../lib/supabase';
 
-interface Props {
-  tags: Tag[];
-  archiveData: { year: number; count: number }[];
-}
-
-const { tags, archiveData } = Astro.props;
+const tags = await getAllTags();
+const archiveData = await getArchiveData();
 ---
 
 <div class="bottom-grid">

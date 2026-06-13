@@ -10,8 +10,6 @@ import BottomGrid from '../components/BottomGrid.astro';
 import {
   getFeaturedPost,
   getAllPosts,
-  getAllTags,
-  getArchiveData,
   type Post,
 } from '../lib/supabase';
 
@@ -24,8 +22,7 @@ const secondPost: Post | undefined = allPosts[0];
 // Remaining posts for the mini list
 const miniPosts = allPosts.slice(1, 6);
 
-const tags = await getAllTags();
-const archiveData = await getArchiveData();
+
 ---
 
 <BaseLayout title="Dos Minutos Más">
@@ -49,7 +46,7 @@ const archiveData = await getArchiveData();
     <SectionDivider label="Explorar" />
 
     <!-- Bottom grid -->
-    <BottomGrid tags={tags} archiveData={archiveData} />
+    <BottomGrid />
 
   </div>
 
