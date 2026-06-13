@@ -161,10 +161,12 @@ const DEMO_ARCHIVE = [
    DATA FETCHING HELPERS (with fallback)
    ============================================== */
 
-/** Normalize tags array — filter out null entries from Supabase joins */
+/** Normalize tags array — unwrap Supabase nested join + filter null entries */
 function normalizeTags(tags: any[] | undefined): Tag[] {
   if (!tags || !Array.isArray(tags)) return [];
-  return tags.filter((t) => t && t.slug && t.name) as Tag[];
+  return tags
+    .map((t) => t?.tags || t)           // unwrap: Supabase nests as { tags: { name, slug } }
+    .filter((t) => t && t.slug && t.name) as Tag[];
 }
 
 /** Get all published non-featured posts, newest first */
@@ -235,12 +237,12 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
 
     if (error) throw error;
 
-    // Filter out posts with no slug or title (orphaned post_tags rows)
-    const rawPosts = (data?.posts as Post[] || []).filter(
-      (p) => p && p.slug && p.title
-    );
+    // Unwrap Supabase nested join: posts come as [{ posts: {...} }, ...]
+    const rawPosts = (data?.posts as any[] || [])
+      .map((p) => p?.posts || p)
+      .filter((p) => p && p.slug && p.title);
 
-    return rawPosts;
+    return rawPosts as Post[];
   } catch {
     console.warn(`[supabase] getPostsByTag("${tagSlug}") failed — using demo data`);
     return DEMO_POSTS;
