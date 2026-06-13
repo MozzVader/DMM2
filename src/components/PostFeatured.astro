@@ -21,7 +21,7 @@ const excerpt = post.excerpt || (post.content ? post.content.slice(0, 200) + '..
 <a href={link} class="post-featured-link">
   <article class="post-featured">
     {post.featured_image ? (
-      <div class="featured-image-wrap">
+      <div class="featured-image-wrap has-image">
         <img src={post.featured_image} alt={post.title} loading="lazy" />
         <span class="edge-glow"></span>
       </div>

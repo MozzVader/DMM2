@@ -450,6 +450,12 @@ body.light .toggle-icon-sun {
   display: block;
 }
 
+/* Hide placeholder decorations when image is present */
+.featured-image-wrap.has-image::before,
+.featured-image-wrap.has-image::after {
+  display: none;
+}
+
 /* Decorative pattern inside the image placeholder */
 .featured-image-wrap::before {
   content: '';
@@ -683,6 +689,12 @@ body.light .badge-green {
   height: 28px;
   border: 1.5px solid rgba(255, 255, 255, 0.1);
   border-radius: 4px;
+}
+
+/* Hide placeholder decorations when image is present */
+.standard-image.has-image::before,
+.standard-image.has-image::after {
+  display: none;
 }
 
 /* Horizontal card text — right side */

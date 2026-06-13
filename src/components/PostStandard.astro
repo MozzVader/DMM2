@@ -21,7 +21,7 @@ const excerpt = post.excerpt || (post.content ? post.content.slice(0, 160) + '..
 <a href={link} class="post-standard-link">
   <article class="post-standard">
     {post.featured_image ? (
-      <div class="standard-image" style={`background-image: url(${post.featured_image}); background-size: cover; background-position: center;`}></div>
+      <div class="standard-image has-image" style={`background-image: url(${post.featured_image}); background-size: cover; background-position: center;`}></div>
     ) : (
       <div class="standard-image"></div>
     )}

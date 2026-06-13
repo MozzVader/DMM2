@@ -108,7 +108,7 @@ const dateStr = new Date(post.published_at).toLocaleDateString('es-AR', {
 
   .post-single-image {
     width: 100%;
-    max-height: 420px;
+    height: 420px;
     overflow: hidden;
     background: linear-gradient(135deg, #1a1a2e, #2d1b4e, #1a1a2e);
   }
@@ -277,6 +277,10 @@ const dateStr = new Date(post.published_at).toLocaleDateString('es-AR', {
       padding: 24px 22px 32px;
     }
 
+    .post-single-image {
+      height: 260px;
+    }
+
     .post-nav {
       grid-template-columns: 1fr;
     }
@@ -289,6 +293,10 @@ const dateStr = new Date(post.published_at).toLocaleDateString('es-AR', {
   @media (max-width: 480px) {
     .post-single-body {
       padding: 20px 18px 28px;
+    }
+
+    .post-single-image {
+      height: 200px;
     }
   }
 </style>
