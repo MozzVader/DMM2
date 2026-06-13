@@ -497,56 +497,17 @@
       .admin-content { padding: 20px 16px; }
     }
 
-    /* Quill overflow fix */
-    .editor-section:has(#editor-container) {
-      max-height: 600px;
-      overflow-y: auto;
-    }
     .ql-container.ql-snow {
-      max-height: 400px;
+      max-height: 480px;
       overflow-y: auto;
-    }
-    .editor-actions {
-      position: relative;
-      z-index: 10;
     }
 
     /* ===== TAGS MANAGER ===== */
-    .tags-manager {
-      margin-top: 32px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 8px;
-      padding: 20px;
-    }
-    .tags-manager-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-    .tags-manager-header h3 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.1rem;
-    }
     .tags-manager-row {
       display: flex;
       gap: 8px;
       align-items: center;
-    }
-    .tags-manager-row input {
-      flex: 1;
-      padding: 10px 12px;
-      background: var(--bg-input);
-      border: 1px solid var(--border-input);
-      border-radius: 6px;
-      color: var(--text-primary);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-    }
-    .tags-manager-row input:focus {
-      outline: none;
-      border-color: var(--neon-purple);
+      margin-top: 8px;
     }
     .tags-list {
       display: flex;
@@ -641,18 +602,6 @@
         </table>
       </div>
 
-      <!-- TAGS MANAGER -->
-      <div class="tags-manager" id="tagsManager">
-        <div class="tags-manager-header">
-          <h3>Tags</h3>
-        </div>
-        <div class="tags-manager-row">
-          <input type="text" id="newTagName" placeholder="Nombre del nuevo tag" />
-          <button class="btn btn-primary" id="addTagBtn">Agregar</button>
-        </div>
-        <div class="tags-list" id="tagsList"></div>
-      </div>
-
       <!-- EDITOR -->
       <div class="editor-screen" id="editorScreen">
         <div class="editor-header">
@@ -725,8 +674,18 @@
 
           <!-- Tags -->
           <div class="editor-section full-width">
-            <h4>Tags</h4>
+            <h4>Tags del post</h4>
             <div class="tags-selector" id="tagsSelector"></div>
+          </div>
+
+          <!-- Tags Manager -->
+          <div class="editor-section full-width">
+            <h4>Crear / eliminar tags</h4>
+            <div class="tags-manager-row">
+              <input type="text" id="newTagName" placeholder="Nombre del nuevo tag" />
+              <button class="btn btn-primary" id="addTagBtn">Agregar</button>
+            </div>
+            <div class="tags-list" id="tagsList"></div>
           </div>
 
           <!-- Excerpt -->
@@ -738,9 +697,9 @@
           </div>
 
           <!-- Content -->
-          <div class="editor-section full-width">
+          <div class="editor-section full-width" style="height:542px;overflow:hidden;display:flex;flex-direction:column;">
             <h4>Contenido</h4>
-            <div id="editor-container"></div>
+            <div id="editor-container" style="flex:1;overflow:hidden;"></div>
           </div>
 
           <!-- Actions -->
@@ -874,6 +833,7 @@ document.getElementById('newPostBtn').addEventListener('click', () => {
   editingPostId = null;
   clearEditor();
   loadTags();
+  loadTagsManager();
   showScreen('editor');
 });
 
@@ -1096,6 +1056,7 @@ async function editPost(id) {
   }
 
   await loadTags();
+  loadTagsManager();
   showScreen('editor');
 }
 
