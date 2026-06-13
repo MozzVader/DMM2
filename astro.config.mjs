@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://mozvader.github.io',
+  site: 'https://mozzvader.github.io',
   base: '/DMM2',
   build: {
     assets: 'assets',

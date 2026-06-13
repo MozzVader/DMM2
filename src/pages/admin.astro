@@ -693,6 +693,7 @@
               <input type="file" id="imageUpload" accept="image/*" />
             </div>
             <div class="upload-preview" id="uploadPreview"></div>
+            <button class="btn btn-sm btn-danger" id="removeImageBtn" style="margin-top:8px;display:none;">Eliminar imagen</button>
           </div>
 
           <!-- Tags -->
@@ -879,6 +880,7 @@ function clearEditor() {
   document.getElementById('postExcerpt').value = '';
   document.getElementById('postDate').value = '';
   document.getElementById('uploadPreview').innerHTML = '';
+  document.getElementById('removeImageBtn').style.display = 'none';
   document.getElementById('toggleFeatured').classList.remove('active');
   selectedTags.clear();
   if (quill) quill.setContents([]);
@@ -964,6 +966,7 @@ async function uploadImage(file) {
   const { data: { publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(data.path);
   document.getElementById('postImageUrl').value = publicUrl;
   document.getElementById('uploadPreview').innerHTML = `<img src="${publicUrl}" alt="Preview" />`;
+  showImageControls(true);
   showToast('Imagen subida correctamente');
 }
 
@@ -971,7 +974,27 @@ document.getElementById('setImageBtn').addEventListener('click', () => {
   const url = document.getElementById('postImageUrl').value;
   if (url) {
     document.getElementById('uploadPreview').innerHTML = `<img src="${url}" alt="Preview" onerror="this.parentElement.innerHTML='<p style=color:var(--danger)>No se pudo cargar la imagen</p>'" />`;
+    document.getElementById('removeImageBtn').style.display = 'inline-block';
   }
+});
+
+// ===== REMOVE IMAGE =====
+function showImageControls(hasImage) {
+  document.getElementById('removeImageBtn').style.display = hasImage ? 'inline-block' : 'none';
+}
+
+document.getElementById('removeImageBtn').addEventListener('click', () => {
+  // Delete from bucket if it's a Supabase Storage URL
+  const url = document.getElementById('postImageUrl').value;
+  if (url && url.includes(SUPABASE_URL)) {
+    const urlParts = url.split('/');
+    const filename = urlParts[urlParts.length - 1].split('?')[0];
+    sb.storage.from(BUCKET).remove([filename]);
+  }
+  document.getElementById('postImageUrl').value = '';
+  document.getElementById('uploadPreview').innerHTML = '';
+  showImageControls(false);
+  showToast('Imagen eliminada');
 });
 
 // ===== SAVE POST =====
@@ -1068,6 +1091,9 @@ async function editPost(id) {
 
   if (post.featured_image) {
     document.getElementById('uploadPreview').innerHTML = `<img src="${post.featured_image}" alt="Preview" onerror="this.parentElement.innerHTML=''" />`;
+    showImageControls(true);
+  } else {
+    showImageControls(false);
   }
 
   if (quill) quill.root.innerHTML = post.content || '';
@@ -1099,6 +1125,17 @@ document.getElementById('confirmCancel').addEventListener('click', () => {
 
 document.getElementById('confirmOk').addEventListener('click', async () => {
   if (!deleteTargetId) return;
+
+  // Get post data to find and delete its image from bucket
+  const { data: post } = await sb.from('posts').select('featured_image').eq('id', deleteTargetId).single();
+  if (post?.featured_image) {
+    // Extract filename from URL: .../object/bucket/filename
+    const urlParts = post.featured_image.split('/');
+    const filename = urlParts[urlParts.length - 1];
+    // Remove query params if any
+    const cleanFilename = filename.split('?')[0];
+    await sb.storage.from(BUCKET).remove([cleanFilename]);
+  }
 
   // Delete post_tags first
   await sb.from('post_tags').delete().eq('post_id', deleteTargetId);
