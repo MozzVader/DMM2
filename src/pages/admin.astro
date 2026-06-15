@@ -1634,10 +1634,7 @@ async function deleteTag(id, name) {
     showToast('Error al eliminar: ' + error.message, 'error');
     return;
   }
-  if (data === null) {
-    showToast('No se pudo eliminar. ¿Algún post lo está usando? Verificá las RLS policies en Supabase.', 'error');
-    return;
-  }
+  // Supabase DELETE always returns data:null on success — not an error
   showToast(`Tag "${name}" eliminado`);
   loadTagsManager();
   loadTags();
