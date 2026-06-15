@@ -1606,7 +1606,7 @@ var autoSaveInterval = null;
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
   // Register QuillBlotFormatter (blot-formatter2)
-  Quill.register('modules/blotFormatter', QuillBlotFormatter);
+  Quill.register('modules/blotFormatter', QuillBlotFormatter2);
 
   quill = new Quill('#editor-container', {
     theme: 'snow',
