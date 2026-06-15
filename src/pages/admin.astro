@@ -16,7 +16,6 @@
   <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
   <script is:inline src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/@enzedonline/quill-blot-formatter2@3.2.0/dist/index.js"></script>
-  <script is:inline src="https://cdn.jsdelivr.net/npm/quill2-image-drop-and-paste@1.1.0/dist/quill2-image-drop-and-paste.min.js"></script>
 
   <style is:inline>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1729,7 +1728,6 @@ var autoSaveInterval = null;
 document.addEventListener('DOMContentLoaded', () => {
   // Register QuillBlotFormatter (blot-formatter2)
   Quill.register('modules/blotFormatter', QuillBlotFormatter2.default);
-  Quill.register('modules/imageDropAndPaste', QuillImageDropAndPaste.default);
 
   quill = new Quill('#editor-container', {
     theme: 'snow',
@@ -1738,20 +1736,6 @@ document.addEventListener('DOMContentLoaded', () => {
       blotFormatter: {
         overlay: {
           style: { position: 'absolute', border: '2px solid var(--neon-purple)', background: 'rgba(191,90,242,0.08)' }
-        }
-      },
-      imageDropAndPaste: {
-        upload: function(file) {
-          const range = quill.getSelection(true);
-          const ext = file.name ? file.name.split('.').pop() : 'png';
-          const filename = 'q-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
-          sb.storage.from(BUCKET).upload(filename, file, { cacheControl: '31536000', upsert: false })
-            .then(({ data, error }) => {
-              if (error) { showToast('Error al subir imagen: ' + error.message, 'error'); return; }
-              const { data: { publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(data.path);
-              quill.insertEmbed(range.index, 'image', publicUrl);
-              showToast('Imagen insertada');
-            });
         }
       },
       toolbar: {
@@ -1775,6 +1759,31 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+
+  // ===== NATIVE DRAG & DROP (no external lib) =====
+  const editorEl = document.querySelector('#editor-container .ql-editor');
+  if (editorEl) {
+    editorEl.addEventListener('dragover', (e) => e.preventDefault());
+    editorEl.addEventListener('drop', function(e) {
+      if (!e.dataTransfer || !e.dataTransfer.files || !e.dataTransfer.files.length) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const file = e.dataTransfer.files[0];
+      if (!file.type.startsWith('image/')) return;
+      const range = quill.getSelection(true);
+      const ext = file.name ? file.name.split('.').pop() : 'png';
+      const filename = 'q-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+      quill.insertText(range.index, 'Subiendo imagen...', { 'color': '#888' });
+      sb.storage.from(BUCKET).upload(filename, file, { cacheControl: '31536000', upsert: false })
+        .then(({ data, error }) => {
+          quill.deleteText(range.index, 'Subiendo imagen...'.length);
+          if (error) { showToast('Error al subir imagen: ' + error.message, 'error'); return; }
+          const { data: { publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(data.path);
+          quill.insertEmbed(range.index, 'image', publicUrl);
+          showToast('Imagen insertada');
+        });
+    });
+  }
 
   // ===== IMAGE URL MODAL =====
   const imgUrlOverlay = document.getElementById('imgUrlModalOverlay');
