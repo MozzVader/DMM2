@@ -306,12 +306,13 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
   }
 }
 
-/** Get archive data grouped by year */
+/** Get archive data grouped by year (excludes scheduled posts) */
 export async function getArchiveData(): Promise<{ year: number; count: number }[]> {
   try {
     const { data, error } = await supabase
       .from('posts')
-      .select('published_at');
+      .select('published_at')
+      .lte('published_at', new Date().toISOString());
 
     if (error) throw error;
 

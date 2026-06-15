@@ -150,11 +150,10 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
           likeCount.textContent = currentLikes;
         }
       } catch(e) {
-        likedPosts.push(postId);
-        localStorage.setItem('dmm_liked', JSON.stringify(likedPosts));
-        likeBtn.classList.add('liked');
-        currentLikes++;
-        likeCount.textContent = currentLikes;
+        // Network error — do NOT save to localStorage or increment count
+        // so the user can retry when connectivity returns
+        likeBtn.style.transform = 'scale(1.2)';
+        setTimeout(function() { likeBtn.style.transform = ''; }, 300);
       }
     });
 

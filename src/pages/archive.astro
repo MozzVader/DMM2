@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BottomGrid from '../components/BottomGrid.astro';
+import { getArchiveData } from '../lib/supabase';
+import { BASE_URL } from '../lib/constants';
+
+const archive = await getArchiveData();
+---
+
+<BaseLayout title="Archivo — Dos Minutos Más">
+  <Header slot="header" />
+
+  <div class="container">
+    <div class="archive-index-header">
+      <h1>Archivo</h1>
+      <p>{archive.reduce((sum, y) => sum + y.count, 0)} post{archive.reduce((sum, y) => sum + y.count, 0) !== 1 ? 's' : ''} en total</p>
+    </div>
+
+    <div class="archive-list">
+      {archive.map((item) => (
+        <a href={`${BASE_URL}archive/${item.year}`} class="archive-row">
+          <span class="archive-year">{item.year}</span>
+          <span class="archive-count">{item.count} post{item.count !== 1 ? 's' : ''}</span>
+          <span class="archive-arrow">→</span>
+        </a>
+      ))}
+    </div>
+
+    {archive.length === 0 && (
+      <div class="empty-state">
+        <p>No hay posts en el archivo todavía.</p>
+      </div>
+    )}
+
+    <BottomGrid />
+  </div>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  .archive-index-header {
+    margin-bottom: 32px;
+  }
+
+  .archive-index-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-red));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+
+  .archive-index-header p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+  }
+
+  .archive-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .archive-row {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .archive-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .archive-year {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--text-primary);
+    min-width: 80px;
+  }
+
+  .archive-count {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .archive-arrow {
+    font-size: 1.1rem;
+    color: var(--text-tertiary);
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+  .archive-row:hover .archive-arrow {
+    color: var(--neon-purple);
+    transform: translateX(4px);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+  }
+</style>
