@@ -433,6 +433,23 @@
     .ql-snow .ql-stroke { stroke: var(--text-secondary); }
     .ql-snow .ql-fill { fill: var(--text-secondary); }
     .ql-snow .ql-picker-label { color: var(--text-secondary); }
+    .ql-snow .ql-stroke:hover { stroke: var(--text-primary); }
+    .ql-snow .ql-fill:hover { fill: var(--text-primary); }
+    .ql-snow .ql-picker-label:hover { color: var(--text-primary); }
+    .ql-snow .ql-active .ql-stroke { stroke: var(--neon-purple); }
+    .ql-snow .ql-active .ql-fill { fill: var(--neon-purple); }
+    .ql-snow .ql-active .ql-picker-label { color: var(--neon-purple); }
+    .ql-snow .ql-picker-item:hover { color: var(--text-primary); }
+    .ql-snow .ql-picker-item.ql-selected { color: var(--neon-purple); }
+    .ql-snow .ql-tooltip { background: var(--bg-card); border: 1px solid var(--border-input); color: var(--text-primary); box-shadow: var(--shadow-card); }
+    .ql-snow .ql-tooltip input[type=text] { background: var(--bg-input); border: 1px solid var(--border-input); color: var(--text-primary); }
+    .ql-snow .ql-tooltip a { color: var(--neon-purple); }
+    .ql-editor img { max-width: 100%; height: auto; margin: 8px 0; }
+    .ql-editor .ql-align-center { text-align: center; }
+    .ql-editor .ql-align-right { text-align: right; }
+    .ql-editor .ql-align-justify { text-align: justify; }
+    .ql-editor img.ql-align-center { display: block; margin: 8px auto; }
+    .ql-editor img.ql-align-right { display: block; margin: 8px 0 8px auto; }
 
     /* Editor actions */
     .editor-actions {
@@ -592,6 +609,226 @@
     }
     ::-webkit-scrollbar-thumb:hover { background: var(--neon-purple); }
     * { scrollbar-width: thin; scrollbar-color: var(--border-input) var(--bg-body); }
+
+    /* ===== FAB (Floating Action Button) ===== */
+    .fab-container {
+      position: fixed;
+      right: 24px;
+      bottom: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 900;
+    }
+    .fab-main {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--neon-purple);
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(191,90,242,0.4);
+      transition: all 0.25s;
+      position: relative;
+    }
+    .fab-main:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(191,90,242,0.55); }
+    .fab-main.open { transform: rotate(45deg); background: var(--neon-red); box-shadow: 0 4px 16px rgba(255,71,87,0.4); }
+    .fab-menu {
+      position: absolute;
+      bottom: 60px;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: all 0.25s;
+    }
+    .fab-menu.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .fab-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-primary);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      box-shadow: var(--shadow-card);
+      transition: all 0.2s;
+    }
+    .fab-menu-item:hover { border-color: var(--neon-purple); background: var(--bg-hover); }
+    .fab-menu-item .fab-icon { font-size: 1.1rem; }
+    .fab-label {
+      position: absolute;
+      right: 60px;
+      bottom: 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(4px);
+      transition: all 0.2s;
+    }
+    .fab-container:hover .fab-label {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* ===== PREVIEW MODAL ===== */
+    .preview-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .preview-modal-overlay.active { display: flex; }
+    .preview-modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 800px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    .preview-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+    .preview-modal-header h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
+    .preview-modal-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .preview-modal-close:hover { color: var(--text-primary); }
+    .preview-modal-body {
+      padding: 24px 28px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .preview-modal-body h1,
+    .preview-modal-body h2,
+    .preview-modal-body h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+    .preview-modal-body h1 { font-size: 1.8rem; }
+    .preview-modal-body h2 { font-size: 1.4rem; }
+    .preview-modal-body h3 { font-size: 1.15rem; }
+    .preview-modal-body p { margin-bottom: 14px; line-height: 1.75; color: var(--text-primary); }
+    .preview-modal-body img { max-width: 100%; border-radius: 8px; margin: 12px 0; }
+    .preview-modal-body blockquote {
+      border-left: 3px solid var(--neon-purple);
+      padding-left: 16px;
+      margin: 16px 0;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .preview-modal-body pre {
+      background: var(--bg-body);
+      border: 1px solid var(--border-input);
+      border-radius: 6px;
+      padding: 16px;
+      overflow-x: auto;
+      margin: 16px 0;
+      font-size: 0.85rem;
+    }
+    .preview-modal-body code {
+      background: rgba(191,90,242,0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    .preview-modal-body pre code {
+      background: none;
+      padding: 0;
+    }
+    .preview-modal-body ul,
+    .preview-modal-body ol {
+      margin: 12px 0;
+      padding-left: 24px;
+      color: var(--text-primary);
+    }
+    .preview-modal-body li { margin-bottom: 6px; line-height: 1.65; }
+    .preview-meta {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+    .preview-featured-img {
+      width: 100%;
+      max-height: 320px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .preview-excerpt {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .preview-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .preview-tag {
+      background: rgba(191,90,242,0.12);
+      color: var(--neon-purple);
+      padding: 4px 12px;
+      border-radius: 14px;
+      font-size: 0.8rem;
+    }
+    @media (max-width: 768px) {
+      .fab-container { right: 16px; bottom: 70px; }
+      .preview-modal-body { padding: 16px; }
+      .preview-modal-body h1 { font-size: 1.4rem; }
+    }
   </style>
 </head>
 <body>
@@ -758,6 +995,7 @@
           <!-- Actions -->
           <div class="editor-actions full-width">
             <button class="btn btn-primary" id="savePostBtn">Guardar post</button>
+            <button class="btn" id="previewBtn" style="margin-left:4px;">👁 Vista previa</button>
             <button class="btn" id="cancelBtn">Cancelar</button>
           </div>
         </div>
@@ -778,6 +1016,31 @@
 
   <!-- Toast -->
   <div class="toast" id="toast"></div>
+
+  <!-- Preview Modal -->
+  <div class="preview-modal-overlay" id="previewOverlay">
+    <div class="preview-modal">
+      <div class="preview-modal-header">
+        <h3>Vista previa del post</h3>
+        <button class="preview-modal-close" id="previewClose">×</button>
+      </div>
+      <div class="preview-modal-body" id="previewBody"></div>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <div class="fab-container" id="fabContainer">
+    <div class="fab-label">Herramientas</div>
+    <button class="fab-main" id="fabMain" title="Herramientas externas">+</button>
+    <div class="fab-menu" id="fabMenu">
+      <a href="https://iloveimg.com" target="_blank" rel="noopener" class="fab-menu-item">
+        <span class="fab-icon">🖼</span> iLoveIMG (comprimir/redimensionar)
+      </a>
+      <a href="https://postimages.org" target="_blank" rel="noopener" class="fab-menu-item">
+        <span class="fab-icon">📸</span> PostImages (hosting gratuito)
+      </a>
+    </div>
+  </div>
 
 <script is:inline>
 const SUPABASE_URL = 'https://ftfpsxvobigayeqmqrac.supabase.co';
@@ -1300,14 +1563,140 @@ document.addEventListener('DOMContentLoaded', () => {
     theme: 'snow',
     placeholder: 'Escribí el contenido del post...',
     modules: {
-      toolbar: [
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ 'header': [1, 2, 3, false] }],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-        ['blockquote', 'code-block'],
-        ['link', 'image', 'video'],
-        ['clean']
-      ]
+      toolbar: {
+        container: [
+          ['bold', 'italic', 'underline', 'strike'],
+          [{ 'header': [1, 2, 3, false] }],
+          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+          [{ 'align': [] }],
+          ['blockquote', 'code-block'],
+          ['link', 'image', 'video'],
+          ['clean']
+        ],
+        handlers: {
+          image: function() {
+            const range = quill.getSelection(true);
+            const value = prompt('Ingresá la URL de la imagen:');
+            if (value) {
+              quill.clipboard.dangerouslyPasteHTML(range.index, '<img src="' + value + '" class="ql-align-center" />');
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // ===== ADD TOOLTIPS TO TOOLBAR BUTTONS =====
+  document.querySelectorAll('.ql-toolbar button, .ql-toolbar .ql-picker-label').forEach(btn => {
+    const cls = btn.className || '';
+    let tip = '';
+    if (cls.includes('ql-bold')) tip = 'Negrita (Ctrl+B)';
+    else if (cls.includes('ql-italic')) tip = 'Cursiva (Ctrl+I)';
+    else if (cls.includes('ql-underline')) tip = 'Subrayado (Ctrl+U)';
+    else if (cls.includes('ql-strike')) tip = 'Tachado';
+    else if (cls.includes('ql-header')) tip = 'Título';
+    else if (cls.includes('ql-list')) tip = cls.includes('ql-list-ordered') ? 'Lista numerada' : 'Lista con viñetas';
+    else if (cls.includes('ql-blockquote')) tip = 'Cita';
+    else if (cls.includes('ql-code-block')) tip = 'Bloque de código';
+    else if (cls.includes('ql-link')) tip = 'Insertar link';
+    else if (cls.includes('ql-image')) tip = 'Insertar imagen';
+    else if (cls.includes('ql-video')) tip = 'Insertar video';
+    else if (cls.includes('ql-clean')) tip = 'Limpiar formato';
+    else if (cls.includes('ql-align')) tip = 'Alineación';
+    if (tip) btn.setAttribute('title', tip);
+  });
+
+  // ===== FAB TOGGLE =====
+  document.getElementById('fabMain').addEventListener('click', function() {
+    this.classList.toggle('open');
+    document.getElementById('fabMenu').classList.toggle('open');
+  });
+
+  // Close FAB menu when clicking outside
+  document.addEventListener('click', (e) => {
+    const fab = document.getElementById('fabContainer');
+    if (!fab.contains(e.target)) {
+      document.getElementById('fabMain').classList.remove('open');
+      document.getElementById('fabMenu').classList.remove('open');
+    }
+  });
+
+  // ===== PREVIEW MODAL =====
+  document.getElementById('previewBtn').addEventListener('click', () => {
+    const title = document.getElementById('postTitle').value.trim();
+    const content = quill ? quill.root.innerHTML : '';
+    const excerpt = document.getElementById('postExcerpt').value.trim();
+    const image = document.getElementById('postImageUrl').value.trim();
+    const date = document.getElementById('postDate').value;
+    const badge = document.getElementById('postBadge').value;
+    const badgeColor = document.getElementById('postBadgeColor').value;
+
+    if (!title && !content) {
+      showToast('No hay contenido para previsualizar', 'error');
+      return;
+    }
+
+    const previewBody = document.getElementById('previewBody');
+    let html = '';
+
+    // Featured image
+    if (image) {
+      html += `<img class="preview-featured-img" src="${image}" alt="Preview" onerror="this.style.display='none'" />`;
+    }
+
+    // Title
+    html += `<h1>${title || 'Sin título'}</h1>`;
+
+    // Meta
+    html += '<div class="preview-meta">';
+    if (date) {
+      html += `<span>📅 ${new Date(date).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>`;
+    } else {
+      html += `<span>📅 ${new Date().toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>`;
+    }
+    html += `<span><span class="badge-sm ${badgeColor || 'purple'}" style="font-size:0.7rem;">${badge || 'General'}</span></span>`;
+    html += '</div>';
+
+    // Excerpt
+    if (excerpt) {
+      html += `<p class="preview-excerpt">${excerpt}</p>`;
+    }
+
+    // Content
+    html += content;
+
+    // Tags
+    if (selectedTags.size > 0) {
+      const tagNames = allTags
+        .filter(t => selectedTags.has(t.id))
+        .map(t => t.name);
+      if (tagNames.length > 0) {
+        html += '<div class="preview-tags">';
+        tagNames.forEach(name => {
+          html += `<span class="preview-tag">${name}</span>`;
+        });
+        html += '</div>';
+      }
+    }
+
+    previewBody.innerHTML = html;
+    document.getElementById('previewOverlay').classList.add('active');
+  });
+
+  document.getElementById('previewClose').addEventListener('click', () => {
+    document.getElementById('previewOverlay').classList.remove('active');
+  });
+
+  document.getElementById('previewOverlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('previewOverlay')) {
+      document.getElementById('previewOverlay').classList.remove('active');
+    }
+  });
+
+  // Escape key closes preview
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.getElementById('previewOverlay').classList.remove('active');
     }
   });
 
