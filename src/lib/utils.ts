@@ -14,7 +14,7 @@ export function stripHTML(html: string): string {
 }
 
 /** Sanitize HTML content for safe rendering (build-time) */
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 export function sanitizeHTML(dirty: string): string {
   return DOMPurify.sanitize(dirty, {
     ALLOWED_TAGS: [
