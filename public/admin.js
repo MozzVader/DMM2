@@ -87,11 +87,11 @@ if (posts.length === 0) {
 
 tbody.innerHTML = posts.map(post => `
   <tr>
-    <td>${post.is_featured ? '<span class="featured-star">★</span>' : ''}</td>
-    <td class="post-title-cell"><a href="${BASE}/post/${post.slug}" target="_blank">${post.title}</a></td>
-    <td><span class="badge-sm ${post.badge_color || 'purple'}">${post.badge || 'General'}</span></td>
-    <td class="date-cell">${formatDate(post.published_at)}</td>
-    <td class="actions-cell">
+    <td data-label="">${post.is_featured ? '<span class="featured-star">★</span>' : ''}</td>
+    <td class="post-title-cell" data-label=""><a href="${BASE}/post/${post.slug}" target="_blank">${post.title}</a></td>
+    <td data-label="Badge"><span class="badge-sm ${post.badge_color || 'purple'}">${post.badge || 'General'}</span></td>
+    <td class="date-cell" data-label="Fecha">${formatDate(post.published_at)}</td>
+    <td class="actions-cell" data-label="">
       <button class="btn btn-sm" onclick="editPost('${post.id}')">Editar</button>
       <button class="btn btn-sm btn-danger" onclick="confirmDelete('${post.id}', '${post.title.replace(/'/g, "\\'")}')">Eliminar</button>
     </td>
