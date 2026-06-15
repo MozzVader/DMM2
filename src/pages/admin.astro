@@ -1760,6 +1760,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Debug: verify BlotFormatter module loaded
+  try {
+    const bf = quill.getModule('blotFormatter');
+    if (bf) {
+      console.log('[DMM] BlotFormatter loaded:', bf);
+      if (bf.actions) console.log('[DMM] BlotFormatter actions:', bf.actions.map(a => a.constructor.name));
+      if (bf.specs) console.log('[DMM] BlotFormatter specs:', bf.specs.map(s => s.constructor.name));
+    } else {
+      console.warn('[DMM] BlotFormatter module not found');
+    }
+  } catch(e) { console.warn('[DMM] BlotFormatter debug error:', e); }
+
   // ===== TRACK CLICKED IMAGE =====
   let _selectedImg = null;
   const editorEl = document.querySelector('#editor-container .ql-editor');
@@ -1815,14 +1827,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!_selectedImg || !quill.root.contains(_selectedImg)) {
           showToast('Click en una imagen primero para alinearla', 'error'); return;
         }
-        // Toggle: if already this alignment, remove it
-        if (_selectedImg.classList.contains('ql-img-' + alignMap[def.cls])) {
-          _selectedImg.classList.remove('ql-img-left', 'ql-img-center', 'ql-img-right');
+        const align = alignMap[def.cls];
+        const currentStyle = _selectedImg.getAttribute('data-img-align');
+        // Toggle: if already this alignment, reset to normal
+        if (currentStyle === align) {
+          _selectedImg.removeAttribute('style');
+          _selectedImg.removeAttribute('data-img-align');
         } else {
-          _selectedImg.classList.remove('ql-img-left', 'ql-img-center', 'ql-img-right');
-          _selectedImg.classList.add('ql-img-' + alignMap[def.cls]);
+          const styles = {
+            left: 'float:left; margin:8px 15px 15px 0; max-width:50%;',
+            center: 'display:block; float:none; margin:8px auto;',
+            right: 'float:right; margin:8px 0 15px 15px; max-width:50%;'
+          };
+          _selectedImg.setAttribute('style', styles[align]);
+          _selectedImg.setAttribute('data-img-align', align);
         }
-        quill.update('user');
+        // DON'T call quill.update('user') — it re-renders from Delta and strips inline styles
       });
       alignGroup.appendChild(btn);
     });
