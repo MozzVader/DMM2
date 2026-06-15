@@ -52,3 +52,10 @@ export function isValidImageType(file: File): boolean {
 export function isValidImageSize(file: File, maxMB: number = 5): boolean {
   return file.size <= maxMB * 1024 * 1024;
 }
+
+/** Estimate reading time from HTML content (~200 words/min for Spanish) */
+export function readingTime(html: string): number {
+  const text = stripHTML(html);
+  const words = text.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / 200));
+}
