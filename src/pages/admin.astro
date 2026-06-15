@@ -492,6 +492,40 @@
       border-color: var(--neon-purple) !important;
     }
 
+    /* Image chooser dropdown */
+    .img-chooser {
+      position: absolute;
+      background: var(--bg-card);
+      border: 1px solid var(--border-input);
+      border-radius: 8px;
+      padding: 6px;
+      box-shadow: var(--shadow-card);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 200px;
+    }
+    .img-chooser.open { display: flex; }
+    .img-chooser-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.15s;
+      text-align: left;
+      width: 100%;
+    }
+    .img-chooser-btn:hover { background: var(--bg-hover); }
+    .img-chooser-btn .chooser-icon { font-size: 1.1rem; }
+
     /* Editor actions */
     .editor-actions {
       display: flex;
@@ -1058,6 +1092,16 @@
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
+  <!-- Image chooser dropdown (positioned dynamically by JS) -->
+  <div class="img-chooser" id="imgChooser">
+    <button class="img-chooser-btn" id="imgChooserUpload">
+      <span class="chooser-icon">📁</span> Subir desde tu PC
+    </button>
+    <button class="img-chooser-btn" id="imgChooserUrl">
+      <span class="chooser-icon">🔗</span> Insertar URL
+    </button>
+  </div>
+
   <!-- Preview Modal -->
   <div class="preview-modal-overlay" id="previewOverlay">
     <div class="preview-modal">
@@ -1613,6 +1657,7 @@ document.addEventListener('DOMContentLoaded', () => {
     placeholder: 'Escribí el contenido del post...',
     modules: {
       blotFormatter: {
+        specs: [QuillBlotFormatter2.ImageSpec],
         overlay: {
           style: { position: 'absolute', border: '2px solid var(--neon-purple)', background: 'rgba(191,90,242,0.08)' }
         }
@@ -1629,22 +1674,45 @@ document.addEventListener('DOMContentLoaded', () => {
         ],
         handlers: {
           image: function() {
-            const choice = prompt('Elegí una opción:\n1 - Subir imagen desde tu PC\n2 - Insertar URL de imagen', '1');
-            if (choice === '1' || choice === null) {
-              // Open file picker (uses the existing hidden input)
-              const fileInput = document.getElementById('imageUpload');
-              fileInput.setAttribute('data-for-quill', 'true');
-              fileInput.click();
-            } else if (choice === '2') {
-              const range = quill.getSelection(true);
-              const value = prompt('Ingresá la URL de la imagen:');
-              if (value) {
-                quill.clipboard.dangerouslyPasteHTML(range.index, '<img src="' + value + '" />');
-              }
+            // Show dropdown instead of prompt (avoids user-activation loss)
+            const chooser = document.getElementById('imgChooser');
+            const imgBtn = document.querySelector('.ql-image');
+            if (imgBtn) {
+              const rect = imgBtn.getBoundingClientRect();
+              chooser.style.top = (rect.bottom + 4) + 'px';
+              chooser.style.left = rect.left + 'px';
+              chooser.classList.add('open');
             }
           }
         }
       }
+    }
+  });
+
+  // Close image chooser when clicking outside
+  document.addEventListener('click', (e) => {
+    const chooser = document.getElementById('imgChooser');
+    if (!chooser.contains(e.target) && !e.target.closest('.ql-image')) {
+      chooser.classList.remove('open');
+    }
+  });
+
+  // Upload from PC button (direct click = user activation preserved)
+  document.getElementById('imgChooserUpload').addEventListener('click', () => {
+    document.getElementById('imgChooser').classList.remove('open');
+    const fileInput = document.getElementById('imageUpload');
+    fileInput.setAttribute('data-for-quill', 'true');
+    fileInput.click();
+  });
+
+  // Insert URL button
+  document.getElementById('imgChooserUrl').addEventListener('click', () => {
+    document.getElementById('imgChooser').classList.remove('open');
+    const range = quill.getSelection(true);
+    // Create a small inline input instead of prompt()
+    const url = prompt('Ingresá la URL de la imagen:');
+    if (url) {
+      quill.insertEmbed(range.index, 'image', { src: url, alt: '' });
     }
   });
 
@@ -1678,7 +1746,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       const { data: { publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(data.path);
-      quill.clipboard.dangerouslyPasteHTML(range.index, '<img src="' + publicUrl + '" />');
+      quill.insertEmbed(range.index, 'image', { src: publicUrl, alt: '' });
       showToast('Imagen insertada en el post');
     };
     reader.readAsArrayBuffer(file);
