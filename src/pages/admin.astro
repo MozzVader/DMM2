@@ -3,19 +3,21 @@
 // All logic is client-side (Supabase Auth, Quill editor, image upload)
 ---
 
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html
+  lang="es"
+  data-sb-url={import.meta.env.SUPABASE_URL || ''}
+  data-sb-key={import.meta.env.SUPABASE_ANON_KEY || ''}
+>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — Dos Minutos Más</title>
   <link rel="icon" type="image/svg+xml" href={(import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/favicon.svg'} />
-  <link rel="icon" type="image/png" href={(import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/favicon.ico'} />
-  <script is:inline src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
   <script is:inline src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/@enzedonline/quill-blot-formatter2@3.2.0/dist/index.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style is:inline>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1169,8 +1171,8 @@
   </div>
 
 <script is:inline>
-const SUPABASE_URL = 'https://ftfpsxvobigayeqmqrac.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0ZnBzeHZvYmlnYXllcW1xcmFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyOTkyOTAsImV4cCI6MjA5Njg3NTI5MH0.jyuUXc9vvZ5WWf7qcLf-Z0_Zn10foHZtAWHPdMF6JoY';
+const SUPABASE_URL = document.documentElement.dataset.sbUrl || '';
+const SUPABASE_ANON_KEY = document.documentElement.dataset.sbKey || '';
 const BUCKET = 'Dosminutosmas';
 const BASE = '/DMM2';
 
@@ -1375,6 +1377,17 @@ document.getElementById('imageUpload').addEventListener('change', async (e) => {
 });
 
 async function uploadImage(file) {
+  // Validate file type
+  var allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
+  if (!allowedTypes.includes(file.type)) {
+    showToast('Tipo de archivo no permitido. Usá JPG, PNG, WebP o GIF.', 'error');
+    return;
+  }
+  // Validate file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('La imagen supera los 5MB. Reducila antes de subir.', 'error');
+    return;
+  }
   showToast('Subiendo imagen...', 'success');
   const ext = file.name.split('.').pop();
   const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
@@ -1626,18 +1639,21 @@ document.getElementById('newTagName').addEventListener('keydown', (e) => {
 });
 
 async function deleteTag(id, name) {
-  // Delete post_tags references first, then the tag itself
-  await sb.from('post_tags').delete().eq('tag_id', id);
-
-  const { data, error } = await sb.from('tags').delete().eq('id', id);
-  if (error) {
-    showToast('Error al eliminar: ' + error.message, 'error');
-    return;
-  }
-  // Supabase DELETE always returns data:null on success — not an error
-  showToast(`Tag "${name}" eliminado`);
-  loadTagsManager();
-  loadTags();
+  deleteTargetId = null;
+  document.getElementById('confirmMsg').textContent = '¿Eliminás el tag "' + name + '"? Esta acción no se puede deshacer y se desvinculará de todos los posts.';
+  document.getElementById('confirmOverlay').classList.add('active');
+  document.getElementById('confirmOk').onclick = async function() {
+    document.getElementById('confirmOverlay').classList.remove('active');
+    await sb.from('post_tags').delete().eq('tag_id', id);
+    const { error } = await sb.from('tags').delete().eq('id', id);
+    if (error) {
+      showToast('Error al eliminar: ' + error.message, 'error');
+      return;
+    }
+    showToast('Tag "' + name + '" eliminado');
+    loadTagsManager();
+    loadTags();
+  };
 }
 
 // ===== AUTO-SAVE TO LOCALSTORAGE =====

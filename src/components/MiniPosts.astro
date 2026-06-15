@@ -1,5 +1,7 @@
 ---
 import type { Post } from '../lib/supabase';
+import { BASE_URL } from '../lib/constants';
+import { formatDate } from '../lib/utils';
 
 interface Props {
   posts: Post[];
@@ -7,22 +9,16 @@ interface Props {
 
 const { posts } = Astro.props;
 
-const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
-
 const colors = ['purple', 'red', 'yellow', 'green'] as const;
 ---
 
 <div class="mini-posts">
   {posts.map((post, i) => (
-    <a href={`${astroBase}post/${post.slug}`} class="mini-post-item">
+    <a href={`${BASE_URL}post/${post.slug}`} class="mini-post-item">
       <span class={`mini-dot ${colors[i % colors.length]}`}></span>
       <span class="mini-post-title">{post.title}</span>
       <span class="mini-post-date">
-        {new Date(post.published_at).toLocaleDateString('es-AR', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        })}
+        {formatDate(post.published_at, { day: 'numeric', month: 'short', year: 'numeric' })}
       </span>
     </a>
   ))}

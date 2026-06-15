@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://mozzvader.github.io',
@@ -6,4 +7,7 @@ export default defineConfig({
   build: {
     assets: 'assets',
   },
+  integrations: [
+    sitemap(),
+  ],
 });

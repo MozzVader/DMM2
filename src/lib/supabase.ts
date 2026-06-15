@@ -1,9 +1,17 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.SUPABASE_URL || 'https://ftfpsxvobigayeqmqrac.supabase.co';
-const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
+const _supabaseUrl = import.meta.env.SUPABASE_URL;
+const _supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+if (!_supabaseUrl) {
+  console.warn('[supabase] SUPABASE_URL is not set. All data fetches will return demo fallbacks.');
+}
+
+// Supabase createClient requires a valid URL string even if all fetches will fail to demo data
+export const supabase = createClient(
+  _supabaseUrl || 'https://example.supabase.co',
+  _supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YW1wbGUiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTcwMDAwMDAwMCwiZXhwIjoyMDAwMDAwMDAwfQ.placeholder'
+);
 
 /* ==============================================
    TYPE DEFINITIONS
@@ -163,7 +171,7 @@ const DEMO_ARCHIVE = [
    ============================================== */
 
 /** Normalize tags array — unwrap Supabase nested join + filter null entries */
-function normalizeTags(tags: any[] | undefined): Tag[] {
+function normalizeTags(tags: Tag[] | undefined): Tag[] {
   if (!tags || !Array.isArray(tags)) return [];
   return tags
     .map((t) => t?.tags || t)           // unwrap: Supabase nests as { tags: { name, slug } }

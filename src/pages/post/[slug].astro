@@ -4,9 +4,9 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import BottomGrid from '../../components/BottomGrid.astro';
 import { getAllPosts, getFeaturedPost } from '../../lib/supabase';
+import { BASE_URL, AUTHOR } from '../../lib/constants';
+import { sanitizeHTML, formatDate, stripHTML } from '../../lib/utils';
 import type { Post } from '../../lib/supabase';
-
-const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
 
 export async function getStaticPaths() {
   const [regularPosts, featuredPost] = await Promise.all([
@@ -30,24 +30,22 @@ export async function getStaticPaths() {
 
 const { post, prevPost, nextPost } = Astro.props;
 
-const dateStr = new Date(post.published_at).toLocaleDateString('es-AR', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
+const dateStr = formatDate(post.published_at);
+const safeContent = sanitizeHTML(post.content);
+const metaDescription = post.excerpt || stripHTML(post.content).slice(0, 160);
 
 const supabaseUrl = import.meta.env.SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
 ---
 
-<BaseLayout title={`${post.title} — Dos Minutos Más`} description={post.excerpt || (post.content ? post.content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim().slice(0, 160) : '')}>
+<BaseLayout title={`${post.title} — Dos Minutos Más`} description={metaDescription} ogImage={post.featured_image || undefined}>
   <Header slot="header" />
 
   <div class="container">
     <article class="post-single">
       <div class="post-single-image">
         {post.featured_image && (
-          <img src={post.featured_image} alt={post.title} loading="lazy" />
+          <img src={post.featured_image} alt={post.title} loading="lazy" width="1200" height="420" />
         )}
       </div>
 
@@ -55,59 +53,55 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
         <span class={`post-badge badge-${post.badge_color || 'purple'}`}>{post.badge || 'General'}</span>
         <h1 class="post-single-title">{post.title}</h1>
         <div class="post-meta">
-          <span class="meta-item"><svg class="meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>{dateStr}</span>
+          <span class="meta-item"><svg class="meta-icon" aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>{dateStr}</span>
           <span class="dot-sep"></span>
-          <span class="meta-item"><svg class="meta-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Mozz</span>
+          <span class="meta-item"><svg class="meta-icon" aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>{AUTHOR.name}</span>
         </div>
 
-        <div class="post-content" set:html={post.content} />
+        <div class="post-content" set:html={safeContent} />
 
         <!-- Post footer: tags, likes, share -->
         <div class="post-footer">
-          <!-- Tags (left) -->
           <div class="post-footer-tags">
             {post.tags && post.tags.length > 0 && post.tags.map((tag) => (
-              <a href={`${astroBase}tag/${tag.slug}`} class="tag-pill" style="border-color: rgba(191, 90, 242, 0.2); color: rgba(191, 90, 242, 0.8);">
+              <a href={`${BASE_URL}tag/${tag.slug}`} class="tag-pill" style="border-color: rgba(191, 90, 242, 0.2); color: rgba(191, 90, 242, 0.8);">
                 {tag.name}
               </a>
             ))}
           </div>
 
-          <!-- Like button (center) -->
           <div class="post-footer-like">
             <button class="like-btn" id="likeBtn" aria-label="Me gusta" data-post-id={post.id} data-sb-url={supabaseUrl} data-sb-key={supabaseAnonKey}>
-              <span class="like-icon" id="likeIcon">♥</span>
+              <span class="like-icon" id="likeIcon" aria-hidden="true">&#9829;</span>
               <span class="like-count" id="likeCount">{(post.likes || 0)}</span>
             </button>
           </div>
 
-          <!-- Share buttons (right) -->
           <div class="post-footer-share">
             <a class="share-btn share-facebook" href="#" id="shareFb" aria-label="Compartir en Facebook" target="_blank" rel="noopener">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
             </a>
             <a class="share-btn share-twitter" href="#" id="shareTw" aria-label="Compartir en X" target="_blank" rel="noopener">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
             </a>
             <a class="share-btn share-whatsapp" href="#" id="shareWa" aria-label="Compartir en WhatsApp" target="_blank" rel="noopener">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
             </a>
           </div>
         </div>
       </div>
     </article>
 
-    <!-- Post navigation -->
     {(prevPost || nextPost) && (
-      <nav class="post-nav">
+      <nav class="post-nav" aria-label="Navegación entre posts">
         {prevPost && (
-          <a href={`${astroBase}post/${prevPost.slug}`} class="post-nav-link post-nav-prev">
+          <a href={`${BASE_URL}post/${prevPost.slug}`} class="post-nav-link post-nav-prev">
             <span class="post-nav-label">← Anterior</span>
             <span class="post-nav-title">{prevPost.title}</span>
           </a>
         )}
         {nextPost && (
-          <a href={`${astroBase}post/${nextPost.slug}`} class="post-nav-link post-nav-next">
+          <a href={`${BASE_URL}post/${nextPost.slug}`} class="post-nav-link post-nav-next">
             <span class="post-nav-label">Siguiente →</span>
             <span class="post-nav-title">{nextPost.title}</span>
           </a>
@@ -130,13 +124,11 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
     var sbKey = likeBtn.getAttribute('data-sb-key');
     var currentLikes = parseInt(likeCount.textContent, 10);
 
-    // Check localStorage for existing like
     var likedPosts = JSON.parse(localStorage.getItem('dmm_liked') || '[]');
     if (likedPosts.indexOf(postId) !== -1) {
       likeBtn.classList.add('liked');
     }
 
-    // Like button click
     likeBtn.addEventListener('click', async function() {
       if (likedPosts.indexOf(postId) !== -1) return;
 
@@ -158,7 +150,6 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
           likeCount.textContent = currentLikes;
         }
       } catch(e) {
-        // Offline fallback: just update UI + localStorage
         likedPosts.push(postId);
         localStorage.setItem('dmm_liked', JSON.stringify(likedPosts));
         likeBtn.classList.add('liked');
@@ -167,7 +158,6 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
       }
     });
 
-    // Share buttons
     var pageUrl = window.location.href;
     var pageTitle = document.title;
 
@@ -193,6 +183,7 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
     height: 420px;
     overflow: hidden;
     background: linear-gradient(135deg, #1a1a2e, #2d1b4e, #1a1a2e);
+    aspect-ratio: 1200 / 420;
   }
 
   .post-single-image img {
@@ -281,24 +272,6 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
     max-width: 100%;
     border-radius: 5px;
     margin: 16px 0;
-  }
-
-  .post-tags {
-    margin-top: 32px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-subtle);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .post-tags a {
-    text-decoration: none;
-    transition: transform 0.2s ease;
-  }
-
-  .post-tags a:hover {
-    transform: translateY(-1px);
   }
 
   /* Post footer: tags + likes + share */

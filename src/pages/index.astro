@@ -10,10 +10,8 @@ import BottomGrid from '../components/BottomGrid.astro';
 import {
   getFeaturedPost,
   getAllPosts,
-  type Post,
 } from '../lib/supabase';
-
-const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
+import { BASE_URL } from '../lib/constants';
 
 const featured = await getFeaturedPost();
 const allPosts = await getAllPosts();
@@ -23,8 +21,6 @@ const standardPosts = allPosts.slice(0, 3);
 
 // Remaining posts for the mini list
 const miniPosts = allPosts.slice(3, 8);
-
-
 ---
 
 <BaseLayout title="Dos Minutos Más">
@@ -48,7 +44,7 @@ const miniPosts = allPosts.slice(3, 8);
     {miniPosts.length > 0 && <MiniPosts posts={miniPosts} />}
 
     <div class="view-all-wrap">
-      <a href={`${astroBase}posts`} class="view-all-btn">
+      <a href={`${BASE_URL}posts`} class="view-all-btn">
         Ver todos los posts <span class="arrow">→</span>
       </a>
     </div>

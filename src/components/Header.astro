@@ -1,19 +1,19 @@
 ---
-const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
+import { BASE_URL } from '../lib/constants';
 ---
 
 <header class="mag-header">
   <div class="container">
     <div class="header-left">
       <div class="logo-area">
-        <a href={astroBase}>
+        <a href={BASE_URL}>
           <div class="logo-placeholder" title="Logo">
-            <img src={`${astroBase}logo.png`} />
+            <img src={`${BASE_URL}logo.png`} alt="Dos Minutos Más" />
           </div>
         </a>
       </div>
       <div class="title-area">
-        <a href={astroBase} class="mag-title-link">
+        <a href={BASE_URL} class="mag-title-link">
           <div class="mag-title-wrapper">
             <h1 class="mag-title">Dos Minutos Más</h1>
           </div>
@@ -21,17 +21,16 @@ const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
       </div>
     </div>
 
-    <div class="search-area">
-      <form class="search-box" action="/buscar" method="get">
-        <input type="text" name="q" placeholder="Buscar..." />
-      </form>
-    </div>
+    <nav class="nav-links" aria-label="Navegación principal">
+      <a href={`${BASE_URL}posts`}>Posts</a>
+      <a href={`${BASE_URL}archive/2024`}>Archivo</a>
+    </nav>
 
     <div class="toggle-area">
-      <div class="toggle-track" id="themeToggle" role="button" tabindex="0" aria-label="Cambiar tema claro/oscuro">
+      <div class="toggle-track" id="themeToggle" role="switch" tabindex="0" aria-label="Cambiar a tema claro" aria-checked="false">
         <div class="toggle-thumb">
-          <span class="toggle-icon-moon">&#9790;</span>
-          <span class="toggle-icon-sun">&#9728;</span>
+          <span class="toggle-icon-moon" aria-hidden="true">&#9790;</span>
+          <span class="toggle-icon-sun" aria-hidden="true">&#9728;</span>
         </div>
       </div>
     </div>
@@ -41,5 +40,37 @@ const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
 <style>
   .mag-title-link {
     text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .nav-links a {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    letter-spacing: 0.01em;
+  }
+
+  .nav-links a:hover {
+    color: var(--neon-purple);
+  }
+
+  @media (max-width: 768px) {
+    .nav-links {
+      order: 3;
+      width: 100%;
+      justify-content: center;
+      gap: 24px;
+      padding: 8px 0 4px;
+    }
   }
 </style>

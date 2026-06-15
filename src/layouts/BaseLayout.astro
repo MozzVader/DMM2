@@ -1,37 +1,46 @@
 ---
+import '../styles/global.css';
+
 interface Props {
   title?: string;
   description?: string;
+  ogImage?: string;
 }
 
 const {
   title = 'Dos Minutos Más',
   description = 'Escribiendo sobre cosas que pasan cuando te quedas dos minutos más.',
+  ogImage,
 } = Astro.props;
 
-import '../styles/global.css';
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const resolvedOgImage = ogImage || `${Astro.site}logo.png`;
 ---
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" transition:persist>
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title}</title>
-    <meta name="description" content={description}>
-    <link rel="canonical" href={Astro.url.href} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl.href} />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:url" content={canonicalUrl.href} />
+    <meta property="og:image" content={resolvedOgImage} />
 
-    <!-- Google Fonts -->
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={resolvedOgImage} />
+
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/favicon.svg`} />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
   </head>
   <body>
     <slot name="header" />
@@ -39,28 +48,34 @@ import '../styles/global.css';
       <slot />
     </main>
     <slot name="footer" />
-
-    <!-- Back to top -->
     <button class="back-to-top" id="backToTop" aria-label="Volver arriba" title="Volver arriba">
-      <span class="btt-arrow">&#8593;</span>
+      <span class="btt-arrow" aria-hidden="true">&#8593;</span>
     </button>
-
-    <!-- Theme Toggle + Back to Top scripts -->
+    <div id="toast-container" aria-live="polite"></div>
     <script is:inline>
       const toggle = document.getElementById('themeToggle');
       const body = document.body;
-      if (localStorage.getItem('dmm-theme') === 'light') body.classList.add('light');
+      const isLight = localStorage.getItem('dmm-theme') === 'light';
+      if (isLight) body.classList.add('light');
+      if (toggle) {
+        toggle.setAttribute('aria-checked', isLight ? 'true' : 'false');
+        toggle.setAttribute('aria-label', isLight ? 'Cambiar a tema oscuro' : 'Cambiar a tema claro');
+      }
       toggle.addEventListener('click', () => {
-        body.classList.toggle('light');
-        localStorage.setItem('dmm-theme', body.classList.contains('light') ? 'light' : 'dark');
+        const nowLight = body.classList.toggle('light');
+        localStorage.setItem('dmm-theme', nowLight ? 'light' : 'dark');
+        toggle.setAttribute('aria-checked', nowLight ? 'true' : 'false');
+        toggle.setAttribute('aria-label', nowLight ? 'Cambiar a tema oscuro' : 'Cambiar a tema claro');
       });
       toggle.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
       });
       const btt = document.getElementById('backToTop');
       window.addEventListener('scroll', () => {
-        btt.classList.toggle('visible', window.scrollY > 400);
-      });
+        const visible = window.scrollY > 400;
+        btt.classList.toggle('visible', visible);
+        btt.setAttribute('aria-hidden', !visible);
+      }, { passive: true });
       btt.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });

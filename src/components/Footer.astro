@@ -1,6 +1,19 @@
 ---
+import { BASE_URL } from '../lib/constants';
 ---
 
 <footer class="mag-footer">
-  <p>Dos Minutos Más &copy; {new Date().getFullYear()} — Hecho con <span class="neon-word">humo</span> y mirrors.</p>
+  <p>Dos Minutos Más &copy; {new Date().getFullYear()} — Hecho con <span class="neon-word">humo</span> y mirrors. <a href={`${BASE_URL}rss.xml`} class="footer-rss">RSS</a></p>
 </footer>
+
+<style>
+  .footer-rss {
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-left: 8px;
+    transition: color 0.2s ease;
+  }
+  .footer-rss:hover {
+    color: var(--neon-purple);
+  }
+</style>

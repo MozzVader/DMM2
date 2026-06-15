@@ -5,6 +5,7 @@ import Footer from '../../components/Footer.astro';
 import PostStandard from '../../components/PostStandard.astro';
 import BottomGrid from '../../components/BottomGrid.astro';
 import { getPostsByTag, getAllTags } from '../../lib/supabase';
+import type { Post } from '../../lib/supabase';
 
 export async function getStaticPaths() {
   const tags = await getAllTags();
@@ -16,7 +17,7 @@ export async function getStaticPaths() {
 
 const { name } = Astro.params;
 const { tagName } = Astro.props;
-const posts = await getPostsByTag(name);
+const posts: Post[] = await getPostsByTag(name);
 ---
 
 <BaseLayout title={`Tag: ${tagName} — Dos Minutos Más`}>
@@ -28,7 +29,7 @@ const posts = await getPostsByTag(name);
       <p>{posts.length} post{posts.length !== 1 ? 's' : ''}</p>
     </div>
 
-    {posts.map((post: any) => (
+    {posts.map((post) => (
       <PostStandard post={post} />
     ))}
 

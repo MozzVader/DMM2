@@ -1,16 +1,17 @@
 ---
+import { BASE_URL } from '../lib/constants';
+
 interface Props {
   archiveData: { year: number; count: number }[];
 }
 
 const { archiveData } = Astro.props;
-const astroBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
 ---
 
 <ul class="archive-list">
   {archiveData.map((item) => (
     <li>
-      <a href={`${astroBase}archive/${item.year}`}>
+      <a href={`${BASE_URL}archive/${item.year}`}>
         <span class="archive-year">{item.year}</span>
         <span class="archive-count">({item.count})</span>
       </a>

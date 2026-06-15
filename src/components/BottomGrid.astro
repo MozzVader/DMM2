@@ -1,4 +1,6 @@
 ---
+import { AUTHOR } from '../lib/constants';
+import { BASE_URL } from '../lib/constants';
 import TagCloud from './TagCloud.astro';
 import ArchiveList from './ArchiveList.astro';
 import { getAllTags, getArchiveData } from '../lib/supabase';
@@ -13,11 +15,9 @@ const archiveData = await getArchiveData();
   <div class="panel author-panel">
     <div class="panel-title">Sobre el autor</div>
     <div class="author-avatar">Mz</div>
-    <div class="author-name">Mozz</div>
-    <div class="author-location">Buenos Aires, Argentina</div>
-    <p class="author-bio">
-      Escribiendo sobre cosas que pasan cuando te quedas dos minutos más. Observador profesional de las pequeñas tragedias cotidianas.
-    </p>
+    <div class="author-name">{AUTHOR.name}</div>
+    <div class="author-location">{AUTHOR.location}</div>
+    <p class="author-bio">{AUTHOR.bio}</p>
   </div>
 
   <!-- Panel 2: Contact + Social (red accent) -->
@@ -26,25 +26,25 @@ const archiveData = await getArchiveData();
     <ul class="contact-list">
       <li>
         <a href="mailto:2minutosmas@gmail.com">
-          <span class="social-icon">@</span>
+          <span class="social-icon" aria-hidden="true">@</span>
           <span class="contact-label">2minutosmas@gmail.com</span>
         </a>
       </li>
       <li>
         <a href="http://twitter.com/Dosminutosmas" target="_blank" rel="noopener">
-          <span class="social-icon">X</span>
+          <span class="social-icon" aria-hidden="true">X</span>
           <span class="contact-label">Twitter / X</span>
         </a>
       </li>
       <li>
         <a href="http://www.facebook.com/Mozz.Smith" target="_blank" rel="noopener">
-          <span class="social-icon">f</span>
+          <span class="social-icon" aria-hidden="true">f</span>
           <span class="contact-label">Facebook</span>
         </a>
       </li>
       <li>
-        <a href="http://feeds.feedburner.com/dosminutosmas" target="_blank" rel="noopener">
-          <span class="social-icon">()</span>
+        <a href={`${BASE_URL}rss.xml`} target="_blank" rel="noopener">
+          <span class="social-icon" aria-hidden="true">()</span>
           <span class="contact-label">RSS Feed</span>
         </a>
       </li>

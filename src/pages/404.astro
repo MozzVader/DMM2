@@ -1,23 +1,69 @@
 ---
-// Importa tu Layout maestro (ajusta la ruta si es necesario)
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { BASE_URL } from '../lib/constants';
 ---
 
-<BaseLayout title="Página no encontrada - 404">
-  <main style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; padding: 2rem;">
-    
+<BaseLayout title="Página no encontrada — 404">
+  <main class="error-page">
     <div class="error-404">404</div>
-    
-    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">¡Ups! Esta página se ha mudado o no existe</h1>
-    
-    <p style="font-size: 1.2rem; max-width: 500px; margin-bottom: 2rem; opacity: 0.8;">
-      Parece que el enlace que seguiste está roto o el post de Blogger cambió de dirección durante el revamp.
-    </p>
-    
-    <!-- Este botón usará los estilos de enlace nativos de tu blog -->
-    <a href="/DMM2/" style="padding: 0.8rem 1.5rem; background-color: var(--primary-color, #000); color: #fff; border-radius: 8px; text-decoration: none; font-weight: bold; transition: opacity 0.2s;">
-      Volver al Inicio
-    </a>
-    
+    <h1>Esta página se ha mudado o no existe</h1>
+    <p>Parece que el enlace que seguiste está roto o el post cambió de dirección durante el revamp.</p>
+    <a href={BASE_URL} class="error-btn">Volver al Inicio</a>
   </main>
 </BaseLayout>
+
+<style>
+  .error-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .error-404 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 8.1rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-red) 50%, var(--neon-yellow) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .error-page h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+
+  .error-page p {
+    font-size: 1.2rem;
+    max-width: 500px;
+    margin-bottom: 2rem;
+    color: var(--text-secondary);
+  }
+
+  .error-btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background: var(--neon-purple);
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .error-btn:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+  }
+</style>
