@@ -16,6 +16,7 @@
   <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
   <script is:inline src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/@enzedonline/quill-blot-formatter2@3.2.0/dist/index.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/quill2-image-drop-and-paste@1.1.0/dist/quill2-image-drop-and-paste.min.js"></script>
   <style is:inline>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -449,22 +450,26 @@
     .ql-editor .ql-align-center { text-align: center; }
     .ql-editor .ql-align-right { text-align: right; }
     .ql-editor .ql-align-justify { text-align: justify; }
-    /* BlotFormatter image alignment with text wrapping */
-    .ql-editor img.ql-align-left {
-      float: left;
-      margin: 0 15px 15px 0;
+    /* BlotFormatter image alignment — covers both ql-align-* and ql-float-* */
+    .ql-editor img.ql-align-left,
+    .ql-editor img.ql-float-left {
+      float: left !important;
+      margin: 0 15px 15px 0 !important;
       max-width: 50%;
       clear: both;
     }
-    .ql-editor img.ql-align-right {
-      float: right;
-      margin: 0 0 15px 15px;
+    .ql-editor img.ql-align-right,
+    .ql-editor img.ql-float-right {
+      float: right !important;
+      margin: 0 0 15px 15px !important;
       max-width: 50%;
       clear: both;
     }
-    .ql-editor img.ql-align-center {
-      display: block;
-      margin: 8px auto;
+    .ql-editor img.ql-align-center,
+    .ql-editor img.ql-float-center {
+      display: block !important;
+      margin: 8px auto !important;
+      float: none !important;
       clear: both;
     }
     .ql-editor img.ql-align-justify {
@@ -1686,15 +1691,34 @@ var autoSaveInterval = null;
 document.addEventListener('DOMContentLoaded', () => {
   // Register QuillBlotFormatter (blot-formatter2)
   Quill.register('modules/blotFormatter', QuillBlotFormatter2.default);
+  Quill.register('modules/imageDropAndPaste', Quill2ImageDropAndPaste.default);
 
   quill = new Quill('#editor-container', {
     theme: 'snow',
     placeholder: 'Escribí el contenido del post...',
     modules: {
       blotFormatter: {
-        specs: [QuillBlotFormatter2.ImageSpec],
         overlay: {
           style: { position: 'absolute', border: '2px solid var(--neon-purple)', background: 'rgba(191,90,242,0.08)' }
+        }
+      },
+      imageDropAndPaste: {
+        upload: function(file) {
+          // When user drops/pastes an image, upload to Supabase Storage
+          const range = quill.getSelection(true);
+          const ext = file.name ? file.name.split('.').pop() : 'png';
+          const filename = 'q-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+
+          sb.storage.from(BUCKET).upload(filename, file, { cacheControl: '31536000', upsert: false })
+            .then(({ data, error }) => {
+              if (error) {
+                showToast('Error al subir imagen arrastrada: ' + error.message, 'error');
+                return;
+              }
+              const { data: { publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(data.path);
+              quill.insertEmbed(range.index, 'image', publicUrl);
+              showToast('Imagen insertada');
+            });
         }
       },
       toolbar: {
