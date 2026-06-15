@@ -451,44 +451,8 @@
     .ql-editor .ql-align-right { text-align: right; }
     .ql-editor .ql-align-justify { text-align: justify; }
     /* Custom image alignment classes — float-based text wrapping */
-    .ql-editor img.ql-img-left {
-      float: left !important;
-      margin: 8px 15px 15px 0 !important;
-      max-width: 50%;
-    }
-    .ql-editor img.ql-img-right {
-      float: right !important;
-      margin: 8px 0 15px 15px !important;
-      max-width: 50%;
-    }
-    .ql-editor img.ql-img-center {
-      display: block !important;
-      float: none !important;
-      margin: 8px auto !important;
-    }
-    /* Also cover BlotFormatter native classes (if they ever start working) */
-    .ql-editor img.ql-align-left,
-    .ql-editor img.ql-float-left {
-      float: left !important;
-      margin: 0 15px 15px 0 !important;
-      max-width: 50%;
-    }
-    .ql-editor img.ql-align-right,
-    .ql-editor img.ql-float-right {
-      float: right !important;
-      margin: 0 0 15px 15px !important;
-      max-width: 50%;
-    }
-    .ql-editor img.ql-align-center,
-    .ql-editor img.ql-float-center {
-      display: block !important;
-      margin: 8px auto !important;
-      float: none !important;
-    }
-    .ql-editor img.ql-align-justify {
-      display: block;
-      margin: 8px auto;
-    }
+      /* overflow:hidden prevents blockquote from expanding behind floated images */
+    .ql-editor blockquote { overflow: hidden; }
     /* BlotFormatter action bar */
     .blot-formatter__toolbar {
       background: var(--bg-card) !important;
@@ -1759,18 +1723,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
-
-  // Debug: verify BlotFormatter module loaded
-  try {
-    const bf = quill.getModule('blotFormatter');
-    if (bf) {
-      console.log('[DMM] BlotFormatter loaded:', bf);
-      if (bf.actions) console.log('[DMM] BlotFormatter actions:', bf.actions.map(a => a.constructor.name));
-      if (bf.specs) console.log('[DMM] BlotFormatter specs:', bf.specs.map(s => s.constructor.name));
-    } else {
-      console.warn('[DMM] BlotFormatter module not found');
-    }
-  } catch(e) { console.warn('[DMM] BlotFormatter debug error:', e); }
 
   // ===== TRACK CLICKED IMAGE =====
   let _selectedImg = null;
