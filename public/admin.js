@@ -85,18 +85,21 @@ if (posts.length === 0) {
   return;
 }
 
-tbody.innerHTML = posts.map(post => `
-  <tr>
+tbody.innerHTML = posts.map(post => {
+  const isScheduled = new Date(post.published_at) > new Date();
+  return `
+  <tr class="${isScheduled ? 'scheduled-row' : ''}">
     <td data-label="">${post.is_featured ? '<span class="featured-star">★</span>' : ''}</td>
-    <td class="post-title-cell" data-label=""><a href="${BASE}/post/${post.slug}" target="_blank">${post.title}</a></td>
+    <td class="post-title-cell" data-label=""><a href="${BASE}/post/${post.slug}" target="_blank">${post.title}</a>${isScheduled ? ' <span class="scheduled-badge">Programado</span>' : ''}</td>
     <td data-label="Badge"><span class="badge-sm ${post.badge_color || 'purple'}">${post.badge || 'General'}</span></td>
     <td class="date-cell" data-label="Fecha">${formatDate(post.published_at)}</td>
     <td class="actions-cell" data-label="">
       <button class="btn btn-sm" onclick="editPost('${post.id}')">Editar</button>
+      <button class="btn btn-sm" onclick="clonePost('${post.id}')">Clonar</button>
       <button class="btn btn-sm btn-danger" onclick="confirmDelete('${post.id}', '${post.title.replace(/'/g, "\\'")}')">Eliminar</button>
     </td>
-  </tr>
-`).join('');
+  </tr>`;
+}).join('');
 }
 
 // ===== NEW POST =====
@@ -380,6 +383,48 @@ showScreen('editor');
 clearDraft();
 if (autoSaveInterval) clearInterval(autoSaveInterval);
 autoSaveInterval = setInterval(saveDraft, 30000);
+}
+
+// ===== CLONE POST =====
+async function clonePost(id) {
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  try {
+    const { data: post, error } = await sb.from('posts').select('*').eq('id', id).single();
+    if (error) throw error;
+
+    const { data: cloned, error: cloneErr } = await sb.from('posts').insert({
+      title: post.title + ' (copia)',
+      slug: post.slug + '-copia',
+      badge: post.badge,
+      badge_color: post.badge_color,
+      is_featured: false,
+      featured_image: post.featured_image,
+      excerpt: post.excerpt,
+      content: post.content,
+      published_at: new Date().toISOString()
+    }).select().single();
+
+    if (cloneErr) throw cloneErr;
+
+    // Clone tags
+    const { data: postTags } = await sb.from('post_tags').select('tag_id').eq('post_id', id);
+    if (postTags) {
+      for (const t of postTags) {
+        await sb.from('post_tags').insert({ post_id: cloned.id, tag_id: t.tag_id });
+      }
+    }
+
+    showToast('Post clonado — editá el título y slug antes de publicar');
+    loadDashboard();
+  } catch (err) {
+    showToast('Error al clonar: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Clonar';
+  }
 }
 
 // ===== DELETE POST =====

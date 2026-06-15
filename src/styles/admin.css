@@ -262,6 +262,22 @@ body {
 .badge-sm.yellow { background: rgba(255,211,42,0.15); color: var(--neon-yellow); }
 .badge-sm.green { background: rgba(46,213,115,0.15); color: var(--neon-green); }
 
+.scheduled-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: rgba(255,211,42,0.15);
+  color: var(--neon-yellow);
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+tr.scheduled-row {
+  opacity: 0.75;
+}
+
 /* ===== EDITOR ===== */
 .editor-screen {
   display: none;
