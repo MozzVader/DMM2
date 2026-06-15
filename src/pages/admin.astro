@@ -449,8 +449,29 @@
     .ql-editor .ql-align-center { text-align: center; }
     .ql-editor .ql-align-right { text-align: right; }
     .ql-editor .ql-align-justify { text-align: justify; }
-    .ql-editor img.ql-align-center { display: block; margin: 8px auto; }
-    .ql-editor img.ql-align-right { display: block; margin: 8px 0 8px auto; }
+    /* BlotFormatter image alignment with text wrapping */
+    .ql-editor img.ql-align-left {
+      float: left;
+      margin: 0 15px 15px 0;
+      max-width: 50%;
+      clear: both;
+    }
+    .ql-editor img.ql-align-right {
+      float: right;
+      margin: 0 0 15px 15px;
+      max-width: 50%;
+      clear: both;
+    }
+    .ql-editor img.ql-align-center {
+      display: block;
+      margin: 8px auto;
+      clear: both;
+    }
+    .ql-editor img.ql-align-justify {
+      display: block;
+      margin: 8px auto;
+      clear: both;
+    }
     /* BlotFormatter action bar */
     .blot-formatter__toolbar {
       background: var(--bg-card) !important;
@@ -492,39 +513,52 @@
       border-color: var(--neon-purple) !important;
     }
 
-    /* Image chooser dropdown */
-    .img-chooser {
-      position: absolute;
-      background: var(--bg-card);
-      border: 1px solid var(--border-input);
-      border-radius: 8px;
-      padding: 6px;
-      box-shadow: var(--shadow-card);
-      z-index: 100;
+    /* Image URL modal */
+    .img-url-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 1500;
       display: none;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 200px;
-    }
-    .img-chooser.open { display: flex; }
-    .img-chooser-btn {
-      display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      font-size: 0.85rem;
-      font-family: 'Inter', sans-serif;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background 0.15s;
-      text-align: left;
-      width: 100%;
+      justify-content: center;
     }
-    .img-chooser-btn:hover { background: var(--bg-hover); }
-    .img-chooser-btn .chooser-icon { font-size: 1.1rem; }
+    .img-url-modal-overlay.active { display: flex; }
+    .img-url-modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 24px;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    .img-url-modal h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      font-size: 1rem;
+    }
+    .img-url-modal input[type=text] {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-input);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+    .img-url-modal input[type=text]:focus {
+      outline: none;
+      border-color: var(--neon-purple);
+    }
+    .img-url-modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
 
     /* Editor actions */
     .editor-actions {
@@ -1092,14 +1126,15 @@
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <!-- Image chooser dropdown (positioned dynamically by JS) -->
-  <div class="img-chooser" id="imgChooser">
-    <button class="img-chooser-btn" id="imgChooserUpload">
-      <span class="chooser-icon">📁</span> Subir desde tu PC
-    </button>
-    <button class="img-chooser-btn" id="imgChooserUrl">
-      <span class="chooser-icon">🔗</span> Insertar URL
-    </button>
+  <!-- URL Input Modal for Quill image insert -->
+  <div class="img-url-modal-overlay" id="imgUrlModalOverlay">
+    <div class="img-url-modal">
+      <h4>Insertar imagen por URL</h4>
+      <input type="text" id="imgUrlInput" placeholder="https://ejemplo.com/imagen.jpg" />\n      <div class="img-url-modal-actions">
+        <button class="btn btn-sm" id="imgUrlCancel">Cancelar</button>
+        <button class="btn btn-sm btn-primary" id="imgUrlInsert">Insertar</button>
+      </div>
+    </div>
   </div>
 
   <!-- Preview Modal -->
@@ -1674,45 +1709,74 @@ document.addEventListener('DOMContentLoaded', () => {
         ],
         handlers: {
           image: function() {
-            // Show dropdown instead of prompt (avoids user-activation loss)
-            const chooser = document.getElementById('imgChooser');
-            const imgBtn = document.querySelector('.ql-image');
-            if (imgBtn) {
-              const rect = imgBtn.getBoundingClientRect();
-              chooser.style.top = (rect.bottom + 4) + 'px';
-              chooser.style.left = rect.left + 'px';
-              chooser.classList.add('open');
-            }
+            // Directly trigger file upload — user activation is preserved
+            const fileInput = document.getElementById('imageUpload');
+            fileInput.setAttribute('data-for-quill', 'true');
+            fileInput.click();
           }
         }
       }
     }
   });
 
-  // Close image chooser when clicking outside
-  document.addEventListener('click', (e) => {
-    const chooser = document.getElementById('imgChooser');
-    if (!chooser.contains(e.target) && !e.target.closest('.ql-image')) {
-      chooser.classList.remove('open');
+  // ===== IMAGE URL MODAL =====
+  const imgUrlOverlay = document.getElementById('imgUrlModalOverlay');
+  const imgUrlInput = document.getElementById('imgUrlInput');
+
+  // Add a toolbar button for URL image insertion via custom HTML
+  const toolbar = document.querySelector('.ql-toolbar');
+  if (toolbar) {
+    const urlBtn = document.createElement('button');
+    urlBtn.className = 'ql-custom-image-url';
+    urlBtn.setAttribute('title', 'Insertar imagen por URL');
+    urlBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2" d="M3.5 7.5c2-3 6-3 8 0s6 3 8 0M3.5 12.5c2-3 6-3 8 0s6 3 8 0M3.5 17.5c2-3 6-3 8 0s6 3 8 0" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    // Insert right after the default image button
+    const imgBtn = toolbar.querySelector('.ql-image');
+    if (imgBtn && imgBtn.parentNode) {
+      imgBtn.parentNode.insertBefore(urlBtn, imgBtn.nextSibling);
+    }
+    urlBtn.addEventListener('click', () => {
+      imgUrlOverlay.classList.add('active');
+      imgUrlInput.value = '';
+      setTimeout(() => imgUrlInput.focus(), 100);
+    });
+  }
+
+  // URL modal insert
+  document.getElementById('imgUrlInsert').addEventListener('click', () => {
+    const url = imgUrlInput.value.trim();
+    if (url) {
+      const range = quill.getSelection(true);
+      quill.insertEmbed(range.index, 'image', { src: url, alt: '' });
+      imgUrlOverlay.classList.remove('active');
+      showToast('Imagen insertada');
     }
   });
 
-  // Upload from PC button (direct click = user activation preserved)
-  document.getElementById('imgChooserUpload').addEventListener('click', () => {
-    document.getElementById('imgChooser').classList.remove('open');
-    const fileInput = document.getElementById('imageUpload');
-    fileInput.setAttribute('data-for-quill', 'true');
-    fileInput.click();
+  // URL modal cancel
+  document.getElementById('imgUrlCancel').addEventListener('click', () => {
+    imgUrlOverlay.classList.remove('active');
   });
 
-  // Insert URL button
-  document.getElementById('imgChooserUrl').addEventListener('click', () => {
-    document.getElementById('imgChooser').classList.remove('open');
-    const range = quill.getSelection(true);
-    // Create a small inline input instead of prompt()
-    const url = prompt('Ingresá la URL de la imagen:');
-    if (url) {
-      quill.insertEmbed(range.index, 'image', { src: url, alt: '' });
+  // URL modal close on overlay click
+  imgUrlOverlay.addEventListener('click', (e) => {
+    if (e.target === imgUrlOverlay) {
+      imgUrlOverlay.classList.remove('active');
+    }
+  });
+
+  // URL modal enter key
+  imgUrlInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('imgUrlInsert').click();
+    }
+    });
+
+  // Escape closes URL modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && imgUrlOverlay.classList.contains('active')) {
+      imgUrlOverlay.classList.remove('active');
     }
   });
 
@@ -1752,6 +1816,14 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.readAsArrayBuffer(file);
   });
 
+  // Style the custom URL image button to match toolbar
+  const customUrlBtn = document.querySelector('.ql-custom-image-url');
+  if (customUrlBtn) {
+    customUrlBtn.style.cssText = 'width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;background:none;border:none;color:var(--text-secondary);cursor:pointer;border-radius:4px;';
+    customUrlBtn.addEventListener('mouseenter', () => customUrlBtn.style.color = 'var(--text-primary)');
+    customUrlBtn.addEventListener('mouseleave', () => customUrlBtn.style.color = 'var(--text-secondary)');
+  }
+
   // ===== ADD TOOLTIPS TO TOOLBAR BUTTONS =====
   document.querySelectorAll('.ql-toolbar button, .ql-toolbar .ql-picker-label').forEach(btn => {
     const cls = btn.className || '';
@@ -1765,7 +1837,8 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (cls.includes('ql-blockquote')) tip = 'Cita';
     else if (cls.includes('ql-code-block')) tip = 'Bloque de código';
     else if (cls.includes('ql-link')) tip = 'Insertar link';
-    else if (cls.includes('ql-image')) tip = 'Insertar imagen';
+    else if (cls.includes('ql-image')) tip = 'Subir imagen desde PC';
+    else if (cls.includes('ql-custom-image-url')) tip = 'Insertar imagen por URL';
     else if (cls.includes('ql-video')) tip = 'Insertar video';
     else if (cls.includes('ql-clean')) tip = 'Limpiar formato';
     else if (cls.includes('ql-align')) tip = 'Alineación';
