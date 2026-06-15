@@ -257,10 +257,16 @@ export async function getAllTags(): Promise<Tag[]> {
   }
 }
 
-/** Get posts by tag slug */
+/** Get posts by tag slug.
+ *
+ *  Uses 3 sequential queries (tag → junction → posts). Supabase PostgREST
+ *  does not support EXISTS sub-queries, and deep nested joins with !inner
+ *  are fragile across Supabase versions. For a static blog with <200 posts
+ *  these 3 queries complete in ~100ms total at build time — acceptable.
+ */
 export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
   try {
-    // Step 1: Get tag ID from slug
+    // Query 1: resolve tag slug → tag id
     const { data: tag, error: tagErr } = await supabase
       .from('tags')
       .select('id')
@@ -269,7 +275,7 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
 
     if (tagErr || !tag) return [];
 
-    // Step 2: Get post IDs from junction table
+    // Query 2: get post IDs from junction table
     const { data: relations, error: relErr } = await supabase
       .from('post_tags')
       .select('post_id')
@@ -279,11 +285,12 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
     const postIds = (relations || []).map((r) => r.post_id);
     if (postIds.length === 0) return [];
 
-    // Step 3: Fetch actual posts with their tags (scheduled posts excluded)
+    // Query 3: fetch posts with their tags (scheduled & featured posts excluded)
     const { data, error } = await supabase
       .from('posts')
       .select('*, tags:post_tags(tags(id, name, slug))')
       .in('id', postIds)
+      .eq('is_featured', false)
       .lte('published_at', new Date().toISOString())
       .order('published_at', { ascending: false });
 
@@ -296,24 +303,6 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
   } catch {
     console.warn(`[supabase] getPostsByTag("${tagSlug}") failed — using demo data`);
     return DEMO_POSTS;
-  }
-}
-
-/** Get a single post by slug (allows scheduled posts so direct links work) */
-export async function getPostBySlug(slug: string): Promise<Post | null> {
-  try {
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*, tags:post_tags(tags(id, name, slug))')
-      .eq('slug', slug)
-      .single();
-
-    if (error) throw error;
-    if (!data) return null;
-    return { ...(data as Post), tags: normalizeTags((data as Post).tags) };
-  } catch {
-    console.warn(`[supabase] getPostBySlug("${slug}") failed — looking in demo data`);
-    return DEMO_POSTS.find(p => p.slug === slug) || DEMO_FEATURED;
   }
 }
 
