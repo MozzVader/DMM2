@@ -16,6 +16,7 @@
   <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
   <script is:inline src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/@enzedonline/quill-blot-formatter2@3.2.0/dist/index.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/quill2-image-drop-and-paste@1.1.0/dist/quill2-image-drop-and-paste.min.js"></script>
 
   <style is:inline>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -450,32 +451,44 @@
     .ql-editor .ql-align-center { text-align: center; }
     .ql-editor .ql-align-right { text-align: right; }
     .ql-editor .ql-align-justify { text-align: justify; }
-    /* BlotFormatter image alignment — covers both ql-align-* and ql-float-* */
+    /* Custom image alignment classes — float-based text wrapping */
+    .ql-editor img.ql-img-left {
+      float: left !important;
+      margin: 8px 15px 15px 0 !important;
+      max-width: 50%;
+    }
+    .ql-editor img.ql-img-right {
+      float: right !important;
+      margin: 8px 0 15px 15px !important;
+      max-width: 50%;
+    }
+    .ql-editor img.ql-img-center {
+      display: block !important;
+      float: none !important;
+      margin: 8px auto !important;
+    }
+    /* Also cover BlotFormatter native classes (if they ever start working) */
     .ql-editor img.ql-align-left,
     .ql-editor img.ql-float-left {
       float: left !important;
       margin: 0 15px 15px 0 !important;
       max-width: 50%;
-      clear: both;
     }
     .ql-editor img.ql-align-right,
     .ql-editor img.ql-float-right {
       float: right !important;
       margin: 0 0 15px 15px !important;
       max-width: 50%;
-      clear: both;
     }
     .ql-editor img.ql-align-center,
     .ql-editor img.ql-float-center {
       display: block !important;
       margin: 8px auto !important;
       float: none !important;
-      clear: both;
     }
     .ql-editor img.ql-align-justify {
       display: block;
       margin: 8px auto;
-      clear: both;
     }
     /* BlotFormatter action bar */
     .blot-formatter__toolbar {
@@ -517,6 +530,31 @@
     .blot-formatter__resize-handle:after {
       border-color: var(--neon-purple) !important;
     }
+
+    /* Custom image align toolbar */
+    .ql-custom-img-align-group {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 1px;
+      padding: 0 4px;
+      border-left: 1px solid #ccc;
+      margin: 0 2px;
+    }
+    .ql-custom-img-align-group button {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: none !important;
+      border: none !important;
+      color: var(--text-secondary) !important;
+      cursor: pointer !important;
+      border-radius: 4px;
+    }
+    .ql-custom-img-align-group button:hover { color: var(--text-primary) !important; background: var(--bg-hover) !important; }
+    .ql-custom-img-align-group button.active { color: var(--neon-purple) !important; }
 
     /* Image URL modal */
     .img-url-modal-overlay {
@@ -1691,6 +1729,7 @@ var autoSaveInterval = null;
 document.addEventListener('DOMContentLoaded', () => {
   // Register QuillBlotFormatter (blot-formatter2)
   Quill.register('modules/blotFormatter', QuillBlotFormatter2.default);
+  Quill.register('modules/imageDropAndPaste', QuillImageDropAndPaste.default);
 
   quill = new Quill('#editor-container', {
     theme: 'snow',
@@ -1699,6 +1738,20 @@ document.addEventListener('DOMContentLoaded', () => {
       blotFormatter: {
         overlay: {
           style: { position: 'absolute', border: '2px solid var(--neon-purple)', background: 'rgba(191,90,242,0.08)' }
+        }
+      },
+      imageDropAndPaste: {
+        upload: function(file) {
+          const range = quill.getSelection(true);
+          const ext = file.name ? file.name.split('.').pop() : 'png';
+          const filename = 'q-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+          sb.storage.from(BUCKET).upload(filename, file, { cacheControl: '31536000', upsert: false })
+            .then(({ data, error }) => {
+              if (error) { showToast('Error al subir imagen: ' + error.message, 'error'); return; }
+              const { data: { publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(data.path);
+              quill.insertEmbed(range.index, 'image', publicUrl);
+              showToast('Imagen insertada');
+            });
         }
       },
       toolbar: {
@@ -1727,14 +1780,37 @@ document.addEventListener('DOMContentLoaded', () => {
   const imgUrlOverlay = document.getElementById('imgUrlModalOverlay');
   const imgUrlInput = document.getElementById('imgUrlInput');
 
-  // Add a toolbar button for URL image insertion via custom HTML
+  // Helper: find the <img> element near cursor or the currently clicked image
+  function getSelectedImage() {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return null;
+    let node = sel.anchorNode;
+    // Walk up to find an img inside .ql-editor
+    while (node && node !== quill.root) {
+      if (node.tagName === 'IMG' && quill.root.contains(node)) return node;
+      node = node.parentNode;
+    }
+    return null;
+  }
+
+  // Helper: toggle alignment class on an image
+  function alignImage(align) {
+    const img = getSelectedImage();
+    if (!img) { showToast('Seleccioná una imagen primero', 'error'); return; }
+    img.classList.remove('ql-img-left', 'ql-img-center', 'ql-img-right');
+    if (align) img.classList.add('ql-img-' + align);
+    // Trigger Quill to recognize the change
+    quill.update('user');
+  }
+
+  // Add custom buttons: image URL insert + image alignment group
   const toolbar = document.querySelector('.ql-toolbar');
   if (toolbar) {
+    // --- URL image button ---
     const urlBtn = document.createElement('button');
     urlBtn.className = 'ql-custom-image-url';
     urlBtn.setAttribute('title', 'Insertar imagen por URL');
     urlBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2" d="M3.5 7.5c2-3 6-3 8 0s6 3 8 0M3.5 12.5c2-3 6-3 8 0s6 3 8 0M3.5 17.5c2-3 6-3 8 0s6 3 8 0" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    // Insert right after the default image button
     const imgBtn = toolbar.querySelector('.ql-image');
     if (imgBtn && imgBtn.parentNode) {
       imgBtn.parentNode.insertBefore(urlBtn, imgBtn.nextSibling);
@@ -1744,6 +1820,41 @@ document.addEventListener('DOMContentLoaded', () => {
       imgUrlInput.value = '';
       setTimeout(() => imgUrlInput.focus(), 100);
     });
+
+    // --- Image alignment group ---
+    const alignGroup = document.createElement('span');
+    alignGroup.className = 'ql-custom-img-align-group';
+
+    const alignDefs = [
+      { cls: 'ql-img-align-left', title: 'Imagen a la izquierda (texto envuelve)', svg: '<svg viewBox="0 0 24 24" width="16" height="16"><rect x="1" y="3" width="8" height="7" rx="1" fill="currentColor" opacity="0.6"/><rect x="1" y="14" width="8" height="7" rx="1" fill="currentColor" opacity="0.6"/><rect x="12" y="5" width="11" height="14" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>' },
+      { cls: 'ql-img-align-center', title: 'Imagen centrada', svg: '<svg viewBox="0 0 24 24" width="16" height="16"><rect x="6.5" y="5" width="11" height="14" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>' },
+      { cls: 'ql-img-align-right', title: 'Imagen a la derecha (texto envuelve)', svg: '<svg viewBox="0 0 24 24" width="16" height="16"><rect x="15" y="3" width="8" height="7" rx="1" fill="currentColor" opacity="0.6"/><rect x="15" y="14" width="8" height="7" rx="1" fill="currentColor" opacity="0.6"/><rect x="1" y="5" width="11" height="14" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>' },
+    ];
+
+    const alignMap = { 'ql-img-align-left': 'left', 'ql-img-align-center': 'center', 'ql-img-align-right': 'right' };
+
+    alignDefs.forEach(def => {
+      const btn = document.createElement('button');
+      btn.className = def.cls;
+      btn.setAttribute('title', def.title);
+      btn.innerHTML = def.svg;
+      btn.addEventListener('click', () => {
+        const img = getSelectedImage();
+        if (!img) { showToast('Click en una imagen primero para alinearla', 'error'); return; }
+        // Toggle: if already this alignment, remove it
+        if (img.classList.contains('ql-img-' + alignMap[def.cls])) {
+          img.classList.remove('ql-img-left', 'ql-img-center', 'ql-img-right');
+        } else {
+          img.classList.remove('ql-img-left', 'ql-img-center', 'ql-img-right');
+          img.classList.add('ql-img-' + alignMap[def.cls]);
+        }
+        quill.update('user');
+      });
+      alignGroup.appendChild(btn);
+    });
+
+    // Insert the align group at the end of the toolbar
+    toolbar.appendChild(alignGroup);
   }
 
   // URL modal insert
