@@ -1747,7 +1747,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const url = imgUrlInput.value.trim();
     if (url) {
       const range = quill.getSelection(true);
-      quill.insertEmbed(range.index, 'image', { src: url, alt: '' });
+      quill.insertEmbed(range.index, 'image', url);
       imgUrlOverlay.classList.remove('active');
       showToast('Imagen insertada');
     }
@@ -1810,7 +1810,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       const { data: { publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(data.path);
-      quill.insertEmbed(range.index, 'image', { src: publicUrl, alt: '' });
+      quill.insertEmbed(range.index, 'image', publicUrl);
       showToast('Imagen insertada en el post');
     };
     reader.readAsArrayBuffer(file);
