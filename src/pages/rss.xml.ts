@@ -1,6 +1,5 @@
 import rss from '@astrojs/rss';
 import { getAllPostsForPagination } from '../lib/supabase';
-import { getStaticPaths as getBaseStaticPaths } from './posts/[...page].astro';
 import type { APIContext } from 'astro';
 
 export async function GET(context: APIContext) {

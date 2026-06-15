@@ -5,12 +5,14 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  ogType?: string;
 }
 
 const {
   title = 'Dos Minutos Más',
   description = 'Escribiendo sobre cosas que pasan cuando te quedas dos minutos más.',
   ogImage,
+  ogType = 'website',
 } = Astro.props;
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
@@ -27,7 +29,7 @@ const resolvedOgImage = ogImage || `${Astro.site}logo.png`;
     <link rel="canonical" href={canonicalUrl.href} />
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl.href} />
@@ -39,6 +41,8 @@ const resolvedOgImage = ogImage || `${Astro.site}logo.png`;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={resolvedOgImage} />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href={`${(import.meta.env.BASE_URL || '/').replace(/\/$/, '')}/favicon.svg`} />
   </head>

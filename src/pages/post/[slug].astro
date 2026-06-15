@@ -38,7 +38,7 @@ const supabaseUrl = import.meta.env.SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
 ---
 
-<BaseLayout title={`${post.title} — Dos Minutos Más`} description={metaDescription} ogImage={post.featured_image || undefined}>
+<BaseLayout title={`${post.title} — Dos Minutos Más`} description={metaDescription} ogImage={post.featured_image || undefined} ogType="article">
   <Header slot="header" />
 
   <div class="container">
@@ -161,7 +161,7 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
     var pageTitle = document.title;
 
     document.getElementById('shareFb').href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(pageUrl);
-    document.getElementById('shareTw').href = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(pageUrl) + '&text=' + encodeURIComponent(pageTitle);
+    document.getElementById('shareTw').href = 'https://x.com/intent/tweet?url=' + encodeURIComponent(pageUrl) + '&text=' + encodeURIComponent(pageTitle);
     document.getElementById('shareWa').href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(pageTitle + ' ' + pageUrl);
   })();
 </script>
