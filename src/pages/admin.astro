@@ -9,12 +9,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — Dos Minutos Más</title>
-  <link rel="icon" type="image/svg+xml" href={(import.meta.env.BASE_URL || '/') + 'favicon.svg'} />
-  <link rel="icon" type="image/png" href={(import.meta.env.BASE_URL || '/') + 'favicon.ico'} />
+  <link rel="icon" type="image/svg+xml" href={(import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/favicon.svg'} />
+  <link rel="icon" type="image/png" href={(import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/favicon.ico'} />
   <script is:inline src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
-  <script is:inline src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+  <script is:inline src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/@enzedonline/quill-blot-formatter2@3.2.0/dist/index.js"></script>
   <style is:inline>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -444,12 +445,52 @@
     .ql-snow .ql-tooltip { background: var(--bg-card); border: 1px solid var(--border-input); color: var(--text-primary); box-shadow: var(--shadow-card); }
     .ql-snow .ql-tooltip input[type=text] { background: var(--bg-input); border: 1px solid var(--border-input); color: var(--text-primary); }
     .ql-snow .ql-tooltip a { color: var(--neon-purple); }
-    .ql-editor img { max-width: 100%; height: auto; margin: 8px 0; }
+    .ql-editor img { max-width: 100%; height: auto; margin: 8px 0; cursor: pointer; }
     .ql-editor .ql-align-center { text-align: center; }
     .ql-editor .ql-align-right { text-align: right; }
     .ql-editor .ql-align-justify { text-align: justify; }
     .ql-editor img.ql-align-center { display: block; margin: 8px auto; }
     .ql-editor img.ql-align-right { display: block; margin: 8px 0 8px auto; }
+    /* BlotFormatter action bar */
+    .blot-formatter__toolbar {
+      background: var(--bg-card) !important;
+      border: 1px solid var(--border-input) !important;
+      border-radius: 6px !important;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.4) !important;
+      padding: 4px !important;
+    }
+    .blot-formatter__toolbar button {
+      background: var(--bg-input) !important;
+      border: none !important;
+      color: var(--text-primary) !important;
+      padding: 4px 6px !important;
+      cursor: pointer !important;
+      border-radius: 4px !important;
+    }
+    .blot-formatter__toolbar button:hover {
+      background: var(--bg-hover) !important;
+      color: var(--neon-purple) !important;
+    }
+    .blot-formatter__toolbar button.active {
+      background: var(--neon-purple) !important;
+      color: #fff !important;
+    }
+    .blot-formatter__action {
+      stroke: var(--text-secondary) !important;
+      fill: var(--text-secondary) !important;
+    }
+    .blot-formatter__action:hover,
+    .blot-formatter__toolbar button.active .blot-formatter__action {
+      stroke: var(--neon-purple) !important;
+      fill: var(--neon-purple) !important;
+    }
+    /* BlotFormatter resize handle */
+    .blot-formatter__resize-handle {
+      background: var(--neon-purple) !important;
+    }
+    .blot-formatter__resize-handle:after {
+      border-color: var(--neon-purple) !important;
+    }
 
     /* Editor actions */
     .editor-actions {
@@ -1242,6 +1283,8 @@ document.getElementById('uploadArea').addEventListener('drop', async (e) => {
 });
 
 document.getElementById('imageUpload').addEventListener('change', async (e) => {
+  // Skip if this upload was triggered from Quill editor
+  if (e.target.getAttribute('data-for-quill')) return;
   const file = e.target.files[0];
   if (file) await uploadImage(file);
 });
@@ -1499,17 +1542,20 @@ document.getElementById('newTagName').addEventListener('keydown', (e) => {
 
 async function deleteTag(id, name) {
   // Delete post_tags references first, then the tag itself
-  const { error: errorRel } = await sb.from('post_tags').delete().eq('tag_id', id);
-  if (errorRel) { showToast('Error al eliminar referencias: ' + errorRel.message, 'error'); return; }
+  await sb.from('post_tags').delete().eq('tag_id', id);
 
-  const { error } = await sb.from('tags').delete().eq('id', id);
+  const { data, error } = await sb.from('tags').delete().eq('id', id);
   if (error) {
-    showToast('Error: ' + error.message, 'error');
-  } else {
-    showToast(`Tag "${name}" eliminado`);
-    loadTagsManager();
-    loadTags();
+    showToast('Error al eliminar: ' + error.message, 'error');
+    return;
   }
+  if (data === null) {
+    showToast('No se pudo eliminar. ¿Algún post lo está usando? Verificá las RLS policies en Supabase.', 'error');
+    return;
+  }
+  showToast(`Tag "${name}" eliminado`);
+  loadTagsManager();
+  loadTags();
 }
 
 // ===== AUTO-SAVE TO LOCALSTORAGE =====
@@ -1559,10 +1605,18 @@ var autoSaveInterval = null;
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
+  // Register QuillBlotFormatter (blot-formatter2)
+  Quill.register('modules/blotFormatter', QuillBlotFormatter);
+
   quill = new Quill('#editor-container', {
     theme: 'snow',
     placeholder: 'Escribí el contenido del post...',
     modules: {
+      blotFormatter: {
+        overlay: {
+          style: { position: 'absolute', border: '2px solid var(--neon-purple)', background: 'rgba(191,90,242,0.08)' }
+        }
+      },
       toolbar: {
         container: [
           ['bold', 'italic', 'underline', 'strike'],
@@ -1575,15 +1629,59 @@ document.addEventListener('DOMContentLoaded', () => {
         ],
         handlers: {
           image: function() {
-            const range = quill.getSelection(true);
-            const value = prompt('Ingresá la URL de la imagen:');
-            if (value) {
-              quill.clipboard.dangerouslyPasteHTML(range.index, '<img src="' + value + '" class="ql-align-center" />');
+            const choice = prompt('Elegí una opción:\n1 - Subir imagen desde tu PC\n2 - Insertar URL de imagen', '1');
+            if (choice === '1' || choice === null) {
+              // Open file picker (uses the existing hidden input)
+              const fileInput = document.getElementById('imageUpload');
+              fileInput.setAttribute('data-for-quill', 'true');
+              fileInput.click();
+            } else if (choice === '2') {
+              const range = quill.getSelection(true);
+              const value = prompt('Ingresá la URL de la imagen:');
+              if (value) {
+                quill.clipboard.dangerouslyPasteHTML(range.index, '<img src="' + value + '" />');
+              }
             }
           }
         }
       }
     }
+  });
+
+  // Handle image upload when triggered from Quill editor
+  document.getElementById('imageUpload').addEventListener('change', function handler(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!this.getAttribute('data-for-quill')) return;
+    // Remove the flag
+    this.removeAttribute('data-for-quill');
+    // Reset input
+    this.value = '';
+
+    const range = quill.getSelection(true);
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      // Show loading state
+      const loader = quill.getText(range.index, range.length);
+      quill.insertText(range.index, 'Subiendo imagen...', { 'color': '#888' });
+
+      const ext = file.name.split('.').pop();
+      const filename = 'q-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+      const { data, error } = await sb.storage.from(BUCKET).upload(filename, file, { cacheControl: '31536000', upsert: false });
+
+      // Remove loading text
+      quill.deleteText(range.index, 'Subiendo imagen...'.length);
+
+      if (error) {
+        showToast('Error al subir imagen: ' + error.message, 'error');
+        quill.insertText(range.index, '[Error al subir imagen]', { 'color': 'var(--neon-red)' });
+        return;
+      }
+      const { data: { publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(data.path);
+      quill.clipboard.dangerouslyPasteHTML(range.index, '<img src="' + publicUrl + '" />');
+      showToast('Imagen insertada en el post');
+    };
+    reader.readAsArrayBuffer(file);
   });
 
   // ===== ADD TOOLTIPS TO TOOLBAR BUTTONS =====
