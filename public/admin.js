@@ -44,15 +44,18 @@ if (screen === 'editor') {
   if (editingIsDraft) {
     document.getElementById('editorTitle').textContent = 'Editar borrador';
     saveBtn.textContent = 'Publicar';
-    draftBtn.style.display = 'none';
+    draftBtn.style.display = '';
+    draftBtn.textContent = 'Actualizar borrador';
   } else if (editingPostId) {
     document.getElementById('editorTitle').textContent = 'Editar post';
     saveBtn.textContent = 'Guardar post';
     draftBtn.style.display = '';
+    draftBtn.textContent = 'Guardar borrador';
   } else {
     document.getElementById('editorTitle').textContent = 'Nuevo post';
     saveBtn.textContent = 'Guardar post';
     draftBtn.style.display = '';
+    draftBtn.textContent = 'Guardar borrador';
   }
 }
 }
