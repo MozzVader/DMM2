@@ -236,6 +236,44 @@ body {
   border-color: var(--neon-purple, #a855f7);
 }
 
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 8px 0;
+}
+
+.pagination-btn {
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color, #2a2a2a);
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  border-color: var(--neon-purple, #a855f7);
+  color: var(--neon-purple, #a855f7);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.pagination-info {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  min-width: 120px;
+  text-align: center;
+}
+
 .posts-table {
   width: 100%;
   border-collapse: collapse;

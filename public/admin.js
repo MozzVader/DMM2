@@ -12,6 +12,8 @@ let editingPostId = null;
 let editingIsDraft = false;
 let currentFilter = 'all';
 let allPosts = [];
+let currentPage = 1;
+const PAGE_SIZE = 30;
 let selectedTags = new Set();
 let quill = null;
 
@@ -108,6 +110,7 @@ renderPosts();
 
 function renderPosts() {
 const tbody = document.getElementById('postsTableBody');
+const paginationEl = document.getElementById('pagination');
 let filtered = allPosts;
 
 if (currentFilter === 'published') {
@@ -118,13 +121,20 @@ if (currentFilter === 'published') {
   filtered = allPosts.filter(p => !p.is_draft && new Date(p.published_at) > new Date());
 }
 
+const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+if (currentPage > totalPages) currentPage = totalPages || 1;
+
 if (filtered.length === 0) {
   const labels = { all: 'posts', published: 'posts publicados', draft: 'borradores', scheduled: 'posts programados' };
   tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-secondary);">No hay ${labels[currentFilter]}</td></tr>`;
+  paginationEl.innerHTML = '';
   return;
 }
 
-tbody.innerHTML = filtered.map(post => {
+const start = (currentPage - 1) * PAGE_SIZE;
+const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+tbody.innerHTML = pageItems.map(post => {
   const isScheduled = !post.is_draft && new Date(post.published_at) > new Date();
   const isDraft = post.is_draft;
   const rowClass = isDraft ? 'draft-row' : (isScheduled ? 'scheduled-row' : '');
@@ -144,6 +154,22 @@ tbody.innerHTML = filtered.map(post => {
     </td>
   </tr>`;
 }).join('');
+
+// Pagination controls
+if (totalPages <= 1) {
+  paginationEl.innerHTML = '';
+  return;
+}
+
+const from = start + 1;
+const to = Math.min(start + PAGE_SIZE, filtered.length);
+paginationEl.innerHTML = `
+  <button class="pagination-btn" id="pagPrev" ${currentPage === 1 ? 'disabled' : ''}>← Anterior</button>
+  <span class="pagination-info">${from}–${to} de ${filtered.length}</span>
+  <button class="pagination-btn" id="pagNext" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente →</button>`;
+
+document.getElementById('pagPrev').addEventListener('click', () => { currentPage--; renderPosts(); });
+document.getElementById('pagNext').addEventListener('click', () => { currentPage++; renderPosts(); });
 }
 
 // ===== FILTERS =====
@@ -153,6 +179,7 @@ document.getElementById('filterBar').addEventListener('click', (e) => {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   currentFilter = btn.dataset.filter;
+  currentPage = 1;
   renderPosts();
 });
 
