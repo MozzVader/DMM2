@@ -728,6 +728,14 @@ function getContent() {
   return quill ? quill.root.innerHTML : '';
 }
 
+function formatHTML(html) {
+  return html
+    .replace(/<\/(p|h[1-6]|div|ul|ol|li|blockquote|pre|figure|figcaption)>/gi, '$&\n')
+    .replace(/<(p|h[1-6]|div|ul|ol|li|blockquote|pre|figure|figcaption)[\s>]/gi, '\n$&')
+    .replace(/\n{2,}/g, '\n')
+    .trim();
+}
+
 // ===== HTML TOGGLE =====
 document.getElementById('htmlToggleBtn').addEventListener('click', () => {
   htmlMode = !htmlMode;
@@ -736,7 +744,7 @@ document.getElementById('htmlToggleBtn').addEventListener('click', () => {
   const btn = document.getElementById('htmlToggleBtn');
 
   if (htmlMode) {
-    htmlEl.value = quill.root.innerHTML;
+    htmlEl.value = formatHTML(quill.root.innerHTML);
     editorEl.style.display = 'none';
     htmlEl.style.display = '';
     btn.classList.add('active');
