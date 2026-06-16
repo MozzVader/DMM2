@@ -221,6 +221,7 @@ document.getElementById('removeImageBtn').style.display = 'none';
 document.getElementById('toggleFeatured').classList.remove('active');
 selectedTags.clear();
 if (quill) quill.setContents([]);
+if (htmlMode) document.getElementById('htmlToggleBtn').click();
 }
 
 // ===== TAGS =====
@@ -359,7 +360,7 @@ const badge_color = document.getElementById('postBadgeColor').value;
 const is_featured = document.getElementById('toggleFeatured').classList.contains('active');
 const featured_image = document.getElementById('postImageUrl').value.trim() || null;
 const excerpt = document.getElementById('postExcerpt').value.trim() || null;
-const content = quill ? quill.root.innerHTML : '';
+const content = getContent();
 const dateInput = document.getElementById('postDate').value;
 const published_at = dateInput ? new Date(dateInput).toISOString() : new Date().toISOString();
 
@@ -432,7 +433,7 @@ const badge = document.getElementById('postBadge').value;
 const badge_color = document.getElementById('postBadgeColor').value;
 const featured_image = document.getElementById('postImageUrl').value.trim() || null;
 const excerpt = document.getElementById('postExcerpt').value.trim() || null;
-const content = quill ? quill.root.innerHTML : '';
+const content = getContent();
 
 if (!title) { showToast('El título es obligatorio para guardar borrador', 'error'); return; }
 const finalSlug = slug || slugify(title);
@@ -720,6 +721,34 @@ localStorage.removeItem('dmm_draft');
 
 // Auto-save every 30 seconds when in editor
 var autoSaveInterval = null;
+let htmlMode = false;
+
+function getContent() {
+  if (htmlMode) return document.getElementById('htmlEditor').value;
+  return quill ? quill.root.innerHTML : '';
+}
+
+// ===== HTML TOGGLE =====
+document.getElementById('htmlToggleBtn').addEventListener('click', () => {
+  htmlMode = !htmlMode;
+  const editorEl = document.getElementById('editor-container');
+  const htmlEl = document.getElementById('htmlEditor');
+  const btn = document.getElementById('htmlToggleBtn');
+
+  if (htmlMode) {
+    htmlEl.value = quill.root.innerHTML;
+    editorEl.style.display = 'none';
+    htmlEl.style.display = '';
+    btn.classList.add('active');
+    btn.textContent = 'Visual';
+  } else {
+    quill.root.innerHTML = htmlEl.value;
+    htmlEl.style.display = 'none';
+    editorEl.style.display = '';
+    btn.classList.remove('active');
+    btn.textContent = 'HTML';
+  }
+});
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -957,7 +986,7 @@ document.addEventListener('click', (e) => {
 // ===== PREVIEW MODAL =====
 document.getElementById('previewBtn').addEventListener('click', () => {
   const title = document.getElementById('postTitle').value.trim();
-  const content = quill ? quill.root.innerHTML : '';
+  const content = getContent();
   const excerpt = document.getElementById('postExcerpt').value.trim();
   const image = document.getElementById('postImageUrl').value.trim();
   const date = document.getElementById('postDate').value;
