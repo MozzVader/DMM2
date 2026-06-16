@@ -306,9 +306,10 @@ try {
 
     showToast('Post actualizado correctamente');
   } else {
-    // INSERT
+    // INSERT — new post automatically becomes featured
+    await sb.from('posts').update({ is_featured: false }).eq('is_featured', true);
     const { data: newPost, error } = await sb.from('posts').insert({
-      title, slug, badge, badge_color, is_featured, featured_image, excerpt, content, published_at
+      title, slug, badge, badge_color, is_featured: true, featured_image, excerpt, content, published_at
     }).select().single();
 
     if (error) throw error;
