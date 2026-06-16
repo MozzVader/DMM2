@@ -9,6 +9,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentUser = null;
 let allTags = [];
 let editingPostId = null;
+let editingIsDraft = false;
 let selectedTags = new Set();
 let quill = null;
 
@@ -37,7 +38,22 @@ return new Date(dateStr).toLocaleDateString('es-AR', {
 function showScreen(screen) {
 document.getElementById('dashboardScreen').classList.toggle('hidden', screen !== 'dashboard');
 document.getElementById('editorScreen').classList.toggle('active', screen === 'editor');
-document.getElementById('editorTitle').textContent = editingPostId ? 'Editar post' : 'Nuevo post';
+if (screen === 'editor') {
+  const saveBtn = document.getElementById('savePostBtn');
+  const draftBtn = document.getElementById('saveDraftBtn');
+  if (editingIsDraft) {
+    document.getElementById('editorTitle').textContent = 'Editar borrador';
+    saveBtn.textContent = 'Publicar';
+    draftBtn.style.display = 'none';
+  } else if (editingPostId) {
+    document.getElementById('editorTitle').textContent = 'Editar post';
+    saveBtn.textContent = 'Guardar post';
+    draftBtn.style.display = '';
+  } else {
+    document.getElementById('editorTitle').textContent = 'Nuevo post';
+    saveBtn.textContent = 'Guardar post';
+    draftBtn.style.display = '';
+  }
 }
 
 // ===== AUTH =====
@@ -86,13 +102,18 @@ if (posts.length === 0) {
 }
 
 tbody.innerHTML = posts.map(post => {
-  const isScheduled = new Date(post.published_at) > new Date();
+  const isScheduled = !post.is_draft && new Date(post.published_at) > new Date();
+  const isDraft = post.is_draft;
+  const rowClass = isDraft ? 'draft-row' : (isScheduled ? 'scheduled-row' : '');
+  let badge = '';
+  if (isDraft) badge = ' <span class="draft-badge">Borrador</span>';
+  else if (isScheduled) badge = ' <span class="scheduled-badge">Programado</span>';
   return `
-  <tr class="${isScheduled ? 'scheduled-row' : ''}">
-    <td data-label="">${post.is_featured ? '<span class="featured-star">★</span>' : ''}</td>
-    <td class="post-title-cell" data-label=""><a href="${BASE}/post/${post.slug}" target="_blank">${post.title}</a>${isScheduled ? ' <span class="scheduled-badge">Programado</span>' : ''}</td>
+  <tr class="${rowClass}">
+    <td data-label="">${!isDraft && post.is_featured ? '<span class="featured-star">★</span>' : ''}</td>
+    <td class="post-title-cell" data-label=""><a href="${BASE}/post/${post.slug}" target="_blank">${post.title}</a>${badge}</td>
     <td data-label="Badge"><span class="badge-sm ${post.badge_color || 'purple'}">${post.badge || 'General'}</span></td>
-    <td class="date-cell" data-label="Fecha">${formatDate(post.published_at)}</td>
+    <td class="date-cell" data-label="Fecha">${isDraft ? '—' : formatDate(post.published_at)}</td>
     <td class="actions-cell" data-label="">
       <button class="btn btn-sm" onclick="editPost('${post.id}')">Editar</button>
       <button class="btn btn-sm" onclick="clonePost('${post.id}')">Clonar</button>
@@ -105,6 +126,7 @@ tbody.innerHTML = posts.map(post => {
 // ===== NEW POST =====
 document.getElementById('newPostBtn').addEventListener('click', () => {
 editingPostId = null;
+editingIsDraft = false;
 clearEditor();
 loadTags();
 loadTagsManager();
@@ -290,35 +312,42 @@ btn.textContent = 'Guardando...';
 
 try {
   if (editingPostId) {
-    // UPDATE
-    const { error } = await sb.from('posts').update({
-      title, slug, badge, badge_color, is_featured, featured_image, excerpt, content, published_at,
-      updated_at: new Date().toISOString()
-    }).eq('id', editingPostId);
-
-    if (error) throw error;
-
-    // Update tags
-    await sb.from('post_tags').delete().eq('post_id', editingPostId);
-    for (const tagId of selectedTags) {
-      await sb.from('post_tags').insert({ post_id: editingPostId, tag_id: tagId });
+    if (editingIsDraft) {
+      // PUBLISH DRAFT → becomes a real post (auto-featured)
+      await sb.from('posts').update({ is_featured: false }).eq('is_featured', true);
+      const { error } = await sb.from('posts').update({
+        title, slug, badge, badge_color, is_featured: true, featured_image, excerpt, content,
+        published_at: new Date().toISOString(), is_draft: false, updated_at: new Date().toISOString()
+      }).eq('id', editingPostId);
+      if (error) throw error;
+      await sb.from('post_tags').delete().eq('post_id', editingPostId);
+      for (const tagId of selectedTags) {
+        await sb.from('post_tags').insert({ post_id: editingPostId, tag_id: tagId });
+      }
+      showToast('Borrador publicado correctamente');
+    } else {
+      // UPDATE existing post
+      const { error } = await sb.from('posts').update({
+        title, slug, badge, badge_color, is_featured, featured_image, excerpt, content, published_at,
+        updated_at: new Date().toISOString()
+      }).eq('id', editingPostId);
+      if (error) throw error;
+      await sb.from('post_tags').delete().eq('post_id', editingPostId);
+      for (const tagId of selectedTags) {
+        await sb.from('post_tags').insert({ post_id: editingPostId, tag_id: tagId });
+      }
+      showToast('Post actualizado correctamente');
     }
-
-    showToast('Post actualizado correctamente');
   } else {
     // INSERT — new post automatically becomes featured
     await sb.from('posts').update({ is_featured: false }).eq('is_featured', true);
     const { data: newPost, error } = await sb.from('posts').insert({
-      title, slug, badge, badge_color, is_featured: true, featured_image, excerpt, content, published_at
+      title, slug, badge, badge_color, is_featured: true, is_draft: false, featured_image, excerpt, content, published_at
     }).select().single();
-
     if (error) throw error;
-
-    // Insert tags
     for (const tagId of selectedTags) {
       await sb.from('post_tags').insert({ post_id: newPost.id, tag_id: tagId });
     }
-
     showToast('Post creado correctamente');
   }
 
@@ -331,7 +360,63 @@ try {
   showToast('Error: ' + err.message, 'error');
 } finally {
   btn.disabled = false;
-  btn.textContent = 'Guardar post';
+  btn.textContent = editingIsDraft ? 'Publicar' : 'Guardar post';
+}
+});
+
+// ===== SAVE DRAFT =====
+document.getElementById('saveDraftBtn').addEventListener('click', async () => {
+const title = document.getElementById('postTitle').value.trim();
+const slug = document.getElementById('postSlug').value.trim();
+const badge = document.getElementById('postBadge').value;
+const badge_color = document.getElementById('postBadgeColor').value;
+const featured_image = document.getElementById('postImageUrl').value.trim() || null;
+const excerpt = document.getElementById('postExcerpt').value.trim() || null;
+const content = quill ? quill.root.innerHTML : '';
+
+if (!title) { showToast('El título es obligatorio para guardar borrador', 'error'); return; }
+const finalSlug = slug || slugify(title);
+
+const btn = document.getElementById('saveDraftBtn');
+btn.disabled = true;
+btn.textContent = 'Guardando...';
+
+try {
+  if (editingPostId && editingIsDraft) {
+    // UPDATE existing draft
+    const { error } = await sb.from('posts').update({
+      title, slug: finalSlug, badge, badge_color, featured_image, excerpt, content,
+      updated_at: new Date().toISOString()
+    }).eq('id', editingPostId);
+    if (error) throw error;
+    await sb.from('post_tags').delete().eq('post_id', editingPostId);
+    for (const tagId of selectedTags) {
+      await sb.from('post_tags').insert({ post_id: editingPostId, tag_id: tagId });
+    }
+    showToast('Borrador actualizado');
+  } else {
+    // INSERT new draft
+    const { data: newPost, error } = await sb.from('posts').insert({
+      title, slug: finalSlug, badge, badge_color, is_featured: false, is_draft: true,
+      featured_image, excerpt, content, published_at: null
+    }).select().single();
+    if (error) throw error;
+    for (const tagId of selectedTags) {
+      await sb.from('post_tags').insert({ post_id: newPost.id, tag_id: tagId });
+    }
+    showToast('Borrador guardado');
+  }
+
+  showScreen('dashboard');
+  loadDashboard();
+  loadTagsManager();
+  clearDraft();
+  if (autoSaveInterval) { clearInterval(autoSaveInterval); autoSaveInterval = null; }
+} catch (err) {
+  showToast('Error: ' + err.message, 'error');
+} finally {
+  btn.disabled = false;
+  btn.textContent = 'Guardar borrador';
 }
 });
 
@@ -342,6 +427,8 @@ clearEditor();
 
 const { data: post, error } = await sb.from('posts').select('*').eq('id', id).single();
 if (error) { showToast('Error al cargar el post', 'error'); return; }
+
+editingIsDraft = !!post.is_draft;
 
 document.getElementById('postTitle').value = post.title;
 document.getElementById('postSlug').value = post.slug;

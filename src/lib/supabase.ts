@@ -185,6 +185,7 @@ export async function getAllPosts(): Promise<Post[]> {
       .from('posts')
       .select('*, tags:post_tags(tags(id, name, slug))')
       .eq('is_featured', false)
+      .eq('is_draft', false)
       .lte('published_at', new Date().toISOString())
       .order('published_at', { ascending: false });
 
@@ -206,6 +207,7 @@ export async function getAllPostsForPagination(): Promise<Post[]> {
     const { data, error } = await supabase
       .from('posts')
       .select('*, tags:post_tags(tags(id, name, slug))')
+      .eq('is_draft', false)
       .lte('published_at', new Date().toISOString())
       .order('published_at', { ascending: false });
 
@@ -227,6 +229,7 @@ export async function getFeaturedPost(): Promise<Post | null> {
       .from('posts')
       .select('*, tags:post_tags(tags(id, name, slug))')
       .eq('is_featured', true)
+      .eq('is_draft', false)
       .lte('published_at', new Date().toISOString())
       .order('published_at', { ascending: false })
       .limit(1)
@@ -291,6 +294,7 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
       .select('*, tags:post_tags(tags(id, name, slug))')
       .in('id', postIds)
       .eq('is_featured', false)
+      .eq('is_draft', false)
       .lte('published_at', new Date().toISOString())
       .order('published_at', { ascending: false });
 
@@ -312,6 +316,7 @@ export async function getArchiveData(): Promise<{ year: number; count: number }[
     const { data, error } = await supabase
       .from('posts')
       .select('published_at')
+      .eq('is_draft', false)
       .lte('published_at', new Date().toISOString());
 
     if (error) throw error;
@@ -341,6 +346,7 @@ export async function getPostsByYear(year: number): Promise<Post[]> {
       .select('*, tags:post_tags(tags(id, name, slug))')
       .gte('published_at', start)
       .lt('published_at', end)
+      .eq('is_draft', false)
       .lte('published_at', new Date().toISOString())
       .order('published_at', { ascending: false });
 

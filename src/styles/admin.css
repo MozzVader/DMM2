@@ -278,6 +278,24 @@ tr.scheduled-row {
   opacity: 0.75;
 }
 
+.draft-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.08);
+  color: var(--text-secondary);
+  margin-left: 6px;
+  vertical-align: middle;
+  border: 1px solid var(--border-subtle);
+}
+
+tr.draft-row {
+  opacity: 0.55;
+  font-style: italic;
+}
+
 /* ===== EDITOR ===== */
 .editor-screen {
   display: none;
