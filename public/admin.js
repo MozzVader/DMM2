@@ -493,10 +493,10 @@ async function clonePost(id) {
       badge: post.badge,
       badge_color: post.badge_color,
       is_featured: false,
-      featured_image: post.featured_image,
+      is_draft: true,
+      published_at: null,
       excerpt: post.excerpt,
-      content: post.content,
-      published_at: new Date().toISOString()
+      content: post.content
     }).select().single();
 
     if (cloneErr) throw cloneErr;
@@ -509,7 +509,7 @@ async function clonePost(id) {
       }
     }
 
-    showToast('Post clonado — editá el título y slug antes de publicar');
+    showToast('Borrador creado — editá el título, slug e imagen antes de publicar');
     loadDashboard();
   } catch (err) {
     showToast('Error al clonar: ' + err.message, 'error');
