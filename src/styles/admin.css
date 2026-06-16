@@ -206,6 +206,36 @@ body {
   font-size: 1.1rem;
 }
 
+.filter-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color, #2a2a2a);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+
+.filter-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--neon-purple, #a855f7);
+}
+
+.filter-btn.active {
+  background: var(--neon-purple, #a855f7);
+  color: #fff;
+  border-color: var(--neon-purple, #a855f7);
+}
+
 .posts-table {
   width: 100%;
   border-collapse: collapse;

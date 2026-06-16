@@ -10,6 +10,8 @@ let currentUser = null;
 let allTags = [];
 let editingPostId = null;
 let editingIsDraft = false;
+let currentFilter = 'all';
+let allPosts = [];
 let selectedTags = new Set();
 let quill = null;
 
@@ -100,12 +102,29 @@ if (error || !posts) {
   return;
 }
 
-if (posts.length === 0) {
-  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-secondary);">No hay posts aún</td></tr>';
+allPosts = posts;
+renderPosts();
+}
+
+function renderPosts() {
+const tbody = document.getElementById('postsTableBody');
+let filtered = allPosts;
+
+if (currentFilter === 'published') {
+  filtered = allPosts.filter(p => !p.is_draft && new Date(p.published_at) <= new Date());
+} else if (currentFilter === 'draft') {
+  filtered = allPosts.filter(p => p.is_draft);
+} else if (currentFilter === 'scheduled') {
+  filtered = allPosts.filter(p => !p.is_draft && new Date(p.published_at) > new Date());
+}
+
+if (filtered.length === 0) {
+  const labels = { all: 'posts', published: 'posts publicados', draft: 'borradores', scheduled: 'posts programados' };
+  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-secondary);">No hay ${labels[currentFilter]}</td></tr>`;
   return;
 }
 
-tbody.innerHTML = posts.map(post => {
+tbody.innerHTML = filtered.map(post => {
   const isScheduled = !post.is_draft && new Date(post.published_at) > new Date();
   const isDraft = post.is_draft;
   const rowClass = isDraft ? 'draft-row' : (isScheduled ? 'scheduled-row' : '');
@@ -126,6 +145,16 @@ tbody.innerHTML = posts.map(post => {
   </tr>`;
 }).join('');
 }
+
+// ===== FILTERS =====
+document.getElementById('filterBar').addEventListener('click', (e) => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.dataset.filter;
+  renderPosts();
+});
 
 // ===== NEW POST =====
 document.getElementById('newPostBtn').addEventListener('click', () => {

@@ -57,6 +57,12 @@ import '../styles/admin.css';
           <h3>Posts</h3>
           <button class="btn btn-primary" id="newPostBtn">+ Nuevo post</button>
         </div>
+        <div class="filter-bar" id="filterBar">
+          <button class="filter-btn active" data-filter="all">Todos</button>
+          <button class="filter-btn" data-filter="published">Publicados</button>
+          <button class="filter-btn" data-filter="draft">Borradores</button>
+          <button class="filter-btn" data-filter="scheduled">Programados</button>
+        </div>
         <table class="posts-table">
           <thead>
             <tr>
