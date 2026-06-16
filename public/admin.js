@@ -984,3 +984,4 @@ sb.auth.getSession().then(({ data: { session } }) => {
   }
 });
 });
+}
