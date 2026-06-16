@@ -55,6 +55,7 @@ if (screen === 'editor') {
     draftBtn.style.display = '';
   }
 }
+}
 
 // ===== AUTH =====
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -984,4 +985,3 @@ sb.auth.getSession().then(({ data: { session } }) => {
   }
 });
 });
-}
