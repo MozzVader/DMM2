@@ -750,7 +750,7 @@ document.getElementById('htmlToggleBtn').addEventListener('click', () => {
     btn.classList.add('active');
     btn.textContent = 'Visual';
   } else {
-    quill.root.innerHTML = htmlEl.value;
+    quill.root.innerHTML = htmlEl.value.replace(/>\s*\n\s*</g, '><');
     htmlEl.style.display = 'none';
     editorEl.style.display = '';
     btn.classList.remove('active');
