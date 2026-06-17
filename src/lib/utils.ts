@@ -28,6 +28,7 @@ export function sanitizeHTML(dirty: string): string {
       'href', 'target', 'rel', 'src', 'alt', 'title', 'class', 'id',
       'style', 'loading', 'width', 'height', 'data-img-align',
       'frameborder', 'allowfullscreen', 'colspan', 'rowspan',
+      'data-raw', 'contenteditable',
     ],
   });
 }

@@ -381,6 +381,31 @@ body {
 .ql-editor small, .ql-editor .ql-small { font-size: 0.8em; color: var(--text-secondary); }
 .ql-editor .ql-bright { color: #ffffff !important; }
 
+/* Quill raw-html snippet block: visual indicator in editor */
+.ql-editor .ql-raw-html {
+  border: 1px dashed rgba(191, 90, 242, 0.35);
+  border-radius: 6px;
+  padding: 2px;
+  margin: 8px 0;
+  position: relative;
+  user-select: none;
+}
+.ql-editor .ql-raw-html::before {
+  content: 'Snippet';
+  position: absolute;
+  top: -8px;
+  left: 10px;
+  background: var(--bg-input);
+  color: var(--neon-purple);
+  font-size: 0.6rem;
+  padding: 0 5px;
+  border-radius: 3px;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
 .scheduled-badge {
   display: inline-block;
   padding: 1px 7px;

@@ -518,7 +518,10 @@ if (post.featured_image) {
   showImageControls(false);
 }
 
-if (quill) quill.root.innerHTML = post.content || '';
+if (quill) {
+    quill.setText('');
+    quill.clipboard.dangerouslyPasteHTML(0, post.content || '', 'html');
+  }
 
 // Load post tags
 const { data: postTags } = await sb.from('post_tags').select('tag_id').eq('post_id', id);
@@ -687,7 +690,7 @@ const draft = {
   image: document.getElementById('postImageUrl').value,
   excerpt: document.getElementById('postExcerpt').value,
   date: document.getElementById('postDate').value,
-  content: quill ? quill.root.innerHTML : '',
+  content: getContent(),
   tags: Array.from(selectedTags),
   featured: document.getElementById('toggleFeatured').classList.contains('active'),
   savedAt: new Date().toISOString()
@@ -707,7 +710,10 @@ try {
   document.getElementById('postImageUrl').value = draft.image || '';
   document.getElementById('postExcerpt').value = draft.excerpt || '';
   document.getElementById('postDate').value = draft.date || '';
-  if (draft.content && quill) quill.root.innerHTML = draft.content;
+  if (draft.content && quill) {
+    quill.setText('');
+    quill.clipboard.dangerouslyPasteHTML(0, draft.content, 'html');
+  }
   selectedTags = new Set(draft.tags || []);
   if (draft.featured) document.getElementById('toggleFeatured').classList.add('active');
   if (draft.savedAt) showToast('Draft restaurado (' + new Date(draft.savedAt).toLocaleTimeString('es-AR') + ')');
@@ -725,7 +731,18 @@ let htmlMode = false;
 
 function getContent() {
   if (htmlMode) return document.getElementById('htmlEditor').value;
-  return quill ? quill.root.innerHTML : '';
+  if (!quill) return '';
+  // Extract raw HTML from snippet blots (remove ql-raw-html wrappers)
+  const clone = quill.root.cloneNode(true);
+  clone.querySelectorAll('.ql-raw-html').forEach(node => {
+    const raw = node.getAttribute('data-raw');
+    if (raw) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = raw;
+      node.replaceWith(...tmp.childNodes);
+    }
+  });
+  return clone.innerHTML;
 }
 
 function formatHTML(html) {
@@ -744,19 +761,51 @@ document.getElementById('htmlToggleBtn').addEventListener('click', () => {
   const btn = document.getElementById('htmlToggleBtn');
 
   if (htmlMode) {
-    htmlEl.value = formatHTML(quill.root.innerHTML);
+    // Visual -> HTML: unwrap ql-raw-html blocks so user sees original snippet HTML
+    const clone = quill.root.cloneNode(true);
+    clone.querySelectorAll('.ql-raw-html').forEach(node => {
+      const raw = node.getAttribute('data-raw');
+      if (raw) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = raw;
+        node.replaceWith(...tmp.childNodes);
+      }
+    });
+    htmlEl.value = formatHTML(clone.innerHTML);
     editorEl.style.display = 'none';
     htmlEl.style.display = '';
     btn.classList.add('active');
     btn.textContent = 'Visual';
   } else {
-    quill.root.innerHTML = htmlEl.value.replace(/>\s*\n\s*</g, '><');
+    // HTML -> Visual: use dangerouslyPasteHTML so clipboard matchers fire
+    const html = htmlEl.value.replace(/>\s*\n\s*</g, '><');
+    quill.setText('');
+    quill.clipboard.dangerouslyPasteHTML(0, html, 'html');
     htmlEl.style.display = 'none';
     editorEl.style.display = '';
     btn.classList.remove('active');
     btn.textContent = 'HTML';
   }
 });
+
+// ===== QUILL: RAW HTML BLOT (preserves snippet blocks) =====
+const BlockEmbed = Quill.import('blots/block/embed');
+class RawHtmlBlot extends BlockEmbed {
+  static create(html) {
+    const node = super.create();
+    node.innerHTML = html;
+    node.setAttribute('data-raw', html);
+    node.setAttribute('contenteditable', 'false');
+    return node;
+  }
+  static value(node) {
+    return node.getAttribute('data-raw') || node.innerHTML;
+  }
+}
+RawHtmlBlot.blotName = 'raw-html';
+RawHtmlBlot.tagName = 'div';
+RawHtmlBlot.className = 'ql-raw-html';
+Quill.register(RawHtmlBlot);
 
 // ===== QUILL: SMALL TEXT BLOT =====
 const SmallBlot = Quill.import('blots/inline');
@@ -818,6 +867,19 @@ quill = new Quill('#editor-container', {
       }
     }
   }
+});
+
+// ===== CLIPBOARD MATCHER: preserve snippet blocks =====
+const Delta = Quill.import('delta');
+const SNIPPET_CLASSES = ['museum-card', 'blog-timeline'];
+quill.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
+  if (node.nodeType !== 1) return delta;
+  for (const cls of SNIPPET_CLASSES) {
+    if (node.classList && node.classList.contains(cls)) {
+      return new Delta().insert({ 'raw-html': node.outerHTML }, quill.getFormat());
+    }
+  }
+  return delta;
 });
 
 // ===== TRACK CLICKED IMAGE =====
