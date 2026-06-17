@@ -93,10 +93,10 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    /* FIX: from 270deg arranca desde la izquierda (9 en punto) y va clockwise */
-    /* FIX: todos los stops son relativos a --percent con calc() */
+    /* Arranca desde las 6 (bottom) y va clockwise */
+    /* Todos los stops son relativos a --percent con calc() */
     background: conic-gradient(
-        from 270deg,
+        from 180deg,
         #ff4d4d 0%,
         #ff9f43 calc(var(--percent) * 0.35),
         #feca57 calc(var(--percent) * 0.7),
@@ -209,7 +209,6 @@
 
 <!-- TEST: 10% nostalgia, 15% humo -->
 <div class="museum-card" style="--percent: 10%; --humo: 15%;">
-    <div class="status-badge">Exhibición Temporal</div>
     <div class="museum-card-header">
         <div class="badge">
             <i class="material-icons" style="font-size:14px">history</i> Post Rescatado
@@ -256,7 +255,6 @@
 
 <!-- TEST: 87% nostalgia, 60% humo -->
 <div class="museum-card" style="--percent: 87%; --humo: 60%;">
-    <div class="status-badge">Exhibición Temporal</div>
     <div class="museum-card-header">
         <div class="badge">
             <i class="material-icons" style="font-size:14px">history</i> Post Rescatado
