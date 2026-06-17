@@ -379,7 +379,7 @@ body {
 
 /* Quill small text button */
 .ql-editor small, .ql-editor .ql-small { font-size: 0.8em; color: var(--text-secondary); }
-.ql-editor .ql-bright { color: var(--text-primary) !important; }
+.ql-editor .ql-bright { color: #ffffff !important; }
 
 .scheduled-badge {
   display: inline-block;
@@ -1132,6 +1132,8 @@ tr.draft-row {
   color: var(--text-primary);
 }
 .preview-modal-body li { margin-bottom: 6px; line-height: 1.65; }
+.preview-modal-body small { font-size: 0.8em; color: var(--text-secondary); }
+.preview-modal-body .ql-bright { color: #ffffff !important; }
 .preview-meta {
   display: flex;
   gap: 16px;
