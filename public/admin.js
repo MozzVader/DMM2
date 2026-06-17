@@ -1125,10 +1125,13 @@ document.getElementById('fabMuseum').addEventListener('click', () => {
         <div class="metric-smoke-col">
             <div class="metric-title">\u00cdndice F\u00famico</div>
             <div class="metric-smoke">
-                <div class="smoke-gauge">
-                    <div class="smoke-bar-fill"></div>
+                <span class="smoke-fire">\uD83D\uDD25</span>
+                <div class="smoke-details">
+                    <div class="smoke-gauge">
+                        <div class="smoke-bar-fill"></div>
+                    </div>
+                    <div class="smoke-meta">Nivel: <strong>Moderado-Alto</strong></div>
                 </div>
-                <div class="smoke-meta">Nivel: <strong>Moderado-Alto</strong></div>
             </div>
         </div>
     </div>

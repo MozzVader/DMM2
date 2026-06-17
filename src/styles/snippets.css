@@ -57,7 +57,7 @@ body.light .museum-card .original-date strong { color: #1a1a1a; }
 
 .museum-card-body {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-columns: 1fr 1fr;
     gap: 24px;
     margin-bottom: 20px;
     align-items: start;
@@ -170,9 +170,21 @@ body.light .museum-card .platform-tag {
 /* Right: Smoke gauge */
 .museum-card .metric-smoke {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    align-items: center;
+    gap: 16px;
     min-height: 100px;
+}
+
+.museum-card .smoke-fire {
+    font-size: 80px;
+    line-height: 1;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 10px rgba(255, 100, 0, 0.3));
+}
+
+.museum-card .smoke-details {
+    flex: 1;
+    min-width: 0;
 }
 
 .museum-card .smoke-gauge {
