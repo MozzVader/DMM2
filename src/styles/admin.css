@@ -14,6 +14,7 @@
   --neon-red: #ff4757;
   --neon-yellow: #ffd32a;
   --neon-green: #2ed573;
+  --neon-cyan: #22d3ee;
   --danger: #ff4757;
   --shadow-card: 0 2px 12px rgba(0,0,0,0.3);
 }
@@ -374,6 +375,11 @@ body {
 .badge-sm.red { background: rgba(255,71,87,0.15); color: var(--neon-red); }
 .badge-sm.yellow { background: rgba(255,211,42,0.15); color: var(--neon-yellow); }
 .badge-sm.green { background: rgba(46,213,115,0.15); color: var(--neon-green); }
+.badge-sm.cyan { background: rgba(34,211,238,0.15); color: var(--neon-cyan); }
+
+/* Quill small text button */
+.ql-small::after { content: 'Aa'; font-size: 0.7em; }
+.ql-editor small, .ql-editor .ql-small { font-size: 0.8em; color: var(--text-secondary); }
 
 .scheduled-badge {
   display: inline-block;

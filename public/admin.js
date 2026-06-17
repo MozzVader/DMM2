@@ -758,6 +758,16 @@ document.getElementById('htmlToggleBtn').addEventListener('click', () => {
   }
 });
 
+// ===== QUILL: SMALL TEXT BLOT =====
+const SmallBlot = Quill.import('blots/inline');
+class SmallTextBlot extends SmallBlot {
+  static create() { return super.create('small'); }
+  static formats() { return true; }
+}
+SmallTextBlot.blotName = 'small';
+SmallTextBlot.tagName = 'small';
+Quill.register(SmallTextBlot);
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
 // Register QuillBlotFormatter (blot-formatter2)
@@ -774,7 +784,7 @@ quill = new Quill('#editor-container', {
     },
     toolbar: {
       container: [
-        ['bold', 'italic', 'underline', 'strike'],
+        ['bold', 'italic', 'underline', 'strike', 'small'],
         [{ 'header': [1, 2, 3, false] }],
         [{ 'list': 'ordered' }, { 'list': 'bullet' }],
         [{ 'align': [] }],
@@ -963,6 +973,7 @@ document.querySelectorAll('.ql-toolbar button, .ql-toolbar .ql-picker-label').fo
   else if (cls.includes('ql-italic')) tip = 'Cursiva (Ctrl+I)';
   else if (cls.includes('ql-underline')) tip = 'Subrayado (Ctrl+U)';
   else if (cls.includes('ql-strike')) tip = 'Tachado';
+  else if (cls.includes('ql-small')) tip = 'Texto pequeño';
   else if (cls.includes('ql-header')) tip = 'Título';
   else if (cls.includes('ql-list')) tip = cls.includes('ql-list-ordered') ? 'Lista numerada' : 'Lista con viñetas';
   else if (cls.includes('ql-blockquote')) tip = 'Cita';
