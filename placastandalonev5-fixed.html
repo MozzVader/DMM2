@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Museum Card v5 Fixed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* --- DEBUG: fondo del body para ver contraste --- */
+        body {
+            background: #161621;
+            margin: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+/* --- ESTILOS GENERALES DE LA CARD --- */
+.museum-card {
+    font-family: 'Space Grotesk', sans-serif;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    color: #fff;
+    max-width: 640px;
+    margin: 40px auto;
+}
+
+.status-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 212, 255, 0.15);
+    color: #00d4ff;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.museum-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.badge {
+    background: linear-gradient(135deg, #ff0055, #ff5588);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.original-date {
+    font-size: 13px;
+    color: #888;
+}
+
+.original-date strong { color: #fff; }
+
+.museum-card-body {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+/* --- LADO IZQUIERDO: CÍRCULO COMPACTO --- */
+.metric-nostalgia {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.chart-container-mini {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+}
+
+.circular-chart-mini {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    /* FIX: from 270deg arranca desde la izquierda (9 en punto) y va clockwise */
+    /* FIX: todos los stops son relativos a --percent con calc() */
+    background: conic-gradient(
+        from 270deg,
+        #ff4d4d 0%,
+        #ff9f43 calc(var(--percent) * 0.35),
+        #feca57 calc(var(--percent) * 0.7),
+        #1dd1a1 var(--percent), 
+        rgba(255, 255, 255, 0.05) var(--percent)
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.inner-circle-mini {
+    width: 76px;
+    height: 76px;
+    background-color: #161621; /* Fondo del post */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.percentage-mini {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.platforms-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.platform-tag {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    color: #ccc;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* --- LADO DERECHO: BARRA DE HUMO --- */
+.metric-smoke {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.metric-label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.smoke-gauge {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.smoke-bar-fill {
+    height: 100%;
+    width: var(--humo);
+    background: linear-gradient(90deg, #ff9900, #ff5500);
+    border-radius: 4px;
+}
+
+.smoke-meta {
+    font-size: 12px;
+    color: #aaa;
+}
+.smoke-meta strong { color: #ff9900; }
+
+/* --- CONSOLA DE COMPROMISO / CHANGELOG --- */
+.curation-changelog {
+    background: #09090d;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.changelog-header {
+    color: #555;
+    font-size: 10px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.changelog-line {
+    margin-bottom: 2px;
+}
+
+.c-fix { color: #1dd1a1; }
+.c-convert { color: #feca57; }
+.c-remove { color: #ff4d4d; }
+
+    </style>
+</head>
+<body>
+
+<!-- TEST: 10% nostalgia, 15% humo -->
+<div class="museum-card" style="--percent: 10%; --humo: 15%;">
+    <div class="status-badge">Exhibición Temporal</div>
+    <div class="museum-card-header">
+        <div class="badge">
+            <i class="material-icons" style="font-size:14px">history</i> Post Rescatado
+        </div>
+        <div class="original-date">
+            Publicado originalmente: <strong>15 de Marzo, 2012</strong>
+        </div>
+    </div>
+    <div class="museum-card-body">
+        <div class="metric-nostalgia">
+            <div class="chart-container-mini">
+                <div class="circular-chart-mini">
+                    <div class="inner-circle-mini">
+                        <span class="percentage-mini">10%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="platforms-grid">
+                <span class="platform-tag">MSN Messenger</span>
+                <span class="platform-tag">Megavideo</span>
+                <span class="platform-tag">Flash Player</span>
+                <span class="platform-tag">Windows XP</span>
+            </div>
+        </div>
+        <div class="metric-smoke">
+            <div class="metric-label">Humo Tecnológico</div>
+            <div class="smoke-gauge">
+                <div class="smoke-bar-fill"></div>
+            </div>
+            <div class="smoke-meta">Nivel: <strong>Leve</strong></div>
+        </div>
+    </div>
+    <div class="curation-changelog">
+        <div class="changelog-header">
+            <i class="material-icons" style="font-size:14px">terminal</i> ARCHIVE_RESTORATION_LOG
+        </div>
+        <div class="changelog-line c-fix">[FIX] 5 imágenes re-hosteadas en Supabase Storage</div>
+        <div class="changelog-line c-convert">[CONVERT] 1 archivo .swf reemplazado por emulador Ruffle</div>
+        <div class="changelog-line c-remove">[REMOVE] 2 videos de YouTube (Dead Links)</div>
+    </div>
+</div>
+
+<br><br>
+
+<!-- TEST: 87% nostalgia, 60% humo -->
+<div class="museum-card" style="--percent: 87%; --humo: 60%;">
+    <div class="status-badge">Exhibición Temporal</div>
+    <div class="museum-card-header">
+        <div class="badge">
+            <i class="material-icons" style="font-size:14px">history</i> Post Rescatado
+        </div>
+        <div class="original-date">
+            Publicado originalmente: <strong>15 de Marzo, 2012</strong>
+        </div>
+    </div>
+    <div class="museum-card-body">
+        <div class="metric-nostalgia">
+            <div class="chart-container-mini">
+                <div class="circular-chart-mini">
+                    <div class="inner-circle-mini">
+                        <span class="percentage-mini">87%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="platforms-grid">
+                <span class="platform-tag">MSN Messenger</span>
+                <span class="platform-tag">Megavideo</span>
+                <span class="platform-tag">Flash Player</span>
+                <span class="platform-tag">Windows XP</span>
+            </div>
+        </div>
+        <div class="metric-smoke">
+            <div class="metric-label">Humo Tecnológico</div>
+            <div class="smoke-gauge">
+                <div class="smoke-bar-fill"></div>
+            </div>
+            <div class="smoke-meta">Nivel: <strong>Moderado-Alto</strong></div>
+        </div>
+    </div>
+    <div class="curation-changelog">
+        <div class="changelog-header">
+            <i class="material-icons" style="font-size:14px">terminal</i> ARCHIVE_RESTORATION_LOG
+        </div>
+        <div class="changelog-line c-fix">[FIX] 5 imágenes re-hosteadas en Supabase Storage</div>
+        <div class="changelog-line c-convert">[CONVERT] 1 archivo .swf reemplazado por emulador Ruffle</div>
+        <div class="changelog-line c-remove">[REMOVE] 2 videos de YouTube (Dead Links)</div>
+    </div>
+</div>
+
+</body>
+</html>
