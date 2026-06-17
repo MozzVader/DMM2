@@ -51,7 +51,7 @@
 }
 
 .badge {
-    background: linear-gradient(135deg, #ff0055, #ff5588);
+    background: linear-gradient(135deg, #ffb347 70%, #ffd700);
     color: white;
     padding: 6px 12px;
     border-radius: 20px;
@@ -79,8 +79,18 @@
 /* --- LADO IZQUIERDO: CÍRCULO COMPACTO --- */
 .metric-nostalgia {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 16px;
+}
+
+.metric-nostalgia-title {
+    flex: 0 0 100%;
+    font-size: 15px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
 }
 
 .chart-container-mini {
@@ -125,6 +135,7 @@
 }
 
 .platforms-grid {
+    flex: 1;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
@@ -146,12 +157,23 @@
     justify-content: center;
 }
 
+.metric-smoke-title{
+    font-size: 15px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: 12px;
+
+}
+
 .metric-label {
     font-size: 11px;
     color: #888;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 6px;
+    margin-top: 20px;
 }
 
 .smoke-gauge {
@@ -219,6 +241,7 @@
     </div>
     <div class="museum-card-body">
         <div class="metric-nostalgia">
+            <div class="metric-nostalgia-title">Nivel de Nostalgia</div>
             <div class="chart-container-mini">
                 <div class="circular-chart-mini">
                     <div class="inner-circle-mini">
@@ -234,6 +257,7 @@
             </div>
         </div>
         <div class="metric-smoke">
+            <div class="metric-smoke-title">Índice fúmico</div>
             <div class="metric-label">Humo Tecnológico</div>
             <div class="smoke-gauge">
                 <div class="smoke-bar-fill"></div>
