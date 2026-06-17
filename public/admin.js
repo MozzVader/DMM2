@@ -1086,6 +1086,40 @@ document.getElementById('fabMuseum').addEventListener('click', () => {
   });
 });
 
+// ===== FAB: COPY TIMELINE =====
+document.getElementById('fabTimeline').addEventListener('click', () => {
+  const html = `<div class="blog-timeline">
+    <div class="timeline-item">
+        <div class="timeline-date">1991 - 2004</div>
+        <div class="timeline-content">
+            <h3>Web 1.0</h3>
+            <p>La web est\u00e1tica de "solo lectura". El usuario com\u00fan solo consume informaci\u00f3n.</p>
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="timeline-date">2004 - 2020</div>
+        <div class="timeline-content">
+            <h3>Web 2.0</h3>
+            <p>La web participativa. Nacen los blogs y las redes sociales donde todos creamos contenido.</p>
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="timeline-date">2026</div>
+        <div class="timeline-content">
+            <h3>Web 4.0</h3>
+            <p>La web inteligente y simbi\u00f3tica. Modelos de lenguaje e interfaces ultra eficientes.</p>
+        </div>
+    </div>
+</div>`;
+  navigator.clipboard.writeText(html).then(() => {
+    showToast('Timeline copiada al portapapeles');
+    document.getElementById('fabMain').classList.remove('open');
+    document.getElementById('fabMenu').classList.remove('open');
+  });
+});
+
 // ===== PREVIEW MODAL =====
 document.getElementById('previewBtn').addEventListener('click', () => {
   const title = document.getElementById('postTitle').value.trim();

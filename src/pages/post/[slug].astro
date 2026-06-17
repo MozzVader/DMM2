@@ -7,6 +7,7 @@ import { getAllPosts, getFeaturedPost } from '../../lib/supabase';
 import { BASE_URL, AUTHOR } from '../../lib/constants';
 import { sanitizeHTML, formatDate, stripHTML, readingTime } from '../../lib/utils';
 import type { Post } from '../../lib/supabase';
+import '../../styles/snippets.css';
 
 export async function getStaticPaths() {
   const [regularPosts, featuredPost] = await Promise.all([
@@ -179,6 +180,8 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
     });
   })();
 </script>
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <style>
   .post-single {
