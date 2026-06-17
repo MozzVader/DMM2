@@ -1014,6 +1014,7 @@ tr.draft-row {
 }
 .fab-menu-item:hover { border-color: var(--neon-purple); background: var(--bg-hover); }
 .fab-menu-item .fab-icon { font-size: 1.1rem; }
+button.fab-menu-item { cursor: pointer; font-family: inherit; font-size: inherit; color: inherit; }
 .fab-label {
   position: absolute;
   right: 60px;

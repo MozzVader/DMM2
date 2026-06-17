@@ -1030,6 +1030,62 @@ document.addEventListener('click', (e) => {
   }
 });
 
+// ===== FAB: COPY MUSEUM CARD =====
+document.getElementById('fabMuseum').addEventListener('click', () => {
+  const html = `<div class="museum-card" style="--percent: 87%; --humo: 60%;">
+    <div class="museum-card-header">
+        <div class="badge">
+            <i class="material-icons" style="font-size:14px">history</i> Post Rescatado
+        </div>
+        <div class="original-date">
+            Publicado originalmente: <strong>15 de Marzo, 2012</strong>
+        </div>
+    </div>
+    <div class="museum-card-body">
+        <div class="metric-nostalgia-col">
+            <div class="metric-title">Nivel de Nostalgia</div>
+            <div class="metric-nostalgia">
+                <div class="chart-container-mini">
+                    <div class="circular-chart-mini">
+                        <div class="inner-circle-mini">
+                            <span class="percentage-mini">87%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="platforms-grid">
+                    <span class="platform-tag">MSN Messenger</span>
+                    <span class="platform-tag">Megavideo</span>
+                    <span class="platform-tag">Flash Player</span>
+                    <span class="platform-tag">Windows XP</span>
+                </div>
+            </div>
+        </div>
+        <div class="metric-smoke-col">
+            <div class="metric-title">\u00cdndice F\u00famico</div>
+            <div class="metric-smoke">
+                <div class="smoke-gauge">
+                    <div class="smoke-bar-fill"></div>
+                </div>
+                <div class="smoke-meta">Nivel: <strong>Moderado-Alto</strong></div>
+            </div>
+        </div>
+    </div>
+    <div class="curation-changelog">
+        <div class="changelog-header">
+            <i class="material-icons" style="font-size:14px">terminal</i> ARCHIVE_RESTORATION_LOG
+        </div>
+        <div class="changelog-line c-fix">[FIX] 5 im\u00e1genes re-hosteadas en Supabase Storage</div>
+        <div class="changelog-line c-convert">[CONVERT] 1 archivo .swf reemplazado por emulador Ruffle</div>
+        <div class="changelog-line c-remove">[REMOVE] 2 videos de YouTube (Dead Links)</div>
+    </div>
+</div>`;
+  navigator.clipboard.writeText(html).then(() => {
+    showToast('Placa Museo copiada al portapapeles');
+    document.getElementById('fabMain').classList.remove('open');
+    document.getElementById('fabMenu').classList.remove('open');
+  });
+});
+
 // ===== PREVIEW MODAL =====
 document.getElementById('previewBtn').addEventListener('click', () => {
   const title = document.getElementById('postTitle').value.trim();
