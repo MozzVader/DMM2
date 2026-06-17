@@ -21,7 +21,7 @@ export function sanitizeHTML(dirty: string): string {
       'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike',
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
       'a', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code',
-      'img', 'figure', 'figcaption', 'video', 'iframe',
+      'img', 'figure', 'figcaption', 'video', 'iframe', 'small',
       'div', 'span', 'sub', 'sup', 'hr', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
     ],
     ALLOWED_ATTR: [

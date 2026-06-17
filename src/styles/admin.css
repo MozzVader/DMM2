@@ -378,7 +378,6 @@ body {
 .badge-sm.cyan { background: rgba(34,211,238,0.15); color: var(--neon-cyan); }
 
 /* Quill small text button */
-.ql-small::after { content: 'Aa'; font-size: 0.7em; }
 .ql-editor small, .ql-editor .ql-small { font-size: 0.8em; color: var(--text-secondary); }
 
 .scheduled-badge {

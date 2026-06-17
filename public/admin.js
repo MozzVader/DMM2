@@ -966,6 +966,12 @@ if (customUrlBtn) {
 }
 
 // ===== ADD TOOLTIPS TO TOOLBAR BUTTONS =====
+// Inject SVG icon into the small-text button (Quill creates it empty)
+const smallBtn = toolbar.querySelector('.ql-small');
+if (smallBtn) {
+  smallBtn.innerHTML = '<svg viewBox="0 0 18 18" width="18" height="18"><path class="ql-stroke" d="M4 13.5L7.5 4.5L11 13.5M5 10.5h5" stroke-linecap="round" stroke-linejoin="round"/><path class="ql-fill" d="M13.5 10.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" opacity="0.5"/></svg>';
+}
+
 document.querySelectorAll('.ql-toolbar button, .ql-toolbar .ql-picker-label').forEach(btn => {
   const cls = btn.className || '';
   let tip = '';
