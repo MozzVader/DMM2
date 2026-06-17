@@ -252,6 +252,16 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
     color: var(--neon-red);
   }
 
+  .post-content :global(small a),
+  .post-content :global(a small) {
+    color: var(--neon-purple);
+  }
+
+  .post-content :global(small a:hover),
+  .post-content :global(a small:hover) {
+    color: var(--neon-red);
+  }
+
   .post-content :global(blockquote) {
     border-left: 3px solid var(--neon-purple);
     padding-left: 16px;
@@ -290,6 +300,10 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
   .post-content :global(small) {
     font-size: 0.8em;
     color: var(--text-secondary);
+  }
+
+  .post-content :global(.ql-bright) {
+    color: var(--text-primary) !important;
   }
 
   /* Post footer: tags + likes + share */

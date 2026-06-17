@@ -768,6 +768,22 @@ SmallTextBlot.blotName = 'small';
 SmallTextBlot.tagName = 'small';
 Quill.register(SmallTextBlot);
 
+// ===== QUILL: BRIGHT TEXT BLOT =====
+const BrightBlot = Quill.import('blots/inline');
+class BrightTextBlot extends BrightBlot {
+  static create() {
+    const node = super.create('span');
+    node.classList.add('ql-bright');
+    return node;
+  }
+  static formats(node) {
+    return node.classList.contains('ql-bright');
+  }
+}
+BrightTextBlot.blotName = 'bright';
+BrightTextBlot.tagName = 'span';
+Quill.register(BrightTextBlot);
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
 // Register QuillBlotFormatter (blot-formatter2)
@@ -784,7 +800,7 @@ quill = new Quill('#editor-container', {
     },
     toolbar: {
       container: [
-        ['bold', 'italic', 'underline', 'strike', 'small'],
+        ['bold', 'italic', 'underline', 'strike', 'small', 'bright'],
         [{ 'header': [1, 2, 3, false] }],
         [{ 'list': 'ordered' }, { 'list': 'bullet' }],
         [{ 'align': [] }],
@@ -972,6 +988,11 @@ if (smallBtn) {
   smallBtn.innerHTML = '<svg viewBox="0 0 18 18" width="18" height="18"><path class="ql-stroke" d="M4 13.5L7.5 4.5L11 13.5M5 10.5h5" stroke-linecap="round" stroke-linejoin="round"/><path class="ql-fill" d="M13.5 10.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" opacity="0.5"/></svg>';
 }
 
+const brightBtn = toolbar.querySelector('.ql-bright');
+if (brightBtn) {
+  brightBtn.innerHTML = '<svg viewBox="0 0 18 18" width="18" height="18"><circle class="ql-fill" cx="9" cy="9" r="3"/><path class="ql-stroke" d="M9 1v2M9 15v2M1 9h2M15 9h2M3.3 3.3l1.4 1.4M13.3 13.3l1.4 1.4M3.3 14.7l1.4-1.4M13.3 4.7l1.4-1.4" stroke-linecap="round"/></svg>';
+}
+
 document.querySelectorAll('.ql-toolbar button, .ql-toolbar .ql-picker-label').forEach(btn => {
   const cls = btn.className || '';
   let tip = '';
@@ -980,6 +1001,7 @@ document.querySelectorAll('.ql-toolbar button, .ql-toolbar .ql-picker-label').fo
   else if (cls.includes('ql-underline')) tip = 'Subrayado (Ctrl+U)';
   else if (cls.includes('ql-strike')) tip = 'Tachado';
   else if (cls.includes('ql-small')) tip = 'Texto pequeño';
+  else if (cls.includes('ql-bright')) tip = 'Texto brillante';
   else if (cls.includes('ql-header')) tip = 'Título';
   else if (cls.includes('ql-list')) tip = cls.includes('ql-list-ordered') ? 'Lista numerada' : 'Lista con viñetas';
   else if (cls.includes('ql-blockquote')) tip = 'Cita';
