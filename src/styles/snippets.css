@@ -12,8 +12,7 @@
     padding: 24px;
     position: relative;
     color: #fff;
-    max-width: 640px;
-    margin: 40px auto;
+    margin: 20px 0;
 }
 
 body.light .museum-card {
@@ -244,8 +243,7 @@ body.light .museum-card .curation-changelog {
 
 .blog-timeline {
     position: relative;
-    max-width: 640px;
-    margin: 40px auto;
+    margin: 20px 0;
     padding-left: 24px;
     font-family: 'Space Grotesk', sans-serif;
 }

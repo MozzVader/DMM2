@@ -1182,6 +1182,16 @@ document.getElementById('fabTimeline').addEventListener('click', () => {
   });
 });
 
+// ===== FAB: COPY SEPARATOR =====
+document.getElementById('fabSeparator').addEventListener('click', () => {
+  const html = `<hr style="height: 2px; border: none; background: linear-gradient(to right, #bf5af2, #ff4757, #ffd93d);">`;
+  navigator.clipboard.writeText(html).then(() => {
+    showToast('Separador copiado al portapapeles');
+    document.getElementById('fabMain').classList.remove('open');
+    document.getElementById('fabMenu').classList.remove('open');
+  });
+});
+
 // ===== PREVIEW MODAL =====
 document.getElementById('previewBtn').addEventListener('click', () => {
   const title = document.getElementById('postTitle').value.trim();
