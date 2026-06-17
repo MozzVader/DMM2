@@ -16,12 +16,4 @@ dist/
 Thumbs.db
 
 # Archives
-v1.zip
-v2.zip
-v3.zip
-v4.zip
-v5.zip
-v6.zip
-v7.zip
-v8.zip
-v9.zip
+*.zip
