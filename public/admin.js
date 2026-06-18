@@ -150,7 +150,7 @@ tbody.innerHTML = pageItems.map(post => {
     <td class="actions-cell" data-label="">
       <button class="btn btn-sm" onclick="editPost('${post.id}')">Editar</button>
       <button class="btn btn-sm" onclick="clonePost('${post.id}')">Clonar</button>
-      <button class="btn btn-sm btn-danger" onclick="confirmDelete('${post.id}', '${post.title.replace(/'/g, "\\'")}')">Eliminar</button>
+      <button class="btn btn-sm btn-danger js-delete-btn" data-id="${post.id}" data-title="${post.title.replace(/"/g, '&quot;').replace(/</g, '&lt;')}">Eliminar</button>
     </td>
   </tr>`;
 }).join('');
@@ -521,6 +521,7 @@ if (post.featured_image) {
 if (quill) {
     quill.setText('');
     quill.clipboard.dangerouslyPasteHTML(0, post.content || '', 'html');
+    restoreImageAlignments(post.content || '');
   }
 
 // Load post tags
@@ -591,6 +592,12 @@ document.getElementById('confirmOverlay').classList.add('active');
 document.getElementById('confirmCancel').addEventListener('click', () => {
 document.getElementById('confirmOverlay').classList.remove('active');
 deleteTargetId = null;
+});
+
+// Event delegation for delete buttons (avoids inline onclick with user-generated titles)
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.js-delete-btn');
+  if (btn) confirmDelete(btn.dataset.id, btn.dataset.title);
 });
 
 document.getElementById('confirmOk').addEventListener('click', async () => {
@@ -713,6 +720,7 @@ try {
   if (draft.content && quill) {
     quill.setText('');
     quill.clipboard.dangerouslyPasteHTML(0, draft.content, 'html');
+    restoreImageAlignments(draft.content);
   }
   selectedTags = new Set(draft.tags || []);
   if (draft.featured) document.getElementById('toggleFeatured').classList.add('active');
@@ -743,6 +751,30 @@ function getContent() {
     }
   });
   return clone.innerHTML;
+}
+
+/** Restore image data-img-align after dangerouslyPasteHTML strips it */
+function restoreImageAlignments(originalHtml) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = originalHtml;
+  const alignMap = new Map();
+  tmp.querySelectorAll('img[data-img-align]').forEach(img => {
+    const src = img.getAttribute('src');
+    if (src) {
+      alignMap.set(src, {
+        align: img.getAttribute('data-img-align'),
+        style: img.getAttribute('style') || ''
+      });
+    }
+  });
+  quill.root.querySelectorAll('img').forEach(img => {
+    const src = img.getAttribute('src');
+    const info = alignMap.get(src);
+    if (info) {
+      img.setAttribute('data-img-align', info.align);
+      if (info.style) img.setAttribute('style', info.style);
+    }
+  });
 }
 
 function formatHTML(html) {
@@ -781,6 +813,7 @@ document.getElementById('htmlToggleBtn').addEventListener('click', () => {
     const html = htmlEl.value.replace(/>\s*\n\s*</g, '><');
     quill.setText('');
     quill.clipboard.dangerouslyPasteHTML(0, html, 'html');
+    restoreImageAlignments(html);
     htmlEl.style.display = 'none';
     editorEl.style.display = '';
     btn.classList.remove('active');
