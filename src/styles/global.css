@@ -176,11 +176,9 @@ body.light .mag-header {
 }
 
 .logo-placeholder {
-  width: 42px;
-  height: 42px;
+  width: 56px;
+  height: 56px;
   border-radius: 5px;
-  background: linear-gradient(135deg, rgba(191, 90, 242, 0.2), rgba(255, 71, 87, 0.15));
-  border: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
