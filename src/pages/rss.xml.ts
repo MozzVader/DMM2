@@ -2,6 +2,8 @@ import rss from '@astrojs/rss';
 import { getAllPostsForPagination } from '../lib/supabase';
 import type { APIContext } from 'astro';
 
+const SITE_URL = 'https://mozvader.github.io';
+
 export async function GET(context: APIContext) {
   const posts = await getAllPostsForPagination();
 
@@ -11,18 +13,22 @@ export async function GET(context: APIContext) {
     site: context.site!,
     items: posts.map((post) => {
       const imgTag = post.featured_image
-        ? `<p><img src="${post.featured_image}" alt="${post.title}" /></p>`
+        ? `<p><img src="${post.featured_image}" alt="${post.title}" style="max-width:100%;height:auto;" /></p>`
         : '';
-      const cleanContent = post.content.replace(/<[^>]*>/g, '').slice(0, 300);
-      const description = post.excerpt || cleanContent;
+      const excerpt = post.excerpt || post.content.replace(/<[^>]*>/g, '').slice(0, 300);
       return {
         title: post.title,
         pubDate: new Date(post.published_at),
-        description,
-        content: imgTag + `<p>${description}</p>`,
+        description: excerpt,
+        content: imgTag + post.content,
         link: `${context.site!}DMM2/post/${post.slug}`,
       };
     }),
-    customData: '<language>es-ar</language>',
+    customData: `<language>es-ar</language>
+      <image>
+        <url>${SITE_URL}/DMM2/favicon.svg</url>
+        <title>Dos Minutos Más</title>
+        <link>${SITE_URL}/DMM2</link>
+      </image>`,
   });
 }
