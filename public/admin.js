@@ -12,6 +12,7 @@ let editingPostId = null;
 let editingIsDraft = false;
 let currentFilter = 'all';
 let allPosts = [];
+let currentSection = 'posts';
 let currentPage = 1;
 const PAGE_SIZE = 30;
 let selectedTags = new Set();
@@ -40,28 +41,47 @@ return new Date(dateStr).toLocaleDateString('es-AR', {
 }
 
 function showScreen(screen) {
-document.getElementById('dashboardScreen').classList.toggle('hidden', screen !== 'dashboard');
-document.getElementById('editorScreen').classList.toggle('active', screen === 'editor');
-if (screen === 'editor') {
-  const saveBtn = document.getElementById('savePostBtn');
-  const draftBtn = document.getElementById('saveDraftBtn');
-  if (editingIsDraft) {
-    document.getElementById('editorTitle').textContent = 'Editar borrador';
-    saveBtn.textContent = 'Publicar';
-    draftBtn.style.display = '';
-    draftBtn.textContent = 'Actualizar borrador';
-  } else if (editingPostId) {
-    document.getElementById('editorTitle').textContent = 'Editar post';
-    saveBtn.textContent = 'Guardar post';
-    draftBtn.style.display = '';
-    draftBtn.textContent = 'Guardar borrador';
+  const sidebar = document.getElementById('adminSidebar');
+
+  if (screen === 'editor') {
+    document.getElementById('dashboardScreen').classList.add('hidden');
+    document.getElementById('statsScreen').classList.add('hidden');
+    document.getElementById('editorScreen').classList.add('active');
+    sidebar.classList.add('sidebar-hidden');
+    const saveBtn = document.getElementById('savePostBtn');
+    const draftBtn = document.getElementById('saveDraftBtn');
+    if (editingIsDraft) {
+      document.getElementById('editorTitle').textContent = 'Editar borrador';
+      saveBtn.textContent = 'Publicar';
+      draftBtn.style.display = '';
+      draftBtn.textContent = 'Actualizar borrador';
+    } else if (editingPostId) {
+      document.getElementById('editorTitle').textContent = 'Editar post';
+      saveBtn.textContent = 'Guardar post';
+      draftBtn.style.display = '';
+      draftBtn.textContent = 'Guardar borrador';
+    } else {
+      document.getElementById('editorTitle').textContent = 'Nuevo post';
+      saveBtn.textContent = 'Guardar post';
+      draftBtn.style.display = '';
+      draftBtn.textContent = 'Guardar borrador';
+    }
   } else {
-    document.getElementById('editorTitle').textContent = 'Nuevo post';
-    saveBtn.textContent = 'Guardar post';
-    draftBtn.style.display = '';
-    draftBtn.textContent = 'Guardar borrador';
+    document.getElementById('editorScreen').classList.remove('active');
+    sidebar.classList.remove('sidebar-hidden');
+    currentSection = screen;
+    document.querySelectorAll('.sidebar-tab').forEach(tab => {
+      tab.classList.toggle('active', tab.dataset.section === screen);
+    });
+    if (screen === 'posts') {
+      document.getElementById('dashboardScreen').classList.remove('hidden');
+      document.getElementById('statsScreen').classList.add('hidden');
+    } else if (screen === 'stats') {
+      document.getElementById('dashboardScreen').classList.add('hidden');
+      document.getElementById('statsScreen').classList.remove('hidden');
+      loadStats();
+    }
   }
-}
 }
 
 // ===== AUTH =====
@@ -183,6 +203,15 @@ document.getElementById('filterBar').addEventListener('click', (e) => {
   renderPosts();
 });
 
+// ===== SIDEBAR NAVIGATION =====
+document.getElementById('adminSidebar').addEventListener('click', (e) => {
+  const tab = e.target.closest('.sidebar-tab');
+  if (!tab || tab.classList.contains('active')) return;
+  const section = tab.dataset.section;
+  showScreen(section);
+  if (section === 'posts') loadDashboard();
+});
+
 // ===== NEW POST =====
 document.getElementById('newPostBtn').addEventListener('click', () => {
 editingPostId = null;
@@ -197,14 +226,16 @@ autoSaveInterval = setInterval(saveDraft, 30000);
 });
 
 document.getElementById('backBtn').addEventListener('click', () => {
-showScreen('dashboard');
-loadDashboard();
+showScreen(currentSection);
+if (currentSection === 'posts') loadDashboard();
+if (currentSection === 'stats') loadStats();
 if (autoSaveInterval) { clearInterval(autoSaveInterval); autoSaveInterval = null; }
 });
 
 document.getElementById('cancelBtn').addEventListener('click', () => {
-showScreen('dashboard');
-loadDashboard();
+showScreen(currentSection);
+if (currentSection === 'posts') loadDashboard();
+if (currentSection === 'stats') loadStats();
 if (autoSaveInterval) { clearInterval(autoSaveInterval); autoSaveInterval = null; }
 });
 
@@ -685,6 +716,160 @@ document.getElementById('confirmOk').onclick = async function() {
   loadTagsManager();
   loadTags();
 };
+}
+
+// ===== STATS DASHBOARD =====
+let chartMonthlyPostsInst = null;
+let chartMonthlyLikesInst = null;
+let chartCategoriesInst = null;
+
+async function loadStats() {
+  if (allPosts.length === 0) return;
+  const published = allPosts.filter(p => !p.is_draft);
+  if (published.length === 0) return;
+
+  // KPIs
+  const totalPosts = published.length;
+  const totalLikes = published.reduce((s, p) => s + (p.likes || 0), 0);
+  const avgLikes = totalPosts > 0 ? (totalLikes / totalPosts).toFixed(1) : '0';
+  document.getElementById('kpiTotalPosts').textContent = totalPosts;
+  document.getElementById('kpiTotalLikes').textContent = totalLikes;
+  document.getElementById('kpiRatio').textContent = avgLikes + ' likes/post';
+
+  const byDate = [...published].sort((a, b) => new Date(b.published_at) - new Date(a.published_at));
+  const lastDate = new Date(byDate[0].published_at);
+  const daysSince = Math.floor((Date.now() - lastDate.getTime()) / 86400000);
+  document.getElementById('kpiLastPost').textContent =
+    daysSince === 0 ? 'Hoy' : daysSince === 1 ? 'Ayer' : 'Hace ' + daysSince + ' días';
+
+  const wc = published.map(p => {
+    const t = (p.content || '').replace(/<[^>]*>/g, '').trim();
+    return t ? t.split(/\s+/).length : 0;
+  });
+  document.getElementById('kpiAvgWords').textContent =
+    Math.round(wc.reduce((a, b) => a + b, 0) / totalPosts).toLocaleString('es-AR');
+
+  const datesAsc = [...published]
+    .sort((a, b) => new Date(a.published_at) - new Date(b.published_at))
+    .map(p => new Date(p.published_at).getTime());
+  if (datesAsc.length >= 2) {
+    let totalDays = 0;
+    for (let i = 1; i < datesAsc.length; i++) {
+      totalDays += (datesAsc[i] - datesAsc[i - 1]) / 86400000;
+    }
+    document.getElementById('kpiCadencia').textContent = (totalDays / (datesAsc.length - 1)).toFixed(1);
+  }
+
+  // Monthly data
+  const monthMap = {}, likesMap = {};
+  published.forEach(p => {
+    const d = new Date(p.published_at);
+    const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    monthMap[key] = (monthMap[key] || 0) + 1;
+    likesMap[key] = (likesMap[key] || 0) + (p.likes || 0);
+  });
+  const mKeys = Object.keys(monthMap).sort();
+  const mLabels = mKeys.map(k => {
+    const [y, m] = k.split('-');
+    return ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][parseInt(m) - 1] + ' ' + y.slice(2);
+  });
+
+  if (chartMonthlyPostsInst) chartMonthlyPostsInst.destroy();
+  if (chartMonthlyLikesInst) chartMonthlyLikesInst.destroy();
+  if (chartCategoriesInst) chartCategoriesInst.destroy();
+
+  Chart.defaults.color = '#888';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+
+  chartMonthlyPostsInst = new Chart(document.getElementById('chartMonthlyPosts'), {
+    type: 'bar',
+    data: {
+      labels: mLabels,
+      datasets: [{
+        label: 'Posts', data: mKeys.map(k => monthMap[k]),
+        backgroundColor: 'rgba(191, 90, 242, 0.6)', borderColor: 'rgba(191, 90, 242, 1)',
+        borderWidth: 1, borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { ticks: { maxRotation: 45, minRotation: 0 } } }
+    }
+  });
+
+  chartMonthlyLikesInst = new Chart(document.getElementById('chartMonthlyLikes'), {
+    type: 'line',
+    data: {
+      labels: mLabels,
+      datasets: [{
+        label: 'Likes', data: mKeys.map(k => likesMap[k] || 0),
+        borderColor: 'rgba(255, 71, 87, 1)', backgroundColor: 'rgba(255, 71, 87, 0.1)',
+        fill: true, tension: 0.3, pointBackgroundColor: 'rgba(255, 71, 87, 1)', pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  const catMap = {};
+  published.forEach(p => { const c = p.badge || 'General'; catMap[c] = (catMap[c] || 0) + 1; });
+  const catLabels = Object.keys(catMap).sort((a, b) => catMap[b] - catMap[a]);
+  const palette = [
+    'rgba(191,90,242,0.8)', 'rgba(255,71,87,0.8)', 'rgba(255,211,42,0.8)',
+    'rgba(46,213,115,0.8)', 'rgba(34,211,238,0.8)', 'rgba(255,159,67,0.8)'
+  ];
+
+  chartCategoriesInst = new Chart(document.getElementById('chartCategories'), {
+    type: 'doughnut',
+    data: {
+      labels: catLabels,
+      datasets: [{
+        data: catLabels.map(k => catMap[k]),
+        backgroundColor: palette.slice(0, catLabels.length),
+        borderColor: '#131313', borderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true, pointStyle: 'circle', font: { size: 12 } } } }
+    }
+  });
+
+  // Tag/Likes correlation
+  try {
+    const { data: postTags } = await sb.from('post_tags').select('post_id, tag_id');
+    const { data: tags } = await sb.from('tags').select('*');
+    if (postTags && tags && postTags.length > 0) {
+      const tMap = {}; tags.forEach(t => tMap[t.id] = t.name);
+      const tLikes = {}, tCounts = {};
+      postTags.forEach(pt => {
+        const post = published.find(p => p.id === pt.post_id);
+        if (post && tMap[pt.tag_id]) {
+          const n = tMap[pt.tag_id];
+          tLikes[n] = (tLikes[n] || 0) + (post.likes || 0);
+          tCounts[n] = (tCounts[n] || 0) + 1;
+        }
+      });
+      const corr = Object.entries(tLikes)
+        .map(([name, total]) => ({ name, avg: (total / tCounts[name]).toFixed(1), count: tCounts[name] }))
+        .sort((a, b) => b.avg - a.avg);
+      document.getElementById('tagLikesTable').innerHTML = corr.length === 0
+        ? '<p style="color:var(--text-muted);font-size:0.85rem;">Sin datos de tags</p>'
+        : corr.map(t => `<div class="tag-likes-row"><div><span class="tag-likes-name">${t.name}</span> <span class="tag-likes-posts">(${t.count} posts)</span></div><span class="tag-likes-avg">${t.avg} ★</span></div>`).join('');
+    }
+  } catch(e) {
+    document.getElementById('tagLikesTable').innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">Error al cargar tags</p>';
+  }
+
+  // Top 5 posts
+  const top5 = [...published].sort((a, b) => (b.likes || 0) - (a.likes || 0)).slice(0, 5);
+  document.getElementById('topPostsBody').innerHTML = top5.map((p, i) =>
+    `<tr><td class="rank">${i + 1}</td><td><a href="${BASE}/post/${p.slug}" target="_blank" class="post-link">${p.title}</a></td><td class="likes-count">${p.likes || 0} ★</td><td style="color:var(--text-secondary);font-size:0.8rem;">${formatDate(p.published_at)}</td></tr>`
+  ).join('');
 }
 
 // ===== AUTO-SAVE TO LOCALSTORAGE =====

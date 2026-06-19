@@ -16,6 +16,7 @@ import '../styles/admin.css';
   <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
   <script is:inline src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/@enzedonline/quill-blot-formatter2@3.2.0/dist/index.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -42,6 +43,18 @@ import '../styles/admin.css';
 
   <!-- ADMIN -->
   <div class="admin-layout" id="adminLayout">
+    <!-- SIDEBAR NAV -->
+    <nav class="admin-sidebar" id="adminSidebar">
+      <button class="sidebar-tab active" data-section="posts" title="Posts">
+        <i class="material-icons">article</i>
+        <span>Posts</span>
+      </button>
+      <button class="sidebar-tab" data-section="stats" title="Estadísticas">
+        <i class="material-icons">bar_chart</i>
+        <span>Estadísticas</span>
+      </button>
+    </nav>
+
     <header class="admin-header">
       <h1 class="admin-title">DMM Admin <span>Panel</span></h1>
       <div class="header-actions">
@@ -78,6 +91,79 @@ import '../styles/admin.css';
           </tbody>
         </table>
         <div class="pagination" id="pagination"></div>
+      </div>
+
+      <!-- STATS DASHBOARD -->
+      <div class="stats-screen hidden" id="statsScreen">
+        <div class="stats-kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-dual">
+              <div>
+                <div class="kpi-value" id="kpiTotalPosts">—</div>
+                <div class="kpi-label">Posts</div>
+              </div>
+              <div class="kpi-divider"></div>
+              <div>
+                <div class="kpi-value" id="kpiTotalLikes">—</div>
+                <div class="kpi-label">Likes</div>
+              </div>
+            </div>
+            <div class="kpi-sub" id="kpiRatio">— likes/post</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpiLastPost">—</div>
+            <div class="kpi-label">Último Post</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpiAvgWords">—</div>
+            <div class="kpi-label">Words Prom.</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpiCadencia">—</div>
+            <div class="kpi-label">Cadencia</div>
+            <div class="kpi-sub">días entre posts</div>
+          </div>
+        </div>
+        <div class="stats-charts-row">
+          <div class="chart-card">
+            <h4>Posts por Mes</h4>
+            <canvas id="chartMonthlyPosts"></canvas>
+          </div>
+          <div class="chart-card">
+            <h4>Likes por Mes</h4>
+            <canvas id="chartMonthlyLikes"></canvas>
+          </div>
+        </div>
+        <div class="stats-charts-row">
+          <div class="chart-card">
+            <h4>Categorías</h4>
+            <div class="chart-doughnut-wrap">
+              <canvas id="chartCategories"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h4>Tag / Likes (promedio)</h4>
+            <div id="tagLikesTable" class="tag-likes-container">
+              <p style="color:var(--text-muted);">Cargando...</p>
+            </div>
+          </div>
+        </div>
+        <div class="stats-section">
+          <h4 class="stats-section-title">Top 5 Posts por Likes</h4>
+          <table class="stats-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Post</th>
+                <th>Likes</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody id="topPostsBody">
+              <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:20px;">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- EDITOR -->
