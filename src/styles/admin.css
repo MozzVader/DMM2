@@ -1276,6 +1276,10 @@ button.fab-menu-item { cursor: pointer; font-family: inherit; font-size: inherit
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .kpi-value {
@@ -1298,12 +1302,14 @@ button.fab-menu-item { cursor: pointer; font-family: inherit; font-size: inherit
   font-size: 0.78rem;
   color: var(--text-muted);
   margin-top: 8px;
+  text-align: center;
 }
 
 .kpi-dual {
   display: flex;
   gap: 20px;
   align-items: center;
+  justify-content: center;
 }
 
 .kpi-divider {

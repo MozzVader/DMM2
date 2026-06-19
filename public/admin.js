@@ -743,8 +743,13 @@ async function loadStats() {
     daysSince === 0 ? 'Hoy' : daysSince === 1 ? 'Ayer' : 'Hace ' + daysSince + ' días';
 
   const wc = published.map(p => {
-    const t = (p.content || '').replace(/<[^>]*>/g, '').trim();
-    return t ? t.split(/\s+/).length : 0;
+    const t = (p.content || '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '')   // remove <style> blocks
+      .replace(/<[^>]*>/g, '')                       // remove all HTML tags
+      .replace(/&\w+;/g, ' ')                        // decode HTML entities as space
+      .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9]+/g, ' ') // keep only letters/numbers
+      .trim();
+    return t ? t.split(/\s+/).filter(w => w.length > 0).length : 0;
   });
   document.getElementById('kpiAvgWords').textContent =
     Math.round(wc.reduce((a, b) => a + b, 0) / totalPosts).toLocaleString('es-AR');
@@ -815,54 +820,69 @@ async function loadStats() {
     }
   });
 
-  const catMap = {};
-  published.forEach(p => { const c = p.badge || 'General'; catMap[c] = (catMap[c] || 0) + 1; });
-  const catLabels = Object.keys(catMap).sort((a, b) => catMap[b] - catMap[a]);
+  // Tags data — single query, reuse for doughnut + table
   const palette = [
     'rgba(191,90,242,0.8)', 'rgba(255,71,87,0.8)', 'rgba(255,211,42,0.8)',
-    'rgba(46,213,115,0.8)', 'rgba(34,211,238,0.8)', 'rgba(255,159,67,0.8)'
+    'rgba(46,213,115,0.8)', 'rgba(34,211,238,0.8)', 'rgba(255,159,67,0.8)',
+    'rgba(255,99,132,0.8)', 'rgba(54,162,235,0.8)', 'rgba(153,102,255,0.8)',
+    'rgba(255,205,86,0.8)'
   ];
+  let tagDoughnutReady = false;
 
-  chartCategoriesInst = new Chart(document.getElementById('chartCategories'), {
-    type: 'doughnut',
-    data: {
-      labels: catLabels,
-      datasets: [{
-        data: catLabels.map(k => catMap[k]),
-        backgroundColor: palette.slice(0, catLabels.length),
-        borderColor: '#131313', borderWidth: 3
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: true,
-      plugins: { legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true, pointStyle: 'circle', font: { size: 12 } } } }
-    }
-  });
-
-  // Tag/Likes correlation
   try {
     const { data: postTags } = await sb.from('post_tags').select('post_id, tag_id');
     const { data: tags } = await sb.from('tags').select('*');
     if (postTags && tags && postTags.length > 0) {
       const tMap = {}; tags.forEach(t => tMap[t.id] = t.name);
-      const tLikes = {}, tCounts = {};
+      const tCounts = {}, tLikes = {};
       postTags.forEach(pt => {
         const post = published.find(p => p.id === pt.post_id);
         if (post && tMap[pt.tag_id]) {
           const n = tMap[pt.tag_id];
-          tLikes[n] = (tLikes[n] || 0) + (post.likes || 0);
           tCounts[n] = (tCounts[n] || 0) + 1;
+          tLikes[n] = (tLikes[n] || 0) + (post.likes || 0);
         }
       });
+
+      // Doughnut: tags by post count
+      const sortedTags = Object.entries(tCounts).sort((a, b) => b[1] - a[1]);
+      chartCategoriesInst = new Chart(document.getElementById('chartCategories'), {
+        type: 'doughnut',
+        data: {
+          labels: sortedTags.map(([name]) => name),
+          datasets: [{
+            data: sortedTags.map(([, count]) => count),
+            backgroundColor: palette.slice(0, sortedTags.length),
+            borderColor: '#131313', borderWidth: 3
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: true,
+          plugins: { legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true, pointStyle: 'circle', font: { size: 12 } } } }
+        }
+      });
+
+      // Tag/Likes correlation table
       const corr = Object.entries(tLikes)
         .map(([name, total]) => ({ name, avg: (total / tCounts[name]).toFixed(1), count: tCounts[name] }))
         .sort((a, b) => b.avg - a.avg);
       document.getElementById('tagLikesTable').innerHTML = corr.length === 0
         ? '<p style="color:var(--text-muted);font-size:0.85rem;">Sin datos de tags</p>'
         : corr.map(t => `<div class="tag-likes-row"><div><span class="tag-likes-name">${t.name}</span> <span class="tag-likes-posts">(${t.count} posts)</span></div><span class="tag-likes-avg">${t.avg} ★</span></div>`).join('');
+    } else {
+      // No tags data — show empty state
+      chartCategoriesInst = new Chart(document.getElementById('chartCategories'), {
+        type: 'doughnut',
+        data: { labels: ['Sin tags'], datasets: [{ data: [1], backgroundColor: ['rgba(85,85,85,0.5)'], borderColor: '#131313', borderWidth: 3 }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true, pointStyle: 'circle', font: { size: 12 } } } } }
+      });
     }
   } catch(e) {
-    document.getElementById('tagLikesTable').innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">Error al cargar tags</p>';
+    chartCategoriesInst = new Chart(document.getElementById('chartCategories'), {
+      type: 'doughnut',
+      data: { labels: ['Error'], datasets: [{ data: [1], backgroundColor: ['rgba(255,71,87,0.5)'], borderColor: '#131313', borderWidth: 3 }] },
+      options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true, pointStyle: 'circle', font: { size: 12 } } } } }
+    });
   }
 
   // Top 5 posts
