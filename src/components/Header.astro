@@ -1,5 +1,6 @@
 ---
 import { BASE_URL } from '../lib/constants';
+import SideNav from './SideNav.astro';
 ---
 
 <header class="mag-header">
@@ -21,11 +22,6 @@ import { BASE_URL } from '../lib/constants';
       </div>
     </div>
 
-    <nav class="nav-links" aria-label="Navegación principal">
-      <a href={`${BASE_URL}posts`}>Posts</a>
-      <a href={`${BASE_URL}archive`}>Archivo</a>
-    </nav>
-
     <div class="toggle-area">
       <div class="toggle-track" id="themeToggle" role="switch" tabindex="0" aria-label="Cambiar a tema claro" aria-checked="false">
         <div class="toggle-thumb">
@@ -37,40 +33,10 @@ import { BASE_URL } from '../lib/constants';
   </div>
 </header>
 
+<SideNav />
+
 <style>
   .mag-title-link {
     text-decoration: none;
-  }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex: 1;
-    justify-content: center;
-  }
-
-  .nav-links a {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color 0.2s ease;
-    letter-spacing: 0.01em;
-  }
-
-  .nav-links a:hover {
-    color: var(--neon-purple);
-  }
-
-  @media (max-width: 768px) {
-    .nav-links {
-      order: 3;
-      width: 100%;
-      justify-content: center;
-      gap: 24px;
-      padding: 8px 0 4px;
-    }
   }
 </style>

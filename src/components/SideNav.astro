@@ -1,0 +1,111 @@
+---
+import { BASE_URL } from '../lib/constants';
+---
+
+<nav class="side-nav" aria-label="Navegación">
+  <a href={`${BASE_URL}about`} class="side-nav-link" data-color="#bf5af2" title="About">
+    <i class="material-icons">person</i>
+    <span>About</span>
+  </a>
+  <a href={`${BASE_URL}posts`} class="side-nav-link" data-color="#ff4757" title="Posts">
+    <i class="material-icons">article</i>
+    <span>Posts</span>
+  </a>
+  <a href={`${BASE_URL}archive`} class="side-nav-link" data-color="#ffd93d" title="Archivo">
+    <i class="material-icons">archive</i>
+    <span>Archivo</span>
+  </a>
+  <a href={`${BASE_URL}museo`} class="side-nav-link" data-color="#4ade80" title="Museo">
+    <i class="material-icons">museum</i>
+    <span>Museo</span>
+  </a>
+  <button class="side-nav-link" data-color="#22d3ee" title="Random" id="randomPostBtn">
+    <i class="material-icons">shuffle</i>
+    <span>Random</span>
+  </button>
+</nav>
+
+<script is:inline>
+document.getElementById('randomPostBtn').addEventListener('click', async () => {
+  try {
+    const resp = await fetch('/DMM2/api/slugs.json');
+    const posts = await resp.json();
+    if (posts.length > 0) {
+      const rand = posts[Math.floor(Math.random() * posts.length)];
+      window.location.href = '/DMM2/post/' + rand.slug;
+    }
+  } catch(e) {
+    // Fallback: go to posts page
+    window.location.href = '/DMM2/posts';
+  }
+});
+</script>
+
+<style>
+  .side-nav {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .side-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    width: 195px;
+    transform: translateX(-195px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.2s ease;
+    background: var(--bg-card, #1a1a22);
+    border: none;
+    border-right: 5px solid var(--nav-color, #bf5af2);
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-secondary, #888);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .side-nav-link i {
+    font-size: 20px;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+    color: var(--nav-color, #bf5af2);
+  }
+
+  .side-nav-link:hover {
+    transform: translateX(0);
+    color: var(--text-primary, #e8e8e8);
+    background: var(--bg-card, #1a1a22);
+  }
+
+  /* Light mode */
+  body.light .side-nav-link {
+    background: rgba(245, 243, 240, 0.95);
+    color: #666;
+  }
+
+  body.light .side-nav-link:hover {
+    color: #1a1a1a;
+    background: rgba(245, 243, 240, 1);
+  }
+
+  @media (max-width: 768px) {
+    .side-nav-link {
+      width: 170px;
+      transform: translateX(-170px);
+      padding: 8px 12px;
+      font-size: 0.82rem;
+    }
+  }
+</style>

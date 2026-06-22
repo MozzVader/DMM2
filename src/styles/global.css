@@ -1161,11 +1161,6 @@ body.light .badge-cyan {
     order: 2;
   }
 
-  .mag-header .nav-links {
-    order: 3;
-    width: 100%;
-  }
-
   .mag-title {
     font-size: 1.35rem;
   }
