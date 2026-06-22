@@ -1075,6 +1075,8 @@ Quill.register(BrightTextBlot);
 document.addEventListener('DOMContentLoaded', () => {
 // Register QuillBlotFormatter (blot-formatter2)
 Quill.register('modules/blotFormatter', QuillBlotFormatter2.default);
+// Register quill-better-table
+Quill.register('modules/betterTable', QuillBetterTable);
 
 quill = new Quill('#editor-container', {
   theme: 'snow',
@@ -1085,7 +1087,7 @@ quill = new Quill('#editor-container', {
         style: { position: 'absolute', border: '2px solid var(--neon-purple)', background: 'rgba(191,90,242,0.08)' }
       }
     },
-    table: true,
+    betterTable: true,
     toolbar: {
       container: [
         ['bold', 'italic', 'underline', 'strike', 'small', 'bright'],
