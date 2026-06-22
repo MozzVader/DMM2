@@ -229,7 +229,7 @@ export async function getMuseoPostsForPagination(): Promise<Post[]> {
       .from('posts')
       .select('*, tags:post_tags(tags(id, name, slug))')
       .eq('is_draft', false)
-      .eq('badge', 'museo')
+      .eq('badge', 'Museo')
       .lte('published_at', new Date().toISOString())
       .order('published_at', { ascending: false });
 
