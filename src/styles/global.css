@@ -1085,6 +1085,11 @@ body.light .badge-cyan {
   font-size: 0.72rem;
   color: var(--text-secondary);
   letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
 }
 
 .mag-footer .neon-word {
