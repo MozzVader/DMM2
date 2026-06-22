@@ -1075,8 +1075,6 @@ Quill.register(BrightTextBlot);
 document.addEventListener('DOMContentLoaded', () => {
 // Register QuillBlotFormatter (blot-formatter2)
 Quill.register('modules/blotFormatter', QuillBlotFormatter2.default);
-// Register quill-better-table
-Quill.register('modules/betterTable', QuillBetterTable);
 
 quill = new Quill('#editor-container', {
   theme: 'snow',
@@ -1087,7 +1085,6 @@ quill = new Quill('#editor-container', {
         style: { position: 'absolute', border: '2px solid var(--neon-purple)', background: 'rgba(191,90,242,0.08)' }
       }
     },
-    betterTable: true,
     toolbar: {
       container: [
         ['bold', 'italic', 'underline', 'strike', 'small', 'bright'],
@@ -1112,7 +1109,7 @@ quill = new Quill('#editor-container', {
 
 // ===== CLIPBOARD MATCHER: preserve snippet blocks =====
 const Delta = Quill.import('delta');
-const SNIPPET_CLASSES = ['museum-card', 'blog-timeline', 'dmm-separator'];
+const SNIPPET_CLASSES = ['museum-card', 'blog-timeline', 'dmm-separator', 'dmm-table'];
 quill.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
   if (node.nodeType !== 1) return delta;
   // Match snippet blocks by class
@@ -1210,25 +1207,6 @@ if (toolbar) {
 
   // Insert the align group at the end of the toolbar
   toolbar.appendChild(alignGroup);
-
-  // --- Table insert button ---
-  const tableBtn = document.createElement('button');
-  tableBtn.className = 'ql-custom-table';
-  tableBtn.setAttribute('title', 'Insertar tabla 3x3');
-  tableBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y="9" x2="21" y2="9"/><line x1="3" y="15" x2="21" y2="15"/><line x1="9" y="3" x2="9" y2="21"/><line x1="15" y="3" x2="15" y2="21"/></svg>';
-  const cleanBtn = toolbar.querySelector('.ql-clean');
-  if (cleanBtn && cleanBtn.parentNode) {
-    cleanBtn.parentNode.insertBefore(tableBtn, cleanBtn);
-  }
-  tableBtn.addEventListener('click', () => {
-    const btModule = quill.getModule('betterTable');
-    if (btModule) {
-      btModule.insertTable(3, 3);
-      showToast('Tabla 3x3 insertada');
-    } else {
-      showToast('Módulo de tablas no disponible', 'error');
-    }
-  });
 }
 
 // URL modal insert
@@ -1460,6 +1438,26 @@ document.getElementById('fabSeparator').addEventListener('click', () => {
   const html = `<div class="dmm-separator" style="height:2px;border:none;background:linear-gradient(to right,#bf5af2,#ff4757,#ffd93d);border-radius:1px;margin:24px 0;"></div>`;
   navigator.clipboard.writeText(html).then(() => {
     showToast('Separador copiado al portapapeles');
+    document.getElementById('fabMain').classList.remove('open');
+    document.getElementById('fabMenu').classList.remove('open');
+  });
+});
+
+// ===== FAB: COPY TABLE =====
+document.getElementById('fabTable').addEventListener('click', () => {
+  const html = `<div class="dmm-table" style="margin:20px 0;overflow-x:auto;">
+<table style="width:100%;border-collapse:collapse;border:1px solid rgba(255,255,255,0.1);border-radius:6px;overflow:hidden;">
+  <thead>
+    <tr><th style="border:1px solid rgba(255,255,255,0.08);padding:10px 14px;background:rgba(191,90,242,0.12);color:#bf5af2;font-weight:600;text-align:left;">Encabezado 1</th><th style="border:1px solid rgba(255,255,255,0.08);padding:10px 14px;background:rgba(191,90,242,0.12);color:#bf5af2;font-weight:600;text-align:left;">Encabezado 2</th><th style="border:1px solid rgba(255,255,255,0.08);padding:10px 14px;background:rgba(191,90,242,0.12);color:#bf5af2;font-weight:600;text-align:left;">Encabezado 3</th></tr>
+  </thead>
+  <tbody>
+    <tr><td style="border:1px solid rgba(255,255,255,0.08);padding:10px 14px;color:#e0e0e0;">Celda 1</td><td style="border:1px solid rgba(255,255,255,0.08);padding:10px 14px;color:#e0e0e0;">Celda 2</td><td style="border:1px solid rgba(255,255,255,0.08);padding:10px 14px;color:#e0e0e0;">Celda 3</td></tr>
+    <tr><td style="border:1px solid rgba(255,255,255,0.08);padding:10px 14px;color:#e0e0e0;">Celda 4</td><td style="border:1px solid rgba(255,255,255,0.08);padding:10px 14px;color:#e0e0e0;">Celda 5</td><td style="border:1px solid rgba(255,255,255,0.08);padding:10px 14px;color:#e0e0e0;">Celda 6</td></tr>
+  </tbody>
+</table>
+</div>`;
+  navigator.clipboard.writeText(html).then(() => {
+    showToast('Tabla copiada al portapapeles');
     document.getElementById('fabMain').classList.remove('open');
     document.getElementById('fabMenu').classList.remove('open');
   });

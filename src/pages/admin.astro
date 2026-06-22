@@ -16,7 +16,6 @@ import '../styles/admin.css';
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
   <script is:inline src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
-  <script is:inline src={(import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/quill-better-table.js'}></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/@enzedonline/quill-blot-formatter2@3.2.0/dist/index.js"></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -342,6 +341,9 @@ import '../styles/admin.css';
       </button>
       <button class="fab-menu-item" id="fabSeparator" title="Copiar separador gradient al portapapeles">
         <span class="fab-icon">✨</span> Separador
+      </button>
+      <button class="fab-menu-item" id="fabTable" title="Copiar tabla al portapapeles">
+        <span class="fab-icon">📊</span> Tabla
       </button>
       <a href="https://iloveimg.com" target="_blank" rel="noopener" class="fab-menu-item">
         <span class="fab-icon">🖼</span> iLoveIMG (comprimir/redimensionar)
