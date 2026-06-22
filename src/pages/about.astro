@@ -1,0 +1,180 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BASE_URL } from '../lib/constants';
+---
+
+<BaseLayout title="About — Dos Minutos Más" description="Conocé más sobre Dos Minutos Más, el blog donde escribo sobre tecnología, opinions y todo lo que pasa cuando te quedás dos minutos más.">
+  <main class="about-page">
+    <div class="about-content">
+      <div class="about-header">
+        <h1>Sobre <span class="highlight">Dos Minutos Más</span></h1>
+        <p class="about-tagline">Escribiendo sobre cosas que pasan cuando te quedás dos minutos más.</p>
+      </div>
+
+      <div class="about-body">
+        <p>
+          Bienvenido a <strong>Dos Minutos Más</strong>, un espacio donde escribo sobre tecnología,
+          desarrollo de software, opinions y reflexiones que se me ocurren a las 3 de la mañana.
+          El nombre viene de esa sensación de "quedarse dos minutos más" — leyendo un artículo,
+          debuggeando un problema, o cayendo en una rabbit hole de Wikipedia a las tantas.
+        </p>
+
+        <p>
+          Este blog está construido con <strong>Astro</strong>, alojado en <strong>GitHub Pages</strong>
+          y usa <strong>Supabase</strong> como base de datos. El contenido se escribe y gestiona desde
+          un panel de administración propio — porque ¿por qué usar algo existente cuando podés
+          construirlo vos mismo y que te dé dolores de cabeza únicos?
+        </p>
+
+        <h2>Lo que encontrás acá</h2>
+        <ul>
+          <li><strong>Posts</strong> — Artículos sobre tech, desarrollo y opiniones varias.</li>
+          <li><strong>Museo</strong> — Una colección de piezas que merecen ser preservadas. Posts que
+            ya pasaron su momento pero siguen valiendo la pena.</li>
+          <li><strong>Archivo</strong> — Todo el contenido organizado cronológicamente.</li>
+          <li><strong>Random</strong> — ¿No sabés qué leer? Dejá que el destino elija por vos.</li>
+        </ul>
+
+        <h2>Contacto</h2>
+        <p>
+          ¿Querés decirme algo? Podés encontrarme en
+          <a href="https://www.instagram.com/mozz_vader" target="_blank" rel="noopener">Instagram</a>
+          o escribirme a <a href="mailto:contacto.mozzdev@gmail.com">contacto.mozzdev@gmail.com</a>.
+        </p>
+
+        <div class="about-footer">
+          <a href={BASE_URL} class="about-back-btn">← Volver al inicio</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .about-page {
+    min-height: 60vh;
+    padding: 0 1rem;
+  }
+
+  .about-content {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 3rem 1rem 4rem;
+  }
+
+  .about-header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .about-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+  }
+
+  .highlight {
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-red));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .about-tagline {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  .about-body h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 2.5rem 0 1rem;
+  }
+
+  .about-body p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text-body);
+    margin-bottom: 1.25rem;
+  }
+
+  .about-body strong {
+    color: var(--text-primary);
+  }
+
+  .about-body a {
+    color: var(--neon-purple);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .about-body a:hover {
+    opacity: 0.8;
+  }
+
+  .about-body ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1.25rem;
+  }
+
+  .about-body ul li {
+    padding: 0.5rem 0;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text-body);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .about-body ul li:last-child {
+    border-bottom: none;
+  }
+
+  .about-body ul li strong {
+    color: var(--neon-purple);
+  }
+
+  .about-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .about-back-btn {
+    display: inline-block;
+    padding: 0.7rem 1.4rem;
+    background: rgba(191,90,242,0.1);
+    color: var(--neon-purple);
+    border: 1px solid rgba(191,90,242,0.2);
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+  }
+
+  .about-back-btn:hover {
+    background: rgba(191,90,242,0.18);
+    border-color: rgba(191,90,242,0.35);
+    opacity: 1;
+  }
+
+  @media (max-width: 600px) {
+    .about-header h1 {
+      font-size: 2rem;
+    }
+
+    .about-content {
+      padding: 2rem 0.5rem 3rem;
+    }
+  }
+</style>
