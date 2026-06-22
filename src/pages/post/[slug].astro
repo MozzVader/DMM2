@@ -300,6 +300,41 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
     overflow-x: auto;
   }
 
+  .post-content :global(.ql-better-table-wrapper) {
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+
+  .post-content :global(table.ql-better-table) {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .post-content :global(table.ql-better-table td),
+  .post-content :global(table.ql-better-table th) {
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .post-content :global(table.ql-better-table th) {
+    background: rgba(191,90,242,0.1);
+    font-weight: 600;
+    color: var(--neon-purple, #bf5af2);
+  }
+
+  .post-content :global(.qlbt-cell-align-center) {
+    text-align: center;
+  }
+
+  .post-content :global(.qlbt-cell-align-right) {
+    text-align: right;
+  }
+
   .post-content :global(img) {
     max-width: 100%;
     border-radius: 5px;

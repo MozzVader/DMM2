@@ -1085,6 +1085,7 @@ quill = new Quill('#editor-container', {
         style: { position: 'absolute', border: '2px solid var(--neon-purple)', background: 'rgba(191,90,242,0.08)' }
       }
     },
+    table: true,
     toolbar: {
       container: [
         ['bold', 'italic', 'underline', 'strike', 'small', 'bright'],
@@ -1093,6 +1094,7 @@ quill = new Quill('#editor-container', {
         [{ 'align': [] }],
         ['blockquote', 'code-block'],
         ['link', 'image', 'video'],
+        [{ 'table': [] }],
         ['clean']
       ],
       handlers: {

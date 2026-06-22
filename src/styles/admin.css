@@ -1441,3 +1441,25 @@ button.fab-menu-item { cursor: pointer; font-family: inherit; font-size: inherit
 .stats-table .post-link:hover {
   color: var(--neon-purple);
 }
+
+/* ===== QUILL BETTER TABLE (admin editor) ===== */
+.ql-container .qlbt-table-cell-inner {
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-input);
+  padding: 6px 10px;
+}
+.ql-container .qlbt-table-cell-inner:focus-within {
+  border-color: var(--neon-purple);
+}
+.qlbt-operation-menu {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-input) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+}
+.qlbt-operation-menu button {
+  color: var(--text-primary) !important;
+}
+.qlbt-operation-menu button:hover {
+  background: var(--bg-hover) !important;
+}
