@@ -138,7 +138,6 @@ a {
   top: 0;
   z-index: 100;
   border-bottom: 1px solid var(--border-subtle);
-  overflow: hidden;
   transition: border-color 0.4s ease, background-color 0.4s ease;
   /* Sticky backdrop */
   background-color: var(--bg-dark);
