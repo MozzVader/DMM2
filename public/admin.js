@@ -1109,13 +1109,23 @@ quill = new Quill('#editor-container', {
 
 // ===== CLIPBOARD MATCHER: preserve snippet blocks =====
 const Delta = Quill.import('delta');
-const SNIPPET_CLASSES = ['museum-card', 'blog-timeline'];
+const SNIPPET_CLASSES = ['museum-card', 'blog-timeline', 'dmm-separator'];
 quill.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
   if (node.nodeType !== 1) return delta;
+  // Match snippet blocks by class
   for (const cls of SNIPPET_CLASSES) {
     if (node.classList && node.classList.contains(cls)) {
       return new Delta().insert({ 'raw-html': node.outerHTML }, quill.getFormat());
     }
+  }
+  // Match legacy gradient <hr> separators (without class)
+  if (node.tagName === 'HR' && (node.style.background || node.style.backgroundImage)) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'dmm-separator';
+    wrapper.style.cssText = node.style.cssText;
+    wrapper.style.height = node.style.height || '2px';
+    wrapper.style.margin = '24px 0';
+    return new Delta().insert({ 'raw-html': wrapper.outerHTML }, quill.getFormat());
   }
   return delta;
 });
@@ -1425,7 +1435,7 @@ document.getElementById('fabTimeline').addEventListener('click', () => {
 
 // ===== FAB: COPY SEPARATOR =====
 document.getElementById('fabSeparator').addEventListener('click', () => {
-  const html = `<hr style="height: 2px; border: none; background: linear-gradient(to right, #bf5af2, #ff4757, #ffd93d);">`;
+  const html = `<div class="dmm-separator" style="height:2px;border:none;background:linear-gradient(to right,#bf5af2,#ff4757,#ffd93d);border-radius:1px;margin:24px 0;"></div>`;
   navigator.clipboard.writeText(html).then(() => {
     showToast('Separador copiado al portapapeles');
     document.getElementById('fabMain').classList.remove('open');
