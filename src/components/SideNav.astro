@@ -2,7 +2,7 @@
 import { BASE_URL } from '../lib/constants';
 ---
 
-<nav class="side-nav" aria-label="Navegación">
+<nav class="side-nav" aria-label="Navegación" data-base-url={BASE_URL}>
   <a href={`${BASE_URL}about`} class="side-nav-link" style="--nav-color: #bf5af2; border-right-color: #bf5af2" title="About">
     <i class="material-icons" style="color: #bf5af2">person</i>
     <span>About</span>
@@ -28,17 +28,28 @@ import { BASE_URL } from '../lib/constants';
 <script is:inline>
 document.getElementById('randomPostBtn').addEventListener('click', async () => {
   try {
-    const base = document.querySelector('meta[property="og:url"]')?.content || '';
-    const origin = base ? new URL(base).origin : location.origin;
-    const basePath = new URL(origin).pathname.replace(/\/$/, '');
-    const resp = await fetch(basePath + '/api/slugs.json');
-    const posts = await resp.json();
-    if (posts.length > 0) {
-      const rand = posts[Math.floor(Math.random() * posts.length)];
-      window.location.href = basePath + '/post/' + rand.slug;
-    }
+    const nav = document.querySelector('.side-nav');
+    const baseUrl = nav ? nav.dataset.baseUrl || '/' : '/';
+    const rssUrl = baseUrl + 'rss.xml';
+
+    const resp = await fetch(rssUrl);
+    if (!resp.ok) throw new Error('RSS fetch failed');
+    const xml = await resp.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xml, 'text/xml');
+
+    const items = doc.querySelectorAll('item > link');
+    if (items.length === 0) throw new Error('No items in RSS');
+
+    const links = Array.from(items).map(el => el.textContent?.trim()).filter(Boolean);
+    if (links.length === 0) throw new Error('No valid links');
+
+    const randomLink = links[Math.floor(Math.random() * links.length)];
+    window.location.href = randomLink;
   } catch(e) {
-    window.location.href = '/posts';
+    const nav = document.querySelector('.side-nav');
+    const baseUrl = nav ? nav.dataset.baseUrl || '/' : '/';
+    window.location.href = baseUrl + 'posts';
   }
 });
 </script>

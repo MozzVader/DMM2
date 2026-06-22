@@ -222,6 +222,28 @@ export async function getAllPostsForPagination(): Promise<Post[]> {
   }
 }
 
+/** Get museo posts (badge = 'museo') for pagination, newest first (scheduled posts excluded) */
+export async function getMuseoPostsForPagination(): Promise<Post[]> {
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*, tags:post_tags(tags(id, name, slug))')
+      .eq('is_draft', false)
+      .eq('badge', 'museo')
+      .lte('published_at', new Date().toISOString())
+      .order('published_at', { ascending: false });
+
+    if (error) throw error;
+    return ((data as Post[]) || []).map((p) => ({
+      ...p,
+      tags: normalizeTags(p.tags),
+    }));
+  } catch {
+    console.warn('[supabase] getMuseoPostsForPagination failed — using demo data');
+    return [];
+  }
+}
+
 /** Get the featured post (scheduled posts excluded) */
 export async function getFeaturedPost(): Promise<Post | null> {
   try {
