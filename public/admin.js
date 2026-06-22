@@ -443,7 +443,7 @@ try {
     showToast('Post creado correctamente');
   }
 
-  showScreen('dashboard');
+  showScreen('posts');
   loadDashboard();
   loadTagsManager();
   clearDraft();
@@ -499,7 +499,7 @@ try {
     showToast('Borrador guardado');
   }
 
-  showScreen('dashboard');
+  showScreen('posts');
   loadDashboard();
   loadTagsManager();
   clearDraft();
