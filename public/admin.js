@@ -1096,7 +1096,6 @@ quill = new Quill('#editor-container', {
         [{ 'align': [] }],
         ['blockquote', 'code-block'],
         ['link', 'image', 'video'],
-        [{ 'table': [] }],
         ['clean']
       ],
       handlers: {
@@ -1211,6 +1210,25 @@ if (toolbar) {
 
   // Insert the align group at the end of the toolbar
   toolbar.appendChild(alignGroup);
+
+  // --- Table insert button ---
+  const tableBtn = document.createElement('button');
+  tableBtn.className = 'ql-custom-table';
+  tableBtn.setAttribute('title', 'Insertar tabla 3x3');
+  tableBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y="9" x2="21" y2="9"/><line x1="3" y="15" x2="21" y2="15"/><line x1="9" y="3" x2="9" y2="21"/><line x1="15" y="3" x2="15" y2="21"/></svg>';
+  const cleanBtn = toolbar.querySelector('.ql-clean');
+  if (cleanBtn && cleanBtn.parentNode) {
+    cleanBtn.parentNode.insertBefore(tableBtn, cleanBtn);
+  }
+  tableBtn.addEventListener('click', () => {
+    const btModule = quill.getModule('betterTable');
+    if (btModule) {
+      btModule.insertTable(3, 3);
+      showToast('Tabla 3x3 insertada');
+    } else {
+      showToast('Módulo de tablas no disponible', 'error');
+    }
+  });
 }
 
 // URL modal insert
