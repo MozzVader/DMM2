@@ -6,11 +6,9 @@ var QuillBetterTable;
                 define(["quill"], factory);
         else if(typeof exports === 'object')
                 exports["quillBetterTable"] = factory(require("quill"));
-        else {
-                if(!root["Quill"]) throw new Error("quill-better-table: window.Quill not found. Load Quill first.");
+        else
                 QuillBetterTable = factory(root["Quill"]);
-        }
-})(typeof window!=='undefined'?window:typeof global!=='undefined'?global:this, function(__WEBPACK_EXTERNAL_MODULE__0__) {
+})(window, function(__WEBPACK_EXTERNAL_MODULE__0__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/        function hotDisposeChunk(chunkId) {
 /******/                delete installedChunks[chunkId];
@@ -3236,3 +3234,4 @@ module.exports = __webpack_require__(10);
 
 /***/ })
 /******/ ])["default"];
+});
