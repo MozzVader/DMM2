@@ -3,24 +3,24 @@ import { BASE_URL } from '../lib/constants';
 ---
 
 <nav class="side-nav" aria-label="Navegación">
-  <a href={`${BASE_URL}about`} class="side-nav-link" data-color="#bf5af2" title="About">
-    <i class="material-icons">person</i>
+  <a href={`${BASE_URL}about`} class="side-nav-link" style="--nav-color: #bf5af2; border-right-color: #bf5af2" title="About">
+    <i class="material-icons" style="color: #bf5af2">person</i>
     <span>About</span>
   </a>
-  <a href={`${BASE_URL}posts`} class="side-nav-link" data-color="#ff4757" title="Posts">
-    <i class="material-icons">article</i>
+  <a href={`${BASE_URL}posts`} class="side-nav-link" style="--nav-color: #ff4757; border-right-color: #ff4757" title="Posts">
+    <i class="material-icons" style="color: #ff4757">article</i>
     <span>Posts</span>
   </a>
-  <a href={`${BASE_URL}archive`} class="side-nav-link" data-color="#ffd93d" title="Archivo">
-    <i class="material-icons">archive</i>
+  <a href={`${BASE_URL}archive`} class="side-nav-link" style="--nav-color: #ffd93d; border-right-color: #ffd93d" title="Archivo">
+    <i class="material-icons" style="color: #ffd93d">archive</i>
     <span>Archivo</span>
   </a>
-  <a href={`${BASE_URL}museo`} class="side-nav-link" data-color="#4ade80" title="Museo">
-    <i class="material-icons">museum</i>
+  <a href={`${BASE_URL}museo`} class="side-nav-link" style="--nav-color: #4ade80; border-right-color: #4ade80" title="Museo">
+    <i class="material-icons" style="color: #4ade80">museum</i>
     <span>Museo</span>
   </a>
-  <button class="side-nav-link" data-color="#22d3ee" title="Random" id="randomPostBtn">
-    <i class="material-icons">shuffle</i>
+  <button class="side-nav-link" style="--nav-color: #22d3ee; border-right-color: #22d3ee" title="Random" id="randomPostBtn">
+    <i class="material-icons" style="color: #22d3ee">shuffle</i>
     <span>Random</span>
   </button>
 </nav>
@@ -28,15 +28,17 @@ import { BASE_URL } from '../lib/constants';
 <script is:inline>
 document.getElementById('randomPostBtn').addEventListener('click', async () => {
   try {
-    const resp = await fetch('/DMM2/api/slugs.json');
+    const base = document.querySelector('meta[property="og:url"]')?.content || '';
+    const origin = base ? new URL(base).origin : location.origin;
+    const basePath = new URL(origin).pathname.replace(/\/$/, '');
+    const resp = await fetch(basePath + '/api/slugs.json');
     const posts = await resp.json();
     if (posts.length > 0) {
       const rand = posts[Math.floor(Math.random() * posts.length)];
-      window.location.href = '/DMM2/post/' + rand.slug;
+      window.location.href = basePath + '/post/' + rand.slug;
     }
   } catch(e) {
-    // Fallback: go to posts page
-    window.location.href = '/DMM2/posts';
+    window.location.href = '/posts';
   }
 });
 </script>
@@ -59,13 +61,13 @@ document.getElementById('randomPostBtn').addEventListener('click', async () => {
     gap: 12px;
     padding: 10px 14px;
     width: 195px;
-    transform: translateX(-195px);
+    transform: translateX(-190px);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                 background-color 0.2s ease;
     background: var(--bg-card, #1a1a22);
     border: none;
     border-right: 5px solid var(--nav-color, #bf5af2);
-    border-radius: 0 6px 6px 0;
+    border-radius: 6px 0 0 6px;
     cursor: pointer;
     text-decoration: none;
     color: var(--text-secondary, #888);
@@ -73,6 +75,7 @@ document.getElementById('randomPostBtn').addEventListener('click', async () => {
     font-size: 0.88rem;
     font-weight: 500;
     white-space: nowrap;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.4);
   }
 
   .side-nav-link i {
@@ -86,7 +89,7 @@ document.getElementById('randomPostBtn').addEventListener('click', async () => {
   .side-nav-link:hover {
     transform: translateX(0);
     color: var(--text-primary, #e8e8e8);
-    background: var(--bg-card, #1a1a22);
+    background: rgba(255, 255, 255, 0.06);
   }
 
   /* Light mode */
@@ -97,13 +100,13 @@ document.getElementById('randomPostBtn').addEventListener('click', async () => {
 
   body.light .side-nav-link:hover {
     color: #1a1a1a;
-    background: rgba(245, 243, 240, 1);
+    background: rgba(0, 0, 0, 0.05);
   }
 
   @media (max-width: 768px) {
     .side-nav-link {
       width: 170px;
-      transform: translateX(-170px);
+      transform: translateX(-165px);
       padding: 8px 12px;
       font-size: 0.82rem;
     }

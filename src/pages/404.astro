@@ -1,9 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
 import { BASE_URL } from '../lib/constants';
 ---
 
 <BaseLayout title="Página no encontrada — 404">
+  <Header slot="header" />
   <main class="error-page">
     <div class="error-404">404</div>
     <h1>Esta página se ha mudado o no existe</h1>
