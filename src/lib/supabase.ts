@@ -79,8 +79,8 @@ async function fetchPosts(query: any): Promise<Post[]> {
 export async function getAllPosts(): Promise<Post[]> {
   try {
     return await fetchPosts(basePostsQuery().eq('is_featured', false));
-  } catch {
-    console.warn('[supabase] getAllPosts failed — using demo data');
+  } catch (err) {
+    console.warn('[supabase] getAllPosts failed — using demo data', err);
     return DEMO_POSTS;
   }
 }
@@ -89,8 +89,8 @@ export async function getAllPosts(): Promise<Post[]> {
 export async function getAllPostsForPagination(): Promise<Post[]> {
   try {
     return await fetchPosts(basePostsQuery());
-  } catch {
-    console.warn('[supabase] getAllPostsForPagination failed — using demo data');
+  } catch (err) {
+    console.warn('[supabase] getAllPostsForPagination failed — using demo data', err);
     return [DEMO_FEATURED, ...DEMO_POSTS];
   }
 }
@@ -99,8 +99,8 @@ export async function getAllPostsForPagination(): Promise<Post[]> {
 export async function getMuseoPostsForPagination(): Promise<Post[]> {
   try {
     return await fetchPosts(basePostsQuery().eq('badge', 'Museo'));
-  } catch {
-    console.warn('[supabase] getMuseoPostsForPagination failed — using demo data');
+  } catch (err) {
+    console.warn('[supabase] getMuseoPostsForPagination failed — using demo data', err);
     return [];
   }
 }
@@ -115,8 +115,8 @@ export async function getFeaturedPost(): Promise<Post | null> {
     if (error && error.code !== 'PGRST116') throw error;
     if (!data) return null;
     return normalizePost(data);
-  } catch {
-    console.warn('[supabase] getFeaturedPost failed — using demo data');
+  } catch (err) {
+    console.warn('[supabase] getFeaturedPost failed — using demo data', err);
     return DEMO_FEATURED;
   }
 }
@@ -131,8 +131,8 @@ export async function getAllTags(): Promise<Tag[]> {
 
     if (error) throw error;
     return (data as Tag[]) || [];
-  } catch {
-    console.warn('[supabase] getAllTags failed — using demo data');
+  } catch (err) {
+    console.warn('[supabase] getAllTags failed — using demo data', err);
     return DEMO_TAGS;
   }
 }
@@ -169,8 +169,8 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
     return await fetchPosts(
       basePostsQuery().in('id', postIds).eq('is_featured', false)
     );
-  } catch {
-    console.warn(`[supabase] getPostsByTag("${tagSlug}") failed — using demo data`);
+  } catch (err) {
+    console.warn(`[supabase] getPostsByTag("${tagSlug}") failed — using demo data`, err);
     return DEMO_POSTS;
   }
 }
@@ -195,8 +195,8 @@ export async function getArchiveData(): Promise<{ year: number; count: number }[
     return Object.entries(years)
       .map(([year, count]) => ({ year: parseInt(year), count }))
       .sort((a, b) => b.year - a.year);
-  } catch {
-    console.warn('[supabase] getArchiveData failed — using demo data');
+  } catch (err) {
+    console.warn('[supabase] getArchiveData failed — using demo data', err);
     return DEMO_ARCHIVE;
   }
 }
@@ -207,8 +207,8 @@ export async function getPostsByYear(year: number): Promise<Post[]> {
   const end = new Date(year + 1, 0, 1).toISOString();
   try {
     return await fetchPosts(basePostsQuery().gte('published_at', start).lt('published_at', end));
-  } catch {
-    console.warn(`[supabase] getPostsByYear(${year}) failed — using demo data`);
+  } catch (err) {
+    console.warn(`[supabase] getPostsByYear(${year}) failed — using demo data`, err);
     return DEMO_POSTS;
   }
 }
