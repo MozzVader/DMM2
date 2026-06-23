@@ -150,16 +150,6 @@ body {
   align-items: center;
 }
 
-.admin-header h2 {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.2rem;
-}
-
-.admin-header h2 span {
-  color: var(--neon-purple);
-  font-weight: 400;
-}
-
 .admin-title {
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
@@ -217,7 +207,7 @@ body {
 .filter-btn {
   background: var(--bg-input);
   color: var(--text-secondary);
-  border: 1px solid var(--border-color, #2a2a2a);
+  border: 1px solid var(--border-input);
   padding: 6px 14px;
   border-radius: 6px;
   font-size: 0.8rem;
@@ -249,7 +239,7 @@ body {
   letter-spacing: 0.05em;
   padding: 3px 10px;
   font-family: 'Space Grotesk', monospace;
-  border: 1px solid var(--border-color, #2a2a2a);
+  border: 1px solid var(--border-input);
   background: transparent;
   color: var(--text-secondary);
 }
@@ -268,7 +258,7 @@ body {
 .html-editor {
   background: var(--bg-input);
   color: var(--text-primary);
-  border: 1px solid var(--border-color, #2a2a2a);
+  border: 1px solid var(--border-input);
   border-radius: 4px;
   padding: 12px;
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
@@ -294,7 +284,7 @@ body {
 .pagination-btn {
   background: var(--bg-input);
   color: var(--text-primary);
-  border: 1px solid var(--border-color, #2a2a2a);
+  border: 1px solid var(--border-input);
   padding: 6px 16px;
   border-radius: 6px;
   font-size: 0.8rem;
@@ -1262,8 +1252,6 @@ button.fab-menu-item { cursor: pointer; font-family: inherit; font-size: inherit
 }
 
 /* ===== STATS DASHBOARD ===== */
-.hidden { display: none !important; }
-
 .stats-kpi-row {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr 1fr;
