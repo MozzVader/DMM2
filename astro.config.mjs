@@ -7,6 +7,9 @@ export default defineConfig({
   build: {
     assets: 'assets',
   },
+  prefetch: {
+    defaultStrategy: 'viewport',
+  },
   integrations: [
     sitemap(),
   ],

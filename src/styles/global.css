@@ -182,7 +182,7 @@ body.light .mag-header {
 }
 
 .logo-placeholder:hover {
-  border-color: rgba(191, 90, 242, 0.3);
+  border-color: var(--neon-purple);
   box-shadow: 0 0 12px rgba(191, 90, 242, 0.15);
 }
 
