@@ -3,6 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import BottomGrid from '../../components/BottomGrid.astro';
+import SectionDivider from '../../components/SectionDivider.astro';
+import MiniPosts from '../../components/MiniPosts.astro';
 import { getAllPosts, getFeaturedPost } from '../../lib/supabase';
 import { BASE_URL, AUTHOR } from '../../lib/constants';
 import { sanitizeHTML, formatDate, stripHTML, readingTime } from '../../lib/utils';
@@ -30,6 +32,19 @@ export async function getStaticPaths() {
 }
 
 const { post, prevPost, nextPost } = Astro.props;
+
+// --- Related posts: by shared tags, fallback to recent ---
+const allPostsData: Post[] = (await getAllPosts()).concat((await getFeaturedPost()) || []);
+const currentTagSlugs = new Set((post.tags || []).map(t => t.slug));
+const relatedPosts = allPostsData
+  .filter(p => p.id !== post.id)
+  .map(p => ({
+    post: p,
+    score: (p.tags || []).filter(t => currentTagSlugs.has(t.slug)).length
+  }))
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 3)
+  .map(r => r.post);
 
 const dateStr = formatDate(post.published_at);
 const safeContent = sanitizeHTML(post.content);
@@ -98,6 +113,13 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
         </div>
       </div>
     </article>
+
+    {relatedPosts.length > 0 && (
+      <div class="related-section">
+        <SectionDivider label="También podría interesarte" />
+        <MiniPosts posts={relatedPosts} />
+      </div>
+    )}
 
     {(prevPost || nextPost) && (
       <nav class="post-nav" aria-label="Navegación entre posts">
@@ -313,7 +335,11 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
     color: #ffffff !important;
   }
 
-  /* Post footer: tags + likes + share */
+  /* Related posts section */
+  .related-section {
+    margin-top: 40px;
+  }
+
   .post-footer {
     margin-top: 32px;
     padding-top: 20px;
