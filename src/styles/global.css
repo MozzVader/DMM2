@@ -1097,6 +1097,12 @@ body.light .badge-cyan {
   font-weight: 500;
 }
 
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+
 /* ============================================
    BACK TO TOP BUTTON
    ============================================ */
