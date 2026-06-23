@@ -2,10 +2,12 @@
 // Admin CMS page — rendered as Astro page to guarantee it's in the build output
 // All logic is client-side (Supabase Auth, Quill editor, image upload)
 import '../styles/admin.css';
+
+const adminJs = import.meta.env.PROD ? 'admin.min.js' : 'admin.js';
 ---
 
 <!DOCTYPE html>
-<html lang="es" data-sb-url={import.meta.env.SUPABASE_URL || ''} data-sb-key={import.meta.env.SUPABASE_ANON_KEY || ''}>
+<html lang="es" data-sb-url={import.meta.env.SUPABASE_URL || ''} data-sb-key={import.meta.env.SUPABASE_ANON_KEY || ''} data-base-url={import.meta.env.BASE_URL || '/'}>
 <head>
   <meta charset="UTF-8" />
   <meta name="robots" content="noindex, nofollow" />
@@ -354,6 +356,6 @@ import '../styles/admin.css';
     </div>
   </div>
 
-<script is:inline src={(import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/admin.js'}></script>
+<script is:inline src={(import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/' + adminJs}></script>
 </body>
 </html>

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "astro dev",
+    "prebuild": "node scripts/minify-admin.mjs",
     "build": "astro build",
     "preview": "astro preview"
   },
@@ -26,5 +27,8 @@
     "@supabase/supabase-js": "^2.108.1",
     "astro": "^6.4.6",
     "isomorphic-dompurify": "^3.17.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.1"
   }
 }

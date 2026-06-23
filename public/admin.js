@@ -1,7 +1,7 @@
 const SUPABASE_URL = document.documentElement.dataset.sbUrl || '';
 const SUPABASE_ANON_KEY = document.documentElement.dataset.sbKey || '';
 const BUCKET = 'Dosminutosmas';
-const BASE = '/DMM2';
+const BASE = (document.documentElement.dataset.baseUrl || '/').replace(/\/$/, '') + '/';
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
