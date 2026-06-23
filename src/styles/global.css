@@ -10,7 +10,6 @@
   --bg-input: rgba(255, 255, 255, 0.05);
   --bg-toggle-track: rgba(255, 255, 255, 0.1);
   --bg-toggle-thumb: #1a1a1a;
-  --color-toggle-thumb-icon: transparent;
 
   /* Neon warm accents — same in both modes but slightly brighter in light */
   --neon-purple: #bf5af2;
@@ -40,7 +39,6 @@
 
   /* Icon colors */
   --icon-color: rgba(255, 255, 255, 0.4);
-  --icon-hover: var(--text-primary);
 
   /* Glow */
   --title-glow-color: var(--neon-purple);
@@ -54,7 +52,6 @@ body.light {
   --bg-input: rgba(0, 0, 0, 0.04);
   --bg-toggle-track: rgba(0, 0, 0, 0.1);
   --bg-toggle-thumb: #ffffff;
-  --color-toggle-thumb-icon: transparent;
 
   /* Slightly deeper neon tones for light bg contrast */
   --neon-purple: #a855f7;
@@ -77,7 +74,6 @@ body.light {
   --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
 
   --icon-color: rgba(0, 0, 0, 0.4);
-  --icon-hover: var(--text-primary);
 
   --title-glow-opacity: 0.15;
 }

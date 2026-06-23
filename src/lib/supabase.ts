@@ -8,7 +8,7 @@ if (!_supabaseUrl) {
 }
 
 // Supabase createClient requires a valid URL string even if all fetches will fail to demo data
-export const supabase = createClient(
+const supabase = createClient(
   _supabaseUrl || 'https://example.supabase.co',
   _supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YW1wbGUiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTcwMDAwMDAwMCwiZXhwIjoyMDAwMDAwMDAwfQ.placeholder'
 );
