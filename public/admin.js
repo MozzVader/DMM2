@@ -551,7 +551,7 @@ if (post.featured_image) {
 
 if (quill) {
     quill.setText('');
-    quill.clipboard.dangerouslyPasteHTML(0, post.content || '', 'html');
+    quill.clipboard.dangerouslyPasteHTML(0, ulToBulletOl(post.content || ''), 'html');
     restoreImageAlignments(post.content || '');
   }
 
@@ -924,7 +924,7 @@ try {
   document.getElementById('postDate').value = draft.date || '';
   if (draft.content && quill) {
     quill.setText('');
-    quill.clipboard.dangerouslyPasteHTML(0, draft.content, 'html');
+    quill.clipboard.dangerouslyPasteHTML(0, ulToBulletOl(draft.content), 'html');
     restoreImageAlignments(draft.content);
   }
   selectedTags = new Set(draft.tags || []);
@@ -955,7 +955,7 @@ function getContent() {
       node.replaceWith(...tmp.childNodes);
     }
   });
-  return clone.innerHTML;
+  return bulletOlToUl(clone.innerHTML);
 }
 
 /** Restore image data-img-align after dangerouslyPasteHTML strips it */
@@ -1008,14 +1008,15 @@ document.getElementById('htmlToggleBtn').addEventListener('click', () => {
         node.replaceWith(...tmp.childNodes);
       }
     });
-    htmlEl.value = formatHTML(clone.innerHTML);
+    htmlEl.value = formatHTML(bulletOlToUl(clone.innerHTML));
     editorEl.style.display = 'none';
     htmlEl.style.display = '';
     btn.classList.add('active');
     btn.textContent = 'Visual';
   } else {
     // HTML -> Visual: use dangerouslyPasteHTML so clipboard matchers fire
-    const html = htmlEl.value.replace(/>\s*\n\s*</g, '><');
+    let html = htmlEl.value.replace(/>\s*\n\s*</g, '><');
+    html = ulToBulletOl(html);
     quill.setText('');
     quill.clipboard.dangerouslyPasteHTML(0, html, 'html');
     restoreImageAlignments(html);
@@ -1071,22 +1072,22 @@ BrightTextBlot.blotName = 'bright';
 BrightTextBlot.tagName = 'span';
 Quill.register(BrightTextBlot);
 
-// ===== FIX: Quill 2.0 uses <ol> for both list types. Override so bullet→<ul> =====
-const ListBlot = Quill.import('formats/list');
-class DMMList extends ListBlot {
-  static create(value) {
-    const tag = value === 'bullet' ? 'ul' : 'ol';
-    const node = document.createElement(tag);
-    node.setAttribute('data-list', value);
-    return node;
-  }
-  static formats(domNode) {
-    if (domNode.tagName === 'UL') return 'bullet';
-    if (domNode.tagName === 'OL') return 'ordered';
-    return undefined;
-  }
+// ===== FIX: Quill 2.0 uses <ol> for both list types. HTML-level conversion. =====
+// Quill internally uses <ol data-list="bullet"> for bullet lists.
+// These functions normalize between Quill's internal format and correct HTML.
+function bulletOlToUl(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  tmp.querySelectorAll('ol[data-list="bullet"]').forEach(ol => {
+    const ul = document.createElement('ul');
+    ul.innerHTML = ol.innerHTML;
+    ol.replaceWith(ul);
+  });
+  return tmp.innerHTML;
 }
-Quill.register(DMMList, true);
+function ulToBulletOl(html) {
+  return html.replace(/<ul(\s[^>]*)?>/gi, '<ol data-list="bullet">').replace(/<\/ul>/gi, '</ol>');
+}
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
