@@ -1,17 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 import { BASE_URL } from '../lib/constants';
 ---
 
 <BaseLayout title="Página no encontrada — 404">
   <Header slot="header" />
-  <main class="error-page">
+  <div class="error-page">
     <div class="error-404">404</div>
     <h1>Esta página se ha mudado o no existe</h1>
     <p>Parece que el enlace que seguiste está roto o el post cambió de dirección durante el revamp.</p>
     <a href={BASE_URL} class="error-btn">Volver al Inicio</a>
-  </main>
+  </div>
+  <Footer slot="footer" />
 </BaseLayout>
 
 <style>

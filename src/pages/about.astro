@@ -1,12 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 import { BASE_URL } from '../lib/constants';
 ---
 
 <BaseLayout title="About — Dos Minutos Más" description="Conocé más sobre Dos Minutos Más, el blog donde escribo sobre tecnología, opiniones y todo lo que pasa cuando te quedás dos minutos más.">
   <Header slot="header" />
-  <main class="about-page">
+  <div class="about-page">
     <div class="about-content">
       <div class="about-header">
         <h1>Sobre <span class="highlight">Dos Minutos Más</span></h1>
@@ -52,7 +53,8 @@ import { BASE_URL } from '../lib/constants';
         </div>
       </div>
     </div>
-  </main>
+  </div>
+  <Footer slot="footer" />
 </BaseLayout>
 
 <style>
