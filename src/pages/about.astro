@@ -4,35 +4,38 @@ import Header from '../components/Header.astro';
 import { BASE_URL } from '../lib/constants';
 ---
 
-<BaseLayout title="About — Dos Minutos Más" description="Conocé más sobre Dos Minutos Más, el blog donde escribo sobre tecnología, opinions y todo lo que pasa cuando te quedás dos minutos más.">
+<BaseLayout title="About — Dos Minutos Más" description="Conocé más sobre Dos Minutos Más, el blog donde escribo sobre tecnología, opiniones y todo lo que pasa cuando te quedás dos minutos más.">
   <Header slot="header" />
   <main class="about-page">
     <div class="about-content">
       <div class="about-header">
         <h1>Sobre <span class="highlight">Dos Minutos Más</span></h1>
-        <p class="about-tagline">Escribiendo sobre cosas que pasan cuando te quedás dos minutos más.</p>
+        <p class="about-tagline">Porque las mejores historias empiezan con "solo voy a mirar una cosa"</p>
       </div>
 
       <div class="about-body">
         <p>
           Bienvenido a <strong>Dos Minutos Más</strong>, un espacio donde escribo sobre tecnología,
-          desarrollo de software, opinions y reflexiones que se me ocurren a las 3 de la mañana.
+          desarrollo web, opinions o algo interesante que encontré a las 3 de la mañana.
           El nombre viene de esa sensación de "quedarse dos minutos más" — leyendo un artículo,
-          debuggeando un problema, o cayendo en una rabbit hole de Wikipedia a las tantas.
+          debuggeando un problema, para terminar cayendo en un rabbit hole de Wikipedia hasta las mil y quinientas.
+          Este es un lugar para hablar de tecnología, desarrollo web, curiosidades digitales y esos proyectos que crecieron mucho más de lo que estaba previsto.
+          Tengo una tendencia a convertir preguntas simples en proyectos inesperada e innecesariamente elaborados. Este blog es el resultado de años sin intentar corregir ese problema.
         </p>
 
         <p>
-          Este blog está construido con <strong>Astro</strong>, alojado en <strong>GitHub Pages</strong>
+          Este blog está construido con <strong>Astro</strong>, alojado en <strong>GitHub</strong>
           y usa <strong>Supabase</strong> como base de datos. El contenido se escribe y gestiona desde
           un panel de administración propio — porque ¿por qué usar algo existente cuando podés
-          construirlo vos mismo y que te dé dolores de cabeza únicos?
+          construirlo vos mismo y que te dé dolores de cabeza únicos? 
+          Vine a investigar una cosa. Terminé construyendo una aplicación
         </p>
 
         <h2>Lo que encontrás acá</h2>
         <ul>
           <li><strong>Posts</strong> — Artículos sobre tech, desarrollo y opiniones varias.</li>
-          <li><strong>Museo</strong> — Una colección de piezas que merecen ser preservadas. Posts que
-            ya pasaron su momento pero siguen valiendo la pena.</li>
+          <li><strong>Museo</strong> — Una colección de piezas rescatadas del blog original que merecen ser preservadas. Posts que
+            ya pasaron su momento pero siguen valiendo la pena volver a visitarlos.</li>
           <li><strong>Archivo</strong> — Todo el contenido organizado cronológicamente.</li>
           <li><strong>Random</strong> — ¿No sabés qué leer? Dejá que el destino elija por vos.</li>
         </ul>
@@ -40,8 +43,8 @@ import { BASE_URL } from '../lib/constants';
         <h2>Contacto</h2>
         <p>
           ¿Querés decirme algo? Podés encontrarme en
-          <a href="https://www.instagram.com/mozz_vader" target="_blank" rel="noopener">Instagram</a>
-          o escribirme a <a href="mailto:contacto.mozzdev@gmail.com">contacto.mozzdev@gmail.com</a>.
+          <a href="https://www.instagram.com/mozz_vader" target="_blank" rel="noopener">Instagram</a>, mi <a href="https://x.com/Mozz_Vader" target="_blank" rel="noopener">Twitter/X</a>
+          o <a href="mailto:contacto.mozzdev@gmail.com">mandarme un mail</a>.
         </p>
 
         <div class="about-footer">
