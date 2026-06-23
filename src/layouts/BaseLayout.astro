@@ -57,6 +57,56 @@ const resolvedOgImage = ogImage || `${Astro.site}logo.png`;
     <button class="back-to-top" id="backToTop" aria-label="Volver arriba" title="Volver arriba">
       <span class="btt-arrow" aria-hidden="true">&#8593;</span>
     </button>
+    <!-- Lightbox container (created once, reused) -->
+    <div class="dmm-lightbox-overlay" id="dmmLightbox" role="dialog" aria-label="Imagen ampliada">
+      <img src="" alt="" />
+    </div>
+    <span class="dmm-lightbox-hint" id="dmmLightboxHint">ESC para cerrar</span>
+    <script is:inline>
+      (function() {
+        var overlay = document.getElementById('dmmLightbox');
+        var lbImg = overlay.querySelector('img');
+        var hint = document.getElementById('dmmLightboxHint');
+        var isOpen = false;
+
+        function open(src, alt) {
+          lbImg.src = src;
+          lbImg.alt = alt || '';
+          overlay.classList.add('active');
+          hint.classList.add('visible');
+          document.body.style.overflow = 'hidden';
+          isOpen = true;
+        }
+
+        function close() {
+          if (!isOpen) return;
+          overlay.classList.remove('active');
+          hint.classList.remove('visible');
+          document.body.style.overflow = '';
+          isOpen = false;
+          setTimeout(function() { lbImg.src = ''; }, 300);
+        }
+
+        // Open on click inside .post-content images
+        document.addEventListener('click', function(e) {
+          var img = e.target.closest('.post-content img');
+          if (img) {
+            e.preventDefault();
+            open(img.src, img.alt);
+          }
+        });
+
+        // Close on overlay click (not on the image itself)
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay) close();
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && isOpen) close();
+        });
+      })();
+    </script>
     <script is:inline>
       const toggle = document.getElementById('themeToggle');
       const body = document.body;

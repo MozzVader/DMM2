@@ -1305,3 +1305,81 @@ body.light::-webkit-scrollbar-track { background: var(--bg-dark); }
 body.light::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); }
 body.light::-webkit-scrollbar-thumb:hover { background: var(--neon-purple); }
 body.light { scrollbar-color: rgba(0, 0, 0, 0.2) var(--bg-dark); }
+
+/* ===== LIGHTBOX ===== */
+.dmm-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  cursor: zoom-out;
+  padding: 24px;
+}
+
+.dmm-lightbox-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dmm-lightbox-overlay img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 0 40px rgba(191, 90, 242, 0.15), 0 0 80px rgba(0, 0, 0, 0.5);
+  transform: scale(0.92);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
+}
+
+.dmm-lightbox-overlay.active img {
+  transform: scale(1);
+}
+
+body.light .dmm-lightbox-overlay {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+body.light .dmm-lightbox-overlay img {
+  box-shadow: 0 0 40px rgba(168, 85, 247, 0.1), 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Zoom hint on post images */
+.post-content img {
+  cursor: zoom-in;
+}
+
+/* Hint badge (bottom-right) */
+.dmm-lightbox-hint {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10000;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 6px 12px;
+  border-radius: 20px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.dmm-lightbox-overlay.active ~ .dmm-lightbox-hint,
+.dmm-lightbox-hint.visible {
+  opacity: 1;
+}
+
+body.light .dmm-lightbox-hint {
+  color: rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.7);
+}
