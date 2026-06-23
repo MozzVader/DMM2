@@ -26,30 +26,16 @@ import { BASE_URL } from '../lib/constants';
 </nav>
 
 <script is:inline>
-document.getElementById('randomPostBtn').addEventListener('click', async () => {
+document.getElementById('randomPostBtn').addEventListener('click', async function() {
   try {
-    const nav = document.querySelector('.side-nav');
-    const baseUrl = nav ? nav.dataset.baseUrl || '/' : '/';
-    const rssUrl = baseUrl + 'rss.xml';
-
-    const resp = await fetch(rssUrl);
-    if (!resp.ok) throw new Error('RSS fetch failed');
-    const xml = await resp.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xml, 'text/xml');
-
-    const items = doc.querySelectorAll('item > link');
-    if (items.length === 0) throw new Error('No items in RSS');
-
-    const links = Array.from(items).map(el => el.textContent?.trim()).filter(Boolean);
-    if (links.length === 0) throw new Error('No valid links');
-
-    const randomLink = links[Math.floor(Math.random() * links.length)];
-    window.location.href = randomLink;
+    var link = await DMM.getRandomPostLink();
+    if (link) {
+      window.location.href = link;
+    } else {
+      window.location.href = DMM.getBaseUrl() + 'posts';
+    }
   } catch(e) {
-    const nav = document.querySelector('.side-nav');
-    const baseUrl = nav ? nav.dataset.baseUrl || '/' : '/';
-    window.location.href = baseUrl + 'posts';
+    window.location.href = DMM.getBaseUrl() + 'posts';
   }
 });
 </script>

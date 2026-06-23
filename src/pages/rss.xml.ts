@@ -1,5 +1,6 @@
 import rss from '@astrojs/rss';
 import { getAllPostsForPagination } from '../lib/supabase';
+import { stripHTML } from '../lib/utils';
 import type { APIContext } from 'astro';
 
 export async function GET(context: APIContext) {
@@ -14,7 +15,7 @@ export async function GET(context: APIContext) {
       const imgTag = post.featured_image
         ? `<p><img src="${post.featured_image}" alt="${post.title}" style="max-width:100%;height:auto;" /></p>`
         : '';
-      const excerpt = post.excerpt || post.content.replace(/<[^>]*>/g, '').slice(0, 300);
+      const excerpt = post.excerpt || stripHTML(post.content).slice(0, 300);
       return {
         title: post.title,
         pubDate: new Date(post.published_at),

@@ -44,85 +44,56 @@ import SideNav from './SideNav.astro';
 
 <script is:inline>
 (function() {
-  const input = document.getElementById('searchInput');
-  const results = document.getElementById('searchResults');
+  var input = document.getElementById('searchInput');
+  var results = document.getElementById('searchResults');
   if (!input || !results) return;
 
-  let index = null;
-  let baseUrl = '/';
-
-  const nav = document.querySelector('.side-nav');
-  if (nav && nav.dataset.baseUrl) baseUrl = nav.dataset.baseUrl;
-
-  function stripHtml(html) {
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    return div.textContent || '';
-  }
-
-  function parseRss(xml) {
-    const doc = new DOMParser().parseFromString(xml, 'text/xml');
-    const items = doc.querySelectorAll('item');
-    return Array.from(items).map(item => {
-      const link = (item.querySelector('link')?.textContent || '').trim();
-      // Extract slug from URL like .../post/my-slug
-      const slug = link.split('/post/')[1] || '';
-      const title = (item.querySelector('title')?.textContent || '').trim();
-      const desc = (item.querySelector('description')?.textContent || '').trim();
-      // content:encoded has namespace, need getElementsByTagNameNS or fallback
-      const contentEl = item.getElementsByTagNameNS('*', 'encoded')[0]
-        || item.querySelector('content\\:encoded')
-        || item.querySelector('encoded');
-      const contentHtml = contentEl ? (contentEl.textContent || '') : '';
-      const fullText = stripHtml((title + ' ' + desc + ' ' + contentHtml).toLowerCase());
-      const pubDate = item.querySelector('pubDate')?.textContent || '';
-      return { title, slug, link, desc: stripHtml(desc), fullText, pubDate };
-    });
-  }
+  var index = null;
 
   async function loadIndex() {
     if (index) return index;
     try {
-      const resp = await fetch(baseUrl + 'rss.xml');
-      const xml = await resp.text();
-      index = parseRss(xml);
+      var items = await DMM.fetchRssItems();
+      index = items.map(function(p) {
+        return Object.assign({}, p, {
+          fullText: DMM.stripHtml((p.title + ' ' + p.desc + ' ' + p.contentHtml).toLowerCase())
+        });
+      });
     } catch(e) { index = []; }
     return index;
   }
 
   function formatDate(d) {
-    const dt = new Date(d);
+    var dt = new Date(d);
     if (isNaN(dt)) return '';
-    const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    var months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
     return dt.getDate() + ' ' + months[dt.getMonth()] + ', ' + dt.getFullYear();
   }
 
   function escapeHtml(s) {
-    const d = document.createElement('div');
+    var d = document.createElement('div');
     d.textContent = s;
     return d.innerHTML;
   }
 
   function highlightContext(text, terms, maxLen) {
-    // Find the best snippet containing the first matched term
-    const lower = text.toLowerCase();
-    let bestIdx = -1;
-    for (const t of terms) {
-      const idx = lower.indexOf(t);
+    var lower = text.toLowerCase();
+    var bestIdx = -1;
+    for (var i = 0; i < terms.length; i++) {
+      var idx = lower.indexOf(terms[i]);
       if (idx !== -1) { bestIdx = idx; break; }
     }
-    let snippet;
+    var snippet;
     if (bestIdx >= 0) {
-      const start = Math.max(0, bestIdx - 40);
-      const end = Math.min(text.length, bestIdx + maxLen);
+      var start = Math.max(0, bestIdx - 40);
+      var end = Math.min(text.length, bestIdx + maxLen);
       snippet = (start > 0 ? '...' : '') + text.slice(start, end) + (end < text.length ? '...' : '');
     } else {
       snippet = text.slice(0, maxLen) + '...';
     }
-    // Highlight matched terms
-    let highlighted = escapeHtml(snippet);
-    for (const t of terms) {
-      const re = new RegExp('(' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+    var highlighted = escapeHtml(snippet);
+    for (var j = 0; j < terms.length; j++) {
+      var re = new RegExp('(' + terms[j].replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
       highlighted = highlighted.replace(re, '<mark>$1</mark>');
     }
     return highlighted;
@@ -134,9 +105,9 @@ import SideNav from './SideNav.astro';
       results.classList.add('open');
       return;
     }
-    const html = items.slice(0, 8).map(p => {
-      const date = formatDate(p.pubDate);
-      const context = highlightContext(p.fullText, terms, 120);
+    var html = items.slice(0, 8).map(function(p) {
+      var date = formatDate(p.pubDate);
+      var context = highlightContext(p.fullText, terms, 120);
       return '<a href="' + escapeHtml(p.link) + '" class="sr-item">'
         + '<div class="sr-item-body">'
         + '<div class="sr-item-title">' + escapeHtml(p.title) + '</div>'
@@ -152,42 +123,42 @@ import SideNav from './SideNav.astro';
 
   function search(q) {
     if (!q || q.length < 2) { hide(); return; }
-    const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+    var terms = q.toLowerCase().split(/\s+/).filter(Boolean);
     if (terms.length === 0) { hide(); return; }
-    const scored = (index || []).map(p => {
-      const titleLower = p.title.toLowerCase();
-      let score = 0;
-      for (const t of terms) {
-        if (titleLower.includes(t)) score += 10;
-        if (p.fullText.includes(t)) score += 2;
+    var scored = (index || []).map(function(p) {
+      var titleLower = p.title.toLowerCase();
+      var score = 0;
+      for (var i = 0; i < terms.length; i++) {
+        if (titleLower.indexOf(terms[i]) !== -1) score += 10;
+        if (p.fullText.indexOf(terms[i]) !== -1) score += 2;
       }
-      return { ...p, score };
-    }).filter(p => p.score > 0).sort((a, b) => b.score - a.score);
+      return Object.assign({}, p, { score: score });
+    }).filter(function(p) { return p.score > 0; }).sort(function(a, b) { return b.score - a.score; });
     renderResults(scored, terms);
   }
 
-  let debounce;
-  input.addEventListener('input', () => {
+  var debounce;
+  input.addEventListener('input', function() {
     clearTimeout(debounce);
-    const q = input.value.trim();
+    var q = input.value.trim();
     if (q.length < 2) { hide(); return; }
-    debounce = setTimeout(async () => {
+    debounce = setTimeout(async function() {
       await loadIndex();
       search(q);
     }, 200);
   });
 
-  input.addEventListener('focus', async () => {
+  input.addEventListener('focus', async function() {
     await loadIndex();
-    const q = input.value.trim();
+    var q = input.value.trim();
     if (q.length >= 2) search(q);
   });
 
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', function(e) {
     if (!e.target.closest('.search-box')) hide();
   });
 
-  document.addEventListener('keydown', (e) => {
+  document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') hide();
   });
 })();

@@ -174,92 +174,72 @@ const DEMO_ARCHIVE = [
 function normalizeTags(tags: Tag[] | undefined): Tag[] {
   if (!tags || !Array.isArray(tags)) return [];
   return tags
-    .map((t) => t?.tags || t)           // unwrap: Supabase nests as { tags: { name, slug } }
+    .map((t) => t?.tags || t)
     .filter((t) => t && t.slug && t.name) as Tag[];
 }
 
-/** Get all published non-featured posts, newest first (scheduled posts excluded) */
+/** Normalize a single post's tags */
+function normalizePost(p: any): Post {
+  return { ...p, tags: normalizeTags(p.tags) };
+}
+
+/** Base query: published, non-draft posts ordered newest first */
+function basePostsQuery() {
+  return supabase
+    .from('posts')
+    .select('*, tags:post_tags(tags(id, name, slug))')
+    .eq('is_draft', false)
+    .lte('published_at', new Date().toISOString())
+    .order('published_at', { ascending: false });
+}
+
+/** Execute a posts query and normalize the array result */
+async function fetchPosts(query: any): Promise<Post[]> {
+  const { data, error } = await query;
+  if (error) throw error;
+  return ((data as Post[]) || []).map(normalizePost);
+}
+
+/** Get all published non-featured posts, newest first */
 export async function getAllPosts(): Promise<Post[]> {
   try {
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*, tags:post_tags(tags(id, name, slug))')
-      .eq('is_featured', false)
-      .eq('is_draft', false)
-      .lte('published_at', new Date().toISOString())
-      .order('published_at', { ascending: false });
-
-    if (error) throw error;
-    const posts = ((data as Post[]) || []).map((p) => ({
-      ...p,
-      tags: normalizeTags(p.tags),
-    }));
-    return posts;
+    return await fetchPosts(basePostsQuery().eq('is_featured', false));
   } catch {
     console.warn('[supabase] getAllPosts failed — using demo data');
     return DEMO_POSTS;
   }
 }
 
-/** Get all posts (featured + regular) for pagination, newest first (scheduled posts excluded) */
+/** Get all posts (featured + regular) for pagination, newest first */
 export async function getAllPostsForPagination(): Promise<Post[]> {
   try {
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*, tags:post_tags(tags(id, name, slug))')
-      .eq('is_draft', false)
-      .lte('published_at', new Date().toISOString())
-      .order('published_at', { ascending: false });
-
-    if (error) throw error;
-    return ((data as Post[]) || []).map((p) => ({
-      ...p,
-      tags: normalizeTags(p.tags),
-    }));
+    return await fetchPosts(basePostsQuery());
   } catch {
     console.warn('[supabase] getAllPostsForPagination failed — using demo data');
     return [DEMO_FEATURED, ...DEMO_POSTS];
   }
 }
 
-/** Get museo posts (badge = 'museo') for pagination, newest first (scheduled posts excluded) */
+/** Get museo posts (badge = 'Museo') for pagination, newest first */
 export async function getMuseoPostsForPagination(): Promise<Post[]> {
   try {
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*, tags:post_tags(tags(id, name, slug))')
-      .eq('is_draft', false)
-      .eq('badge', 'Museo')
-      .lte('published_at', new Date().toISOString())
-      .order('published_at', { ascending: false });
-
-    if (error) throw error;
-    return ((data as Post[]) || []).map((p) => ({
-      ...p,
-      tags: normalizeTags(p.tags),
-    }));
+    return await fetchPosts(basePostsQuery().eq('badge', 'Museo'));
   } catch {
     console.warn('[supabase] getMuseoPostsForPagination failed — using demo data');
     return [];
   }
 }
 
-/** Get the featured post (scheduled posts excluded) */
+/** Get the featured post (newest) */
 export async function getFeaturedPost(): Promise<Post | null> {
   try {
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*, tags:post_tags(tags(id, name, slug))')
+    const { data, error } = await basePostsQuery()
       .eq('is_featured', true)
-      .eq('is_draft', false)
-      .lte('published_at', new Date().toISOString())
-      .order('published_at', { ascending: false })
       .limit(1)
       .single();
-
     if (error && error.code !== 'PGRST116') throw error;
     if (!data) return null;
-    return { ...(data as Post), tags: normalizeTags((data as Post).tags) };
+    return normalizePost(data);
   } catch {
     console.warn('[supabase] getFeaturedPost failed — using demo data');
     return DEMO_FEATURED;
@@ -310,22 +290,10 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
     const postIds = (relations || []).map((r) => r.post_id);
     if (postIds.length === 0) return [];
 
-    // Query 3: fetch posts with their tags (scheduled & featured posts excluded)
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*, tags:post_tags(tags(id, name, slug))')
-      .in('id', postIds)
-      .eq('is_featured', false)
-      .eq('is_draft', false)
-      .lte('published_at', new Date().toISOString())
-      .order('published_at', { ascending: false });
-
-    if (error) throw error;
-
-    return ((data as Post[]) || []).map((p) => ({
-      ...p,
-      tags: normalizeTags(p.tags),
-    }));
+    // Query 3: fetch posts with their tags
+    return await fetchPosts(
+      basePostsQuery().in('id', postIds).eq('is_featured', false)
+    );
   } catch {
     console.warn(`[supabase] getPostsByTag("${tagSlug}") failed — using demo data`);
     return DEMO_POSTS;
@@ -358,25 +326,12 @@ export async function getArchiveData(): Promise<{ year: number; count: number }[
   }
 }
 
-/** Get all posts published in a given year (scheduled posts excluded) */
+/** Get all posts published in a given year */
 export async function getPostsByYear(year: number): Promise<Post[]> {
   const start = new Date(year, 0, 1).toISOString();
   const end = new Date(year + 1, 0, 1).toISOString();
   try {
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*, tags:post_tags(tags(id, name, slug))')
-      .gte('published_at', start)
-      .lt('published_at', end)
-      .eq('is_draft', false)
-      .lte('published_at', new Date().toISOString())
-      .order('published_at', { ascending: false });
-
-    if (error) throw error;
-    return ((data as Post[]) || []).map((p) => ({
-      ...p,
-      tags: normalizeTags(p.tags),
-    }));
+    return await fetchPosts(basePostsQuery().gte('published_at', start).lt('published_at', end));
   } catch {
     console.warn(`[supabase] getPostsByYear(${year}) failed — using demo data`);
     return DEMO_POSTS;

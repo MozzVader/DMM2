@@ -48,6 +48,7 @@ const resolvedOgImage = ogImage || `${Astro.site}logo.png`;
     <link rel="icon" type="image/svg+xml" href={`${(import.meta.env.BASE_URL || '/').replace(/\/$/, '')}/favicon.svg`} />
   </head>
   <body>
+    <script is:inline src={`${(import.meta.env.BASE_URL || '/').replace(/\/$/, '')}/rss-utils.js`}></script>
     <slot name="header" />
     <main class="main-content">
       <slot />
