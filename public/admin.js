@@ -1071,6 +1071,23 @@ BrightTextBlot.blotName = 'bright';
 BrightTextBlot.tagName = 'span';
 Quill.register(BrightTextBlot);
 
+// ===== FIX: Quill 2.0 uses <ol> for both list types. Override so bullet→<ul> =====
+const ListBlot = Quill.import('formats/list');
+class DMMList extends ListBlot {
+  static create(value) {
+    const tag = value === 'bullet' ? 'ul' : 'ol';
+    const node = document.createElement(tag);
+    node.setAttribute('data-list', value);
+    return node;
+  }
+  static formats(domNode) {
+    if (domNode.tagName === 'UL') return 'bullet';
+    if (domNode.tagName === 'OL') return 'ordered';
+    return undefined;
+  }
+}
+Quill.register(DMMList, true);
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
 // Register QuillBlotFormatter (blot-formatter2)

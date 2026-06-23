@@ -1357,6 +1357,31 @@ body.light .dmm-lightbox-overlay img {
   cursor: zoom-in;
 }
 
+/* List styles for blog posts */
+.post-content ul,
+.post-content ol {
+  margin: 16px 0;
+  padding-left: 28px;
+}
+
+.post-content li {
+  margin-bottom: 8px;
+  line-height: 1.75;
+}
+
+.post-content li::marker {
+  color: var(--neon-purple);
+}
+
+/* Nested lists get deeper indentation */
+.post-content ul ul,
+.post-content ol ol,
+.post-content ul ol,
+.post-content ol ul {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
 /* Hint badge (bottom-right) */
 .dmm-lightbox-hint {
   position: fixed;
