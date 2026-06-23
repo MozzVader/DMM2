@@ -1073,20 +1073,33 @@ BrightTextBlot.tagName = 'span';
 Quill.register(BrightTextBlot);
 
 // ===== FIX: Quill 2.0 uses <ol> for both list types. HTML-level conversion. =====
-// Quill internally uses <ol data-list="bullet"> for bullet lists.
+// Quill 2 structure: <ol><li data-list="bullet">...</li></ol>
 // These functions normalize between Quill's internal format and correct HTML.
 function bulletOlToUl(html) {
   const tmp = document.createElement('div');
   tmp.innerHTML = html;
-  tmp.querySelectorAll('ol[data-list="bullet"]').forEach(ol => {
-    const ul = document.createElement('ul');
-    ul.innerHTML = ol.innerHTML;
-    ol.replaceWith(ul);
+  tmp.querySelectorAll('ol').forEach(ol => {
+    if (ol.querySelector(':scope > li[data-list="bullet"]')) {
+      const ul = document.createElement('ul');
+      ol.querySelectorAll(':scope > li').forEach(li => li.removeAttribute('data-list'));
+      ul.innerHTML = ol.innerHTML;
+      ol.replaceWith(ul);
+    } else {
+      ol.querySelectorAll(':scope > li[data-list="ordered"]').forEach(li => li.removeAttribute('data-list'));
+    }
   });
   return tmp.innerHTML;
 }
 function ulToBulletOl(html) {
-  return html.replace(/<ul(\s[^>]*)?>/gi, '<ol data-list="bullet">').replace(/<\/ul>/gi, '</ol>');
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  tmp.querySelectorAll('ul').forEach(ul => {
+    const ol = document.createElement('ol');
+    ul.querySelectorAll(':scope > li').forEach(li => li.setAttribute('data-list', 'bullet'));
+    ol.innerHTML = ul.innerHTML;
+    ul.replaceWith(ol);
+  });
+  return tmp.innerHTML;
 }
 
 // ===== INIT =====
