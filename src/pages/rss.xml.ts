@@ -4,6 +4,7 @@ import type { APIContext } from 'astro';
 
 export async function GET(context: APIContext) {
   const posts = await getAllPostsForPagination();
+  const base = import.meta.env.BASE_URL || '/';
 
   return rss({
     title: 'Dos Minutos Más',
@@ -19,7 +20,7 @@ export async function GET(context: APIContext) {
         pubDate: new Date(post.published_at),
         description: excerpt,
         content: imgTag + post.content,
-        link: `${context.site!}DMM2/post/${post.slug}`,
+        link: new URL(`${base}post/${post.slug}`, context.site!).href,
       };
     }),
     customData: '<language>es-ar</language>',
