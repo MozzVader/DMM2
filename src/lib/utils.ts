@@ -43,17 +43,6 @@ export function formatDate(dateStr: string, options?: Intl.DateTimeFormatOptions
   return new Date(dateStr).toLocaleDateString('es-AR', options || defaults);
 }
 
-/** Validate that a file is an accepted image type */
-export function isValidImageType(file: File): boolean {
-  const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
-  return allowed.includes(file.type);
-}
-
-/** Validate file size (default max 5MB) */
-export function isValidImageSize(file: File, maxMB: number = 5): boolean {
-  return file.size <= maxMB * 1024 * 1024;
-}
-
 /** Estimate reading time from HTML content (~200 words/min for Spanish) */
 export function readingTime(html: string): number {
   const text = stripHTML(html);
