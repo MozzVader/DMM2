@@ -125,7 +125,7 @@ renderSkeleton();
 
 const { data: posts, error } = await sb
   .from('posts')
-  .select('id, title, slug, badge, badge_color, is_draft, is_featured, published_at')
+  .select('id, title, slug, badge, badge_color, is_draft, is_featured, published_at, likes')
   .order('published_at', { ascending: false });
 
 if (error || !posts) {
