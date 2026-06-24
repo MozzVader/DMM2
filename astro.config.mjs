@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://dosminutosmas.pages.dev',
+  site: 'https://blog.mozzdev.com',
   base: '/',
   build: {
     assets: 'assets',
