@@ -110,13 +110,22 @@ location.reload();
 });
 
 // ===== DASHBOARD =====
+const SKELETON_ROWS = 6;
+function renderSkeleton() {
+  const tbody = document.getElementById('postsTableBody');
+  let rows = '';
+  for (let i = 0; i < SKELETON_ROWS; i++) {
+    rows += `<tr class="skeleton-row"><td></td><td><div class="skeleton-bar w60"></div></td><td><div class="skeleton-bar w25"></div></td><td><div class="skeleton-bar w30"></div></td><td><div class="skeleton-bar w50"></div></td></tr>`;
+  }
+  tbody.innerHTML = rows;
+}
+
 async function loadDashboard() {
-const tbody = document.getElementById('postsTableBody');
-tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-secondary);">Cargando...</td></tr>';
+renderSkeleton();
 
 const { data: posts, error } = await sb
   .from('posts')
-  .select('*')
+  .select('id, title, slug, badge, badge_color, is_draft, is_featured, published_at')
   .order('published_at', { ascending: false });
 
 if (error || !posts) {
