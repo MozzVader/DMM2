@@ -963,14 +963,15 @@ function restoreImageAlignments(originalHtml) {
   const tmp = document.createElement('div');
   tmp.innerHTML = originalHtml;
   const alignMap = new Map();
+  // Handle both <img data-img-align> (no caption) and <figure data-img-align> (with caption)
   tmp.querySelectorAll('img[data-img-align]').forEach(img => {
     const src = img.getAttribute('src');
-    if (src) {
-      alignMap.set(src, {
-        align: img.getAttribute('data-img-align'),
-        style: img.getAttribute('style') || ''
-      });
-    }
+    if (src) alignMap.set(src, { align: img.getAttribute('data-img-align'), style: img.getAttribute('style') || '' });
+  });
+  tmp.querySelectorAll('figure[data-img-align] img').forEach(img => {
+    const src = img.getAttribute('src');
+    const figAlign = img.closest('figure').getAttribute('data-img-align');
+    if (src && figAlign) alignMap.set(src, { align: figAlign, style: '' });
   });
   quill.root.querySelectorAll('img').forEach(img => {
     const src = img.getAttribute('src');
