@@ -1114,6 +1114,9 @@ quill = new Quill('#editor-container', {
     blotFormatter: {
       overlay: {
         style: { position: 'absolute', border: '2px solid var(--neon-purple)', background: 'rgba(191,90,242,0.08)' }
+      },
+      image: {
+        registerImageTitleBlot: true
       }
     },
     toolbar: {
