@@ -165,9 +165,9 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
     const postIds = (relations || []).map((r) => r.post_id);
     if (postIds.length === 0) return [];
 
-    // Query 3: fetch posts with their tags
+    // Query 3: fetch posts with their tags (include featured posts in tag listings)
     return await fetchPosts(
-      basePostsQuery().in('id', postIds).eq('is_featured', false)
+      basePostsQuery().in('id', postIds)
     );
   } catch (err) {
     console.warn(`[supabase] getPostsByTag("${tagSlug}") failed — using demo data`, err);
