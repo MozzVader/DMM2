@@ -1121,18 +1121,47 @@ function imgTitleToFigcaption(html) {
     if (align) {
       figure.setAttribute('data-img-align', align);
       img.removeAttribute('data-img-align');
-      // Transfer float-related inline styles to figure
       const styleMap = { left: 'float:left; margin:8px 15px 15px 0; max-width:50%;', center: 'display:block; float:none; margin:8px auto;', right: 'float:right; margin:8px 0 15px 15px; max-width:50%;' };
       figure.style.cssText = styleMap[align] || '';
-      // Keep only width/height on img, remove float/margin
       const w = img.style.width, h = img.style.height;
       img.style.cssText = '';
       if (w) img.style.width = w;
       if (h) img.style.height = h;
     }
-    img.parentNode.insertBefore(figure, img);
     figure.appendChild(img);
     figure.appendChild(figcaption);
+    // If img was inside a <p>, split the paragraph around the figure
+    // (block element inside inline is invalid HTML — causes <p><br></p> artifacts)
+    const parent = img.parentNode; // img is now inside figure
+    const grandparent = parent;    // figure's parent is the original <p>
+    if (grandparent && grandparent.tagName === 'P') {
+      const beforeNodes = [];
+      const afterNodes = [];
+      let found = false;
+      for (const child of Array.from(grandparent.childNodes)) {
+        if (child === figure) { found = true; continue; }
+        if (!found) beforeNodes.push(child);
+        else afterNodes.push(child);
+      }
+      const frag = document.createDocumentFragment();
+      if (beforeNodes.length) {
+        const pBefore = document.createElement('p');
+        beforeNodes.forEach(n => pBefore.appendChild(n));
+        frag.appendChild(pBefore);
+      }
+      frag.appendChild(figure);
+      if (afterNodes.length) {
+        const pAfter = document.createElement('p');
+        afterNodes.forEach(n => pAfter.appendChild(n));
+        frag.appendChild(pAfter);
+      }
+      grandparent.parentNode.insertBefore(frag, grandparent);
+      grandparent.remove();
+    }
+  });
+  // Clean up empty <p><br></p> artifacts
+  tmp.querySelectorAll('p').forEach(p => {
+    if (p.innerHTML.trim() === '<br>' || p.innerHTML.trim() === '') p.remove();
   });
   return tmp.innerHTML;
 }
