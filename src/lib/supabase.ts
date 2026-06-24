@@ -26,7 +26,7 @@ export interface Post {
   content: string;
   featured_image: string | null;
   badge: string;
-  badge_color: 'purple' | 'red' | 'yellow' | 'green';
+  badge_color: 'purple' | 'red' | 'yellow' | 'green' | 'cyan';
   is_featured: boolean;
   published_at: string;
   created_at: string;
