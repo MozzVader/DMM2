@@ -1115,6 +1115,20 @@ function imgTitleToFigcaption(html) {
     const figcaption = document.createElement('figcaption');
     figcaption.textContent = title;
     img.removeAttribute('title');
+    // Move float/alignment from img to figure so caption travels with it
+    const align = img.getAttribute('data-img-align');
+    if (align) {
+      figure.setAttribute('data-img-align', align);
+      img.removeAttribute('data-img-align');
+      // Transfer float-related inline styles to figure
+      const styleMap = { left: 'float:left; margin:8px 15px 15px 0; max-width:50%;', center: 'display:block; float:none; margin:8px auto;', right: 'float:right; margin:8px 0 15px 15px; max-width:50%;' };
+      figure.style.cssText = styleMap[align] || '';
+      // Keep only width/height on img, remove float/margin
+      const w = img.style.width, h = img.style.height;
+      img.style.cssText = '';
+      if (w) img.style.width = w;
+      if (h) img.style.height = h;
+    }
     img.parentNode.insertBefore(figure, img);
     figure.appendChild(img);
     figure.appendChild(figcaption);
@@ -1129,6 +1143,16 @@ function figcaptionToImgTitle(html) {
     const figcaption = figure.querySelector('figcaption');
     if (!img) { figure.replaceWith(...figure.childNodes); return; }
     if (figcaption) img.setAttribute('title', figcaption.textContent.trim());
+    // Restore float/alignment from figure back to img
+    const align = figure.getAttribute('data-img-align');
+    if (align) {
+      img.setAttribute('data-img-align', align);
+      const styleMap = { left: 'float:left; margin:8px 15px 15px 0; max-width:50%;', center: 'display:block; float:none; margin:8px auto;', right: 'float:right; margin:8px 0 15px 15px; max-width:50%;' };
+      const w = img.style.width, h = img.style.height;
+      img.style.cssText = styleMap[align] || '';
+      if (w) img.style.width = w;
+      if (h) img.style.height = h;
+    }
     figure.replaceWith(img);
   });
   return tmp.innerHTML;
