@@ -955,7 +955,7 @@ function getContent() {
       node.replaceWith(...tmp.childNodes);
     }
   });
-  return imgTitleToFigcaption(bulletOlToUl(clone.innerHTML));
+  return stripEmptyParagraphs(imgTitleToFigcaption(bulletOlToUl(clone.innerHTML)));
 }
 
 /** Restore image data-img-align after dangerouslyPasteHTML strips it */
@@ -968,10 +968,11 @@ function restoreImageAlignments(originalHtml) {
     const src = img.getAttribute('src');
     if (src) alignMap.set(src, { align: img.getAttribute('data-img-align'), style: img.getAttribute('style') || '' });
   });
+  const styleMap = { left: 'float:left; margin:8px 15px 15px 0; max-width:50%;', center: 'display:block; float:none; margin:8px auto;', right: 'float:right; margin:8px 0 15px 15px; max-width:50%;' };
   tmp.querySelectorAll('figure[data-img-align] img').forEach(img => {
     const src = img.getAttribute('src');
     const figAlign = img.closest('figure').getAttribute('data-img-align');
-    if (src && figAlign) alignMap.set(src, { align: figAlign, style: '' });
+    if (src && figAlign) alignMap.set(src, { align: figAlign, style: styleMap[figAlign] || '' });
   });
   quill.root.querySelectorAll('img').forEach(img => {
     const src = img.getAttribute('src');
@@ -981,6 +982,11 @@ function restoreImageAlignments(originalHtml) {
       if (info.style) img.setAttribute('style', info.style);
     }
   });
+}
+
+/** Strip <p><br></p> and <p></p> artifacts that Quill injects on round-trips */
+function stripEmptyParagraphs(html) {
+  return html.replace(/<p>\s*<br\s*\/?>\s*<\/p>/gi, '');
 }
 
 function formatHTML(html) {
@@ -1009,7 +1015,7 @@ document.getElementById('htmlToggleBtn').addEventListener('click', () => {
         node.replaceWith(...tmp.childNodes);
       }
     });
-    htmlEl.value = formatHTML(imgTitleToFigcaption(bulletOlToUl(clone.innerHTML)));
+    htmlEl.value = formatHTML(stripEmptyParagraphs(imgTitleToFigcaption(bulletOlToUl(clone.innerHTML))));
     editorEl.style.display = 'none';
     htmlEl.style.display = '';
     btn.classList.add('active');
@@ -1128,17 +1134,17 @@ function imgTitleToFigcaption(html) {
       if (w) img.style.width = w;
       if (h) img.style.height = h;
     }
+    // Insert figure into the DOM BEFORE moving img into it
+    const originalParent = img.parentNode;
+    originalParent.insertBefore(figure, img);
     figure.appendChild(img);
     figure.appendChild(figcaption);
-    // If img was inside a <p>, split the paragraph around the figure
-    // (block element inside inline is invalid HTML — causes <p><br></p> artifacts)
-    const parent = img.parentNode; // img is now inside figure
-    const grandparent = parent;    // figure's parent is the original <p>
-    if (grandparent && grandparent.tagName === 'P') {
+    // If figure ended up inside a <p>, split the paragraph around it
+    if (originalParent.tagName === 'P') {
       const beforeNodes = [];
       const afterNodes = [];
       let found = false;
-      for (const child of Array.from(grandparent.childNodes)) {
+      for (const child of Array.from(originalParent.childNodes)) {
         if (child === figure) { found = true; continue; }
         if (!found) beforeNodes.push(child);
         else afterNodes.push(child);
@@ -1155,13 +1161,9 @@ function imgTitleToFigcaption(html) {
         afterNodes.forEach(n => pAfter.appendChild(n));
         frag.appendChild(pAfter);
       }
-      grandparent.parentNode.insertBefore(frag, grandparent);
-      grandparent.remove();
+      originalParent.parentNode.insertBefore(frag, originalParent);
+      originalParent.remove();
     }
-  });
-  // Clean up empty <p><br></p> artifacts
-  tmp.querySelectorAll('p').forEach(p => {
-    if (p.innerHTML.trim() === '<br>' || p.innerHTML.trim() === '') p.remove();
   });
   return tmp.innerHTML;
 }
