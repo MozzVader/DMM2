@@ -2,8 +2,8 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://mozzvader.github.io',
-  base: '/DMM2',
+  site: 'https://dosminutosmas.pages.dev',
+  base: '/',
   build: {
     assets: 'assets',
   },
