@@ -1357,6 +1357,25 @@ body.light .dmm-lightbox-overlay img {
   cursor: zoom-in;
 }
 
+/* Image captions */
+.post-content figure {
+  margin: 16px 0;
+  text-align: center;
+}
+
+.post-content figcaption {
+  font-size: 0.8em;
+  font-style: italic;
+  color: #ffffff;
+  margin-top: 8px;
+  opacity: 0.7;
+}
+
+body.light .post-content figcaption {
+  color: var(--text-secondary);
+  opacity: 0.85;
+}
+
 /* List styles for blog posts */
 .post-content ul,
 .post-content ol {

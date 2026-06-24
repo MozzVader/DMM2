@@ -551,7 +551,7 @@ if (post.featured_image) {
 
 if (quill) {
     quill.setText('');
-    quill.clipboard.dangerouslyPasteHTML(0, ulToBulletOl(post.content || ''), 'html');
+    quill.clipboard.dangerouslyPasteHTML(0, ulToBulletOl(figcaptionToImgTitle(post.content || '')), 'html');
     restoreImageAlignments(post.content || '');
   }
 
@@ -924,7 +924,7 @@ try {
   document.getElementById('postDate').value = draft.date || '';
   if (draft.content && quill) {
     quill.setText('');
-    quill.clipboard.dangerouslyPasteHTML(0, ulToBulletOl(draft.content), 'html');
+    quill.clipboard.dangerouslyPasteHTML(0, ulToBulletOl(figcaptionToImgTitle(draft.content)), 'html');
     restoreImageAlignments(draft.content);
   }
   selectedTags = new Set(draft.tags || []);
@@ -955,7 +955,7 @@ function getContent() {
       node.replaceWith(...tmp.childNodes);
     }
   });
-  return bulletOlToUl(clone.innerHTML);
+  return imgTitleToFigcaption(bulletOlToUl(clone.innerHTML));
 }
 
 /** Restore image data-img-align after dangerouslyPasteHTML strips it */
@@ -1008,7 +1008,7 @@ document.getElementById('htmlToggleBtn').addEventListener('click', () => {
         node.replaceWith(...tmp.childNodes);
       }
     });
-    htmlEl.value = formatHTML(bulletOlToUl(clone.innerHTML));
+    htmlEl.value = formatHTML(imgTitleToFigcaption(bulletOlToUl(clone.innerHTML)));
     editorEl.style.display = 'none';
     htmlEl.style.display = '';
     btn.classList.add('active');
@@ -1016,7 +1016,7 @@ document.getElementById('htmlToggleBtn').addEventListener('click', () => {
   } else {
     // HTML -> Visual: use dangerouslyPasteHTML so clipboard matchers fire
     let html = htmlEl.value.replace(/>\s*\n\s*</g, '><');
-    html = ulToBulletOl(html);
+    html = figcaptionToImgTitle(ulToBulletOl(html));
     quill.setText('');
     quill.clipboard.dangerouslyPasteHTML(0, html, 'html');
     restoreImageAlignments(html);
@@ -1098,6 +1098,38 @@ function ulToBulletOl(html) {
     ul.querySelectorAll(':scope > li').forEach(li => li.setAttribute('data-list', 'bullet'));
     ol.innerHTML = ul.innerHTML;
     ul.replaceWith(ol);
+  });
+  return tmp.innerHTML;
+}
+
+// ===== Image title → <figure><figcaption> conversion =====
+// Quill stores title as img attribute; we convert to visible figcaption for output.
+function imgTitleToFigcaption(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  tmp.querySelectorAll('img[title]').forEach(img => {
+    if (img.closest('figure')) return;
+    const title = img.getAttribute('title');
+    if (!title.trim()) return;
+    const figure = document.createElement('figure');
+    const figcaption = document.createElement('figcaption');
+    figcaption.textContent = title;
+    img.removeAttribute('title');
+    img.parentNode.insertBefore(figure, img);
+    figure.appendChild(img);
+    figure.appendChild(figcaption);
+  });
+  return tmp.innerHTML;
+}
+function figcaptionToImgTitle(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  tmp.querySelectorAll('figure').forEach(figure => {
+    const img = figure.querySelector('img');
+    const figcaption = figure.querySelector('figcaption');
+    if (!img) { figure.replaceWith(...figure.childNodes); return; }
+    if (figcaption) img.setAttribute('title', figcaption.textContent.trim());
+    figure.replaceWith(img);
   });
   return tmp.innerHTML;
 }
