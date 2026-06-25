@@ -19,6 +19,16 @@ let selectedTags = new Set();
 let quill = null;
 
 // ===== HELPERS =====
+function countWords(html) {
+  const t = (html || '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&\w+;/g, ' ')
+    .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9]+/g, ' ')
+    .trim();
+  return t ? t.split(/\s+/).filter(w => w.length > 0).length : 0;
+}
+
 function slugify(text) {
 return text
   .toLowerCase()
@@ -125,7 +135,7 @@ renderSkeleton();
 
 const { data: posts, error } = await sb
   .from('posts')
-  .select('id, title, slug, badge, badge_color, is_draft, is_featured, published_at, likes')
+  .select('id, title, slug, badge, badge_color, is_draft, is_featured, published_at, likes, word_count')
   .order('published_at', { ascending: false });
 
 if (error || !posts) {
@@ -417,7 +427,7 @@ try {
       // PUBLISH DRAFT → becomes a real post (auto-featured)
       await sb.from('posts').update({ is_featured: false }).eq('is_featured', true);
       const { error } = await sb.from('posts').update({
-        title, slug, badge, badge_color, is_featured: true, featured_image, excerpt, content,
+        title, slug, badge, badge_color, is_featured: true, featured_image, excerpt, content, word_count: countWords(content),
         published_at: new Date().toISOString(), is_draft: false, updated_at: new Date().toISOString()
       }).eq('id', editingPostId);
       if (error) throw error;
@@ -429,7 +439,7 @@ try {
     } else {
       // UPDATE existing post
       const { error } = await sb.from('posts').update({
-        title, slug, badge, badge_color, is_featured, featured_image, excerpt, content, published_at,
+        title, slug, badge, badge_color, is_featured, featured_image, excerpt, content, word_count: countWords(content), published_at,
         updated_at: new Date().toISOString()
       }).eq('id', editingPostId);
       if (error) throw error;
@@ -443,7 +453,7 @@ try {
     // INSERT — new post automatically becomes featured
     await sb.from('posts').update({ is_featured: false }).eq('is_featured', true);
     const { data: newPost, error } = await sb.from('posts').insert({
-      title, slug, badge, badge_color, is_featured: true, is_draft: false, featured_image, excerpt, content, published_at
+      title, slug, badge, badge_color, is_featured: true, is_draft: false, featured_image, excerpt, content, word_count: countWords(content), published_at
     }).select().single();
     if (error) throw error;
     for (const tagId of selectedTags) {
@@ -486,7 +496,7 @@ try {
   if (editingPostId && editingIsDraft) {
     // UPDATE existing draft
     const { error } = await sb.from('posts').update({
-      title, slug: finalSlug, badge, badge_color, featured_image, excerpt, content,
+      title, slug: finalSlug, badge, badge_color, featured_image, excerpt, content, word_count: countWords(content),
       updated_at: new Date().toISOString()
     }).eq('id', editingPostId);
     if (error) throw error;
@@ -499,7 +509,7 @@ try {
     // INSERT new draft
     const { data: newPost, error } = await sb.from('posts').insert({
       title, slug: finalSlug, badge, badge_color, is_featured: false, is_draft: true,
-      featured_image, excerpt, content, published_at: null
+      featured_image, excerpt, content, word_count: countWords(content), published_at: null
     }).select().single();
     if (error) throw error;
     for (const tagId of selectedTags) {
@@ -751,17 +761,8 @@ async function loadStats() {
   document.getElementById('kpiLastPost').textContent =
     daysSince === 0 ? 'Hoy' : daysSince === 1 ? 'Ayer' : 'Hace ' + daysSince + ' días';
 
-  const wc = published.map(p => {
-    const t = (p.content || '')
-      .replace(/<style[\s\S]*?<\/style>/gi, '')   // remove <style> blocks
-      .replace(/<[^>]*>/g, '')                       // remove all HTML tags
-      .replace(/&\w+;/g, ' ')                        // decode HTML entities as space
-      .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9]+/g, ' ') // keep only letters/numbers
-      .trim();
-    return t ? t.split(/\s+/).filter(w => w.length > 0).length : 0;
-  });
   document.getElementById('kpiAvgWords').textContent =
-    Math.round(wc.reduce((a, b) => a + b, 0) / totalPosts).toLocaleString('es-AR');
+    Math.round(published.reduce((s, p) => s + (p.word_count || 0), 0) / totalPosts).toLocaleString('es-AR');
 
   const datesAsc = [...published]
     .sort((a, b) => new Date(a.published_at) - new Date(b.published_at))
