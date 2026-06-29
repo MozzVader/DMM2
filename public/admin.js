@@ -183,7 +183,7 @@ tbody.innerHTML = pageItems.map(post => {
   return `
   <tr class="${rowClass}">
     <td data-label="">${!isDraft && post.is_featured ? '<span class="featured-star">★</span>' : ''}</td>
-    <td class="post-title-cell" data-label=""><a href="${BASE}/post/${post.slug}" target="_blank">${post.title}</a>${badge}</td>
+    <td class="post-title-cell" data-label=""><a href="${BASE}post/${post.slug}" target="_blank">${post.title}</a>${badge}</td>
     <td data-label="Badge"><span class="badge-sm ${post.badge_color || 'purple'}">${post.badge || 'General'}</span></td>
     <td class="date-cell" data-label="Fecha">${isDraft ? '—' : formatDate(post.published_at)}</td>
     <td class="actions-cell" data-label="">
@@ -898,7 +898,7 @@ async function loadStats() {
   // Top 5 posts
   const top5 = [...published].sort((a, b) => (b.likes || 0) - (a.likes || 0)).slice(0, 5);
   document.getElementById('topPostsBody').innerHTML = top5.map((p, i) =>
-    `<tr><td class="rank">${i + 1}</td><td><a href="${BASE}/post/${p.slug}" target="_blank" class="post-link">${p.title}</a></td><td class="likes-count">${p.likes || 0} ★</td><td style="color:var(--text-secondary);font-size:0.8rem;">${formatDate(p.published_at)}</td></tr>`
+    `<tr><td class="rank">${i + 1}</td><td><a href="${BASE}post/${p.slug}" target="_blank" class="post-link">${p.title}</a></td><td class="likes-count">${p.likes || 0} ★</td><td style="color:var(--text-secondary);font-size:0.8rem;">${formatDate(p.published_at)}</td></tr>`
   ).join('');
 }
 
