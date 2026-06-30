@@ -195,7 +195,7 @@ tbody.innerHTML = pageItems.map(post => {
     <td class="actions-cell" data-label="">
       <button class="btn btn-sm" onclick="editPost('${post.id}')">Editar</button>
       <button class="btn btn-sm" onclick="clonePost('${post.id}')">Clonar</button>
-      <button class="btn btn-sm btn-danger js-delete-btn" data-id="${post.id}" data-title="${post.title.replace(/"/g, '&quot;').replace(/</g, '&lt;')}">Eliminar</button>
+      <button class="btn btn-sm btn-danger btn-icon js-delete-btn" data-id="${post.id}" data-title="${post.title.replace(/"/g, '&quot;').replace(/</g, '&lt;')}" title="Eliminar post">🗑️</button>
     </td>
   </tr>`;
 }).join('');
