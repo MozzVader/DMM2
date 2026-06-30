@@ -349,7 +349,9 @@ body {
 
 .actions-cell {
   display: flex;
+  align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .featured-star { color: var(--neon-yellow); }
