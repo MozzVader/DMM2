@@ -333,6 +333,7 @@ body {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-subtle);
   font-size: 0.85rem;
+  vertical-align: middle;
 }
 
 .posts-table tr:hover td { background: var(--bg-hover); }
