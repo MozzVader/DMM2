@@ -56,6 +56,10 @@ const adminJs = import.meta.env.PROD ? 'admin.min.js' : 'admin.js';
         <i class="material-icons">bar_chart</i>
         <span>Estadísticas</span>
       </button>
+      <button class="sidebar-tab" data-section="backup" title="Backup">
+        <i class="material-icons">cloud_download</i>
+        <span>Backup</span>
+      </button>
     </nav>
 
     <header class="admin-header">
@@ -329,6 +333,38 @@ const adminJs = import.meta.env.PROD ? 'admin.min.js' : 'admin.js';
         <button class="preview-modal-close" id="previewClose">×</button>
       </div>
       <div class="preview-modal-body" id="previewBody"></div>
+    </div>
+  </div>
+
+  <!-- BACKUP SCREEN -->
+  <div class="dashboard-screen hidden" id="backupScreen">
+    <div class="dashboard-header">
+      <h3>Backup de datos</h3>
+    </div>
+    <div class="backup-grid">
+      <!-- Export -->
+      <div class="backup-card">
+        <div class="backup-card-icon">📤</div>
+        <h4>Exportar base de datos</h4>
+        <p>Descarga todos los posts, tags y relaciones en un archivo JSON.</p>
+        <button class="btn btn-primary" id="exportBtn">Descargar backup</button>
+        <p class="backup-hint" id="exportInfo"></p>
+      </div>
+      <!-- Import -->
+      <div class="backup-card">
+        <div class="backup-card-icon">📥</div>
+        <h4>Importar base de datos</h4>
+        <p>Restaura datos desde un archivo JSON de backup previo.</p>
+        <input type="file" id="importFile" accept=".json" style="display:none;" />
+        <button class="btn" id="importBtn" style="background:var(--neon-yellow);color:#000;">Seleccionar archivo</button>
+        <div id="importPreview" style="display:none;margin-top:12px;">
+          <p id="importSummary" style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:10px;"></p>
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--neon-red);cursor:pointer;margin-bottom:10px;">
+            <input type="checkbox" id="importConfirmReplace" /> <span>Entiendo que esto va a <b>reemplazar</b> todos los posts y tags existentes</span>
+          </label>
+          <button class="btn btn-danger" id="importExecBtn" disabled>⚠️ Restaurar backup</button>
+        </div>
+      </div>
     </div>
   </div>
 

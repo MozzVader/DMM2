@@ -86,10 +86,16 @@ function showScreen(screen) {
     if (screen === 'posts') {
       document.getElementById('dashboardScreen').classList.remove('hidden');
       document.getElementById('statsScreen').classList.add('hidden');
+      document.getElementById('backupScreen').classList.add('hidden');
     } else if (screen === 'stats') {
       document.getElementById('dashboardScreen').classList.add('hidden');
       document.getElementById('statsScreen').classList.remove('hidden');
+      document.getElementById('backupScreen').classList.add('hidden');
       loadStats();
+    } else if (screen === 'backup') {
+      document.getElementById('dashboardScreen').classList.add('hidden');
+      document.getElementById('statsScreen').classList.add('hidden');
+      document.getElementById('backupScreen').classList.remove('hidden');
     }
   }
 }
@@ -1199,6 +1205,137 @@ function figcaptionToImgTitle(html) {
   });
   return tmp.innerHTML;
 }
+
+// ===== BACKUP: EXPORT / IMPORT =====
+document.getElementById('exportBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('exportBtn');
+  const info = document.getElementById('exportInfo');
+  btn.disabled = true;
+  btn.textContent = 'Exportando...';
+  info.textContent = '';
+
+  try {
+    const [postsRes, tagsRes, postTagsRes] = await Promise.all([
+      sb.from('posts').select('*').order('published_at', { ascending: false }),
+      sb.from('tags').select('*').order('name'),
+      sb.from('post_tags').select('*')
+    ]);
+
+    if (postsRes.error) throw postsRes.error;
+    if (tagsRes.error) throw tagsRes.error;
+    if (postTagsRes.error) throw postTagsRes.error;
+
+    const backup = {
+      _meta: {
+        version: 1,
+        exported_at: new Date().toISOString(),
+        source: 'DMM2 Admin'
+      },
+      posts: postsRes.data,
+      tags: tagsRes.data,
+      post_tags: postTagsRes.data
+    };
+
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const date = new Date().toISOString().slice(0, 10);
+    a.download = `dmm2-backup-${date}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    info.textContent = postsRes.data.length + ' posts, ' + tagsRes.data.length + ' tags exportados.';
+    info.style.color = 'var(--neon-green)';
+  } catch (err) {
+    info.textContent = 'Error: ' + err.message;
+    info.style.color = 'var(--neon-red)';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Descargar backup';
+  }
+});
+
+let pendingImportData = null;
+
+document.getElementById('importBtn').addEventListener('click', () => {
+  document.getElementById('importFile').click();
+});
+
+document.getElementById('importFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data._meta || !data.posts || !data.tags || !data.post_tags) {
+        throw new Error('Formato de backup invalido');
+      }
+      pendingImportData = data;
+      document.getElementById('importSummary').textContent =
+        data.posts.length + ' posts y ' + data.tags.length + ' tags encontrados en el backup.';
+      document.getElementById('importPreview').style.display = '';
+      document.getElementById('importExecBtn').disabled = true;
+      document.getElementById('importConfirmReplace').checked = false;
+    } catch (err) {
+      showToast('Archivo invalido: ' + err.message, 'error');
+      pendingImportData = null;
+      document.getElementById('importPreview').style.display = 'none';
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+document.getElementById('importConfirmReplace').addEventListener('change', (e) => {
+  document.getElementById('importExecBtn').disabled = !e.target.checked;
+});
+
+document.getElementById('importExecBtn').addEventListener('click', async () => {
+  if (!pendingImportData) return;
+
+  const btn = document.getElementById('importExecBtn');
+  btn.disabled = true;
+  btn.textContent = 'Restaurando...';
+
+  try {
+    await sb.from('post_tags').delete().ne('post_id', '00000000-0000-0000-0000-000000000000');
+    await sb.from('posts').delete().ne('id', '00000000-0000-0000-0000-000000000000');
+    await sb.from('tags').delete().ne('id', '00000000-0000-0000-0000-000000000000');
+
+    if (pendingImportData.tags.length > 0) {
+      const { error: tErr } = await sb.from('tags').insert(pendingImportData.tags);
+      if (tErr) throw new Error('Tags: ' + tErr.message);
+    }
+
+    if (pendingImportData.posts.length > 0) {
+      const batchSize = 50;
+      for (let i = 0; i < pendingImportData.posts.length; i += batchSize) {
+        const batch = pendingImportData.posts.slice(i, i + batchSize);
+        const { error: pErr } = await sb.from('posts').insert(batch);
+        if (pErr) throw new Error('Posts (batch ' + (Math.floor(i / batchSize) + 1) + '): ' + pErr.message);
+      }
+    }
+
+    if (pendingImportData.post_tags.length > 0) {
+      const { error: ptErr } = await sb.from('post_tags').insert(pendingImportData.post_tags);
+      if (ptErr) throw new Error('Post-Tags: ' + ptErr.message);
+    }
+
+    showToast('Backup restaurado: ' + pendingImportData.posts.length + ' posts, ' + pendingImportData.tags.length + ' tags');
+    document.getElementById('importPreview').style.display = 'none';
+    pendingImportData = null;
+    allPosts = [];
+    loadDashboard();
+  } catch (err) {
+    showToast('Error al restaurar: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '\u26A0\uFE0F Restaurar backup';
+  }
+});
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
