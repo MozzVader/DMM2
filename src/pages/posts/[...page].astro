@@ -34,7 +34,7 @@ function getPageNumbers(current: number, total: number): (number | '...')[] {
   return pages;
 }
 
-const pageNumbers = getPageNumbers(page.currentPage, page.totalPages);
+const pageNumbers = getPageNumbers(page.currentPage, page.lastPage);
 ---
 
 <BaseLayout title={page.currentPage === 1 ? 'Todos los posts — Dos Minutos Más' : `Página ${page.currentPage} — Dos Minutos Más`}>
@@ -57,7 +57,7 @@ const pageNumbers = getPageNumbers(page.currentPage, page.totalPages);
     )}
 
     <!-- Pagination (truncated) -->
-    {page.totalPages > 1 && (
+    {page.lastPage > 1 && (
       <nav class="pagination" aria-label="Paginación">
         <a
           href={page.urlPrev || '#'}
