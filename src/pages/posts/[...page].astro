@@ -60,9 +60,9 @@ const pageNumbers = getPageNumbers(page.currentPage, page.lastPage);
     {page.lastPage > 1 && (
       <nav class="pagination" aria-label="Paginación">
         <a
-          href={page.urlPrev || '#'}
-          class={`page-btn page-prev ${!page.urlPrev ? 'disabled' : ''}`}
-          aria-disabled={!page.urlPrev}
+          href={page.url.prev || '#'}
+          class={`page-btn page-prev ${!page.url.prev ? 'disabled' : ''}`}
+          aria-disabled={!page.url.prev}
         >
           ← Anterior
         </a>
@@ -80,9 +80,9 @@ const pageNumbers = getPageNumbers(page.currentPage, page.lastPage);
         </div>
 
         <a
-          href={page.urlNext || '#'}
-          class={`page-btn page-next ${!page.urlNext ? 'disabled' : ''}`}
-          aria-disabled={!page.urlNext}
+          href={page.url.next || '#'}
+          class={`page-btn page-next ${!page.url.next ? 'disabled' : ''}`}
+          aria-disabled={!page.url.next}
         >
           Siguiente →
         </a>
