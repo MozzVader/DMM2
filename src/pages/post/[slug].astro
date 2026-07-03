@@ -335,6 +335,104 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
     color: #ffffff !important;
   }
 
+  /* ===== Callouts ===== */
+  .post-content :global(.callout) {
+    display: flex;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin: 20px 0;
+    border-left: 3px solid;
+  }
+
+  .post-content :global(.callout-icon) {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+    margin-top: 1px;
+    line-height: 1;
+  }
+
+  .post-content :global(.callout-content) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .post-content :global(.callout-title) {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 0.875rem;
+  }
+
+  .post-content :global(.callout p) {
+    font-size: 0.875rem;
+    margin-bottom: 4px;
+  }
+
+  .post-content :global(.callout p:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* Tip — cyan */
+  .post-content :global(.callout-tip) {
+    background-color: rgba(34, 211, 238, 0.07);
+    border-color: var(--neon-cyan);
+  }
+  .post-content :global(.callout-tip .callout-icon),
+  .post-content :global(.callout-tip .callout-title) {
+    color: var(--neon-cyan);
+  }
+
+  /* Warning — yellow */
+  .post-content :global(.callout-warning) {
+    background-color: rgba(255, 217, 61, 0.07);
+    border-color: var(--neon-yellow);
+  }
+  .post-content :global(.callout-warning .callout-icon),
+  .post-content :global(.callout-warning .callout-title) {
+    color: var(--neon-yellow);
+  }
+
+  /* Danger — red */
+  .post-content :global(.callout-danger) {
+    background-color: rgba(255, 71, 87, 0.07);
+    border-color: var(--neon-red);
+  }
+  .post-content :global(.callout-danger .callout-icon),
+  .post-content :global(.callout-danger .callout-title) {
+    color: var(--neon-red);
+  }
+
+  /* Info — purple */
+  .post-content :global(.callout-info) {
+    background-color: rgba(191, 90, 242, 0.07);
+    border-color: var(--neon-purple);
+  }
+  .post-content :global(.callout-info .callout-icon),
+  .post-content :global(.callout-info .callout-title) {
+    color: var(--neon-purple);
+  }
+
+  /* Tool — green */
+  .post-content :global(.callout-tool) {
+    background-color: rgba(74, 222, 128, 0.07);
+    border-left: 3px dashed var(--neon-green);
+  }
+  .post-content :global(.callout-tool .callout-icon),
+  .post-content :global(.callout-tool .callout-title) {
+    color: var(--neon-green);
+  }
+  .post-content :global(.callout-tool a) {
+    color: var(--neon-green);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: rgba(74, 222, 128, 0.4);
+    transition: text-decoration-color 0.2s ease;
+  }
+  .post-content :global(.callout-tool a:hover) {
+    text-decoration-color: var(--neon-green);
+  }
+
   /* Related posts section */
   .related-section {
     margin-top: 40px;

@@ -233,6 +233,62 @@ body {
   align-items: center;
 }
 
+/* ===== Callout Bar ===== */
+.callout-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 2px;
+  flex-shrink: 0;
+}
+
+.callout-bar-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 2px;
+}
+
+.callout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+}
+
+.callout-btn:hover { opacity: 0.85; }
+.callout-btn:active { transform: scale(0.96); }
+
+.callout-btn-tip { border-color: rgba(34,211,238,0.3); color: var(--neon-cyan); }
+.callout-btn-tip:hover { background: rgba(34,211,238,0.08); }
+
+.callout-btn-warning { border-color: rgba(255,217,61,0.3); color: var(--neon-yellow); }
+.callout-btn-warning:hover { background: rgba(255,217,61,0.08); }
+
+.callout-btn-danger { border-color: rgba(255,71,87,0.3); color: var(--neon-red); }
+.callout-btn-danger:hover { background: rgba(255,71,87,0.08); }
+
+.callout-btn-info { border-color: rgba(191,90,242,0.3); color: var(--neon-purple); }
+.callout-btn-info:hover { background: rgba(191,90,242,0.08); }
+
+.callout-btn-tool { border-color: rgba(74,222,128,0.3); color: var(--neon-green); }
+.callout-btn-tool:hover { background: rgba(74,222,128,0.08); }
+
+/* Hide callout bar when in HTML mode */
+.html-editor-visible .callout-bar { display: none; }
+
 .html-toggle-btn {
   font-size: 0.7rem;
   text-transform: uppercase;

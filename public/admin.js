@@ -1036,6 +1036,7 @@ document.getElementById('htmlToggleBtn').addEventListener('click', () => {
     htmlEl.style.display = '';
     btn.classList.add('active');
     btn.textContent = 'Visual';
+    document.getElementById('calloutBar').style.display = 'none';
   } else {
     // HTML -> Visual: use dangerouslyPasteHTML so clipboard matchers fire
     let html = htmlEl.value.replace(/>\s*\n\s*</g, '><');
@@ -1047,6 +1048,7 @@ document.getElementById('htmlToggleBtn').addEventListener('click', () => {
     editorEl.style.display = '';
     btn.classList.remove('active');
     btn.textContent = 'HTML';
+    document.getElementById('calloutBar').style.display = '';
   }
 });
 
@@ -1378,7 +1380,7 @@ quill = new Quill('#editor-container', {
 
 // ===== CLIPBOARD MATCHER: preserve snippet blocks =====
 const Delta = Quill.import('delta');
-const SNIPPET_CLASSES = ['museum-card', 'blog-timeline', 'dmm-separator', 'dmm-table'];
+const SNIPPET_CLASSES = ['museum-card', 'blog-timeline', 'dmm-separator', 'dmm-table', 'callout'];
 quill.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
   if (node.nodeType !== 1) return delta;
   // Match snippet blocks by class
@@ -1730,6 +1732,43 @@ document.getElementById('fabTable').addEventListener('click', () => {
     document.getElementById('fabMain').classList.remove('open');
     document.getElementById('fabMenu').classList.remove('open');
   });
+});
+
+// ===== CALLOUT INJECTION =====
+const CALLOUT_TEMPLATES = {
+  tip:     { icon: '\uD83D\uDCA1', title: 'Tip',     cls: 'callout-tip' },
+  warning: { icon: '\u26A0\uFE0F', title: 'Warning', cls: 'callout-warning' },
+  danger:  { icon: '\uD83D\uDD25', title: 'Danger',  cls: 'callout-danger' },
+  info:    { icon: '\u2139\uFE0F', title: 'Info',    cls: 'callout-info' },
+  tool:    { icon: '\uD83D\uDEE0\uFE0F', title: 'Tool', cls: 'callout-tool' },
+};
+
+document.getElementById('calloutBar').addEventListener('click', (e) => {
+  const btn = e.target.closest('.callout-btn');
+  if (!btn) return;
+  const type = btn.dataset.type;
+  const t = CALLOUT_TEMPLATES[type];
+  if (!t) return;
+
+  const html = `<div class="${t.cls} callout"><span class="callout-icon">${t.icon}</span><div class="callout-content"><div class="callout-title">${t.title}</div><p>Texto del callout aqu\u00ed...</p></div></div>`;
+
+  // If in HTML view, insert into textarea
+  const htmlEditor = document.getElementById('htmlEditor');
+  if (htmlEditor && htmlEditor.style.display !== 'none') {
+    const start = htmlEditor.selectionStart;
+    const before = htmlEditor.value.substring(0, start);
+    const after = htmlEditor.value.substring(htmlEditor.selectionEnd);
+    const sep = before && !before.endsWith('\n') ? '\n' : '';
+    htmlEditor.value = before + sep + html + '\n' + after;
+    htmlEditor.selectionStart = htmlEditor.selectionEnd = start + sep.length + html.length + 1;
+    return;
+  }
+
+  // Visual mode: inject into Quill at cursor
+  if (!quill) return;
+  const range = quill.getSelection(true);
+  quill.clipboard.dangerouslyPasteHTML(range ? range.index : quill.getLength(), '\n' + html + '\n', 'html');
+  quill.setSelection(range ? range.index + html.length + 2 : quill.getLength(), 0);
 });
 
 // ===== PREVIEW MODAL =====
