@@ -451,7 +451,9 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
 
   /* ===== Twitter / X Embed ===== */
   .post-content :global(.twitter-tweet-wrap) {
-    margin: 24px 0;
+    margin: 24px auto;
+    max-width: 550px;
+    text-align: center;
   }
 
   .post-content :global(.twitter-tweet-wrap blockquote) {

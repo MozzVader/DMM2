@@ -300,6 +300,11 @@ body {
 /* Hide callout bar when in HTML mode */
 .html-editor-visible .callout-bar { display: none; }
 
+/* Center twitter embeds in editor */
+.ql-raw-html:has(.twitter-tweet-wrap) {
+  text-align: center;
+}
+
 .html-toggle-btn {
   font-size: 0.7rem;
   text-transform: uppercase;
