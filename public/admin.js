@@ -1380,7 +1380,7 @@ quill = new Quill('#editor-container', {
 
 // ===== CLIPBOARD MATCHER: preserve snippet blocks =====
 const Delta = Quill.import('delta');
-const SNIPPET_CLASSES = ['museum-card', 'blog-timeline', 'dmm-separator', 'dmm-table', 'callout'];
+const SNIPPET_CLASSES = ['museum-card', 'blog-timeline', 'dmm-separator', 'dmm-table', 'callout', 'twitter-tweet-wrap'];
 quill.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
   if (node.nodeType !== 1) return delta;
   // Match snippet blocks by class
@@ -1769,6 +1769,65 @@ document.getElementById('calloutBar').addEventListener('click', (e) => {
   const range = quill.getSelection(true);
   quill.clipboard.dangerouslyPasteHTML(range ? range.index : quill.getLength(), '\n' + html + '\n', 'html');
   quill.setSelection(range ? range.index + html.length + 2 : quill.getLength(), 0);
+});
+
+// ===== X / TWITTER EMBED =====
+const xEmbedOverlay = document.getElementById('xEmbedOverlay');
+const xEmbedInput = document.getElementById('xEmbedInput');
+
+document.getElementById('embedXBtn').addEventListener('click', () => {
+  xEmbedInput.value = '';
+  xEmbedOverlay.classList.add('active');
+  setTimeout(() => xEmbedInput.focus(), 100);
+});
+
+document.getElementById('xEmbedCancel').addEventListener('click', () => {
+  xEmbedOverlay.classList.remove('active');
+});
+
+xEmbedOverlay.addEventListener('click', (e) => {
+  if (e.target === xEmbedOverlay) xEmbedOverlay.classList.remove('active');
+});
+
+document.getElementById('xEmbedInsert').addEventListener('click', () => {
+  const raw = xEmbedInput.value.trim();
+  if (!raw) return;
+
+  // Extract the <blockquote> from the embed code (strip <script> tags)
+  const match = raw.match(/<blockquote\s+class="twitter-tweet"[\s\S]*?<\/blockquote>/i);
+  if (!match) {
+    showToast('No se encontr\u00f3 un blockquote de X v\u00e1lido', 'error');
+    return;
+  }
+
+  let bq = match[0];
+  // Ensure data-theme is set to dark
+  if (!bq.includes('data-theme')) {
+    bq = bq.replace('<blockquote', '<blockquote data-theme="dark"');
+  }
+
+  const html = '<div class="twitter-tweet-wrap">' + bq + '</div>';
+
+  // If in HTML view, insert into textarea
+  const htmlEditor = document.getElementById('htmlEditor');
+  if (htmlEditor && htmlEditor.style.display !== 'none') {
+    const start = htmlEditor.selectionStart;
+    const before = htmlEditor.value.substring(0, start);
+    const after = htmlEditor.value.substring(htmlEditor.selectionEnd);
+    const sep = before && !before.endsWith('\n') ? '\n' : '';
+    htmlEditor.value = before + sep + html + '\n' + after;
+    htmlEditor.selectionStart = htmlEditor.selectionEnd = start + sep.length + html.length + 1;
+    xEmbedOverlay.classList.remove('active');
+    return;
+  }
+
+  // Visual mode: inject into Quill
+  if (!quill) return;
+  const range = quill.getSelection(true);
+  quill.clipboard.dangerouslyPasteHTML(range ? range.index : quill.getLength(), '\n' + html + '\n', 'html');
+  quill.setSelection(range ? range.index + html.length + 2 : quill.getLength(), 0);
+  xEmbedOverlay.classList.remove('active');
+  showToast('Embed de X insertado');
 });
 
 // ===== PREVIEW MODAL =====

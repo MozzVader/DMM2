@@ -286,6 +286,17 @@ body {
 .callout-btn-tool { border-color: rgba(74,222,128,0.3); color: var(--neon-green); }
 .callout-btn-tool:hover { background: rgba(74,222,128,0.08); }
 
+.callout-btn-x { border-color: rgba(255,255,255,0.15); color: var(--text-primary); font-weight: 500; }
+.callout-btn-x:hover { background: rgba(255,255,255,0.05); }
+
+.callout-bar-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border-subtle);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
 /* Hide callout bar when in HTML mode */
 .html-editor-visible .callout-bar { display: none; }
 

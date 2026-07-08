@@ -290,6 +290,8 @@ const adminJs = import.meta.env.PROD ? 'admin.min.js' : 'admin.js';
               <button class="callout-btn callout-btn-danger" data-type="danger" title="Danger">🔥 Danger</button>
               <button class="callout-btn callout-btn-info" data-type="info" title="Info">ℹ️ Info</button>
               <button class="callout-btn callout-btn-tool" data-type="tool" title="Tool">🛠️ Tool</button>
+              <span class="callout-bar-sep"></span>
+              <button class="callout-btn callout-btn-x" id="embedXBtn" title="Embed X/Twitter post">𝕏 Embed</button>
             </div>
             <div id="editor-container" style="flex:1;overflow:visible;"></div>
             <textarea id="htmlEditor" class="html-editor" style="display:none;flex:1;resize:none;"></textarea>
@@ -374,6 +376,19 @@ const adminJs = import.meta.env.PROD ? 'admin.min.js' : 'admin.js';
         <button class="preview-modal-close" id="previewClose">×</button>
       </div>
       <div class="preview-modal-body" id="previewBody"></div>
+    </div>
+  </div>
+
+  <!-- X Embed Modal -->
+  <div class="img-url-modal-overlay" id="xEmbedOverlay">
+    <div class="img-url-modal" style="max-width:520px;">
+      <h4>Embed post de X / Twitter</h4>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin:0 0 10px;">Pegá el código de embed que te da X (Ctrl+C desde el tweet → "Embed post").</p>
+      <textarea id="xEmbedInput" placeholder='<blockquote class="twitter-tweet"...\n...>\n</blockquote> <script async ...>' rows="6" style="width:100%;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:5px;color:var(--text-primary);padding:10px;font-size:0.8rem;font-family:'Inter',sans-serif;resize:vertical;box-sizing:border-box;"></textarea>
+      <div class="img-url-modal-actions">
+        <button class="btn btn-sm" id="xEmbedCancel">Cancelar</button>
+        <button class="btn btn-sm btn-primary" id="xEmbedInsert">Insertar</button>
+      </div>
     </div>
   </div>
 

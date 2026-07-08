@@ -79,6 +79,22 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
 
         <div class="post-content" set:html={safeContent} />
 
+        {/* Load X/Twitter widget.js only if the post contains tweet embeds */}
+        {post.content && post.content.includes('twitter-tweet') && (
+          <script is:inline>
+            if (!document.getElementById('twitter-wjs')) {
+              const s = document.createElement('script');
+              s.id = 'twitter-wjs';
+              s.src = 'https://platform.x.com/widgets.js';
+              s.charset = 'utf-8';
+              s.async = true;
+              document.head.appendChild(s);
+            } else if (window.twttr && window.twttr.widgets) {
+              window.twttr.widgets.load();
+            }
+          </script>
+        )}
+
         <!-- Post footer: tags, likes, share -->
         <div class="post-footer">
           <div class="post-footer-tags">
@@ -431,6 +447,20 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
   }
   .post-content :global(.callout-tool a:hover) {
     text-decoration-color: var(--neon-green);
+  }
+
+  /* ===== Twitter / X Embed ===== */
+  .post-content :global(.twitter-tweet-wrap) {
+    margin: 24px 0;
+  }
+
+  .post-content :global(.twitter-tweet-wrap blockquote) {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-style: normal !important;
+    color: inherit !important;
+    overflow: visible;
   }
 
   /* Related posts section */
