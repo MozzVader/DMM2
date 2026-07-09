@@ -1380,7 +1380,7 @@ quill = new Quill('#editor-container', {
 
 // ===== CLIPBOARD MATCHER: preserve snippet blocks =====
 const Delta = Quill.import('delta');
-const SNIPPET_CLASSES = ['museum-card', 'blog-timeline', 'dmm-separator', 'dmm-table', 'callout', 'twitter-tweet-wrap'];
+const SNIPPET_CLASSES = ['museum-card', 'blog-timeline', 'dmm-separator', 'dmm-table', 'callout', 'twitter-tweet-wrap', 'reddit-embed-wrap'];
 quill.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
   if (node.nodeType !== 1) return delta;
   // Match snippet blocks by class
@@ -1828,6 +1828,61 @@ document.getElementById('xEmbedInsert').addEventListener('click', () => {
   quill.setSelection(range ? range.index + html.length + 2 : quill.getLength(), 0);
   xEmbedOverlay.classList.remove('active');
   showToast('Embed de X insertado');
+});
+
+// ===== REDDIT EMBED =====
+const redditEmbedOverlay = document.getElementById('redditEmbedOverlay');
+const redditEmbedInput = document.getElementById('redditEmbedInput');
+
+document.getElementById('embedRedditBtn').addEventListener('click', () => {
+  redditEmbedInput.value = '';
+  redditEmbedOverlay.classList.add('active');
+  setTimeout(() => redditEmbedInput.focus(), 100);
+});
+
+document.getElementById('redditEmbedCancel').addEventListener('click', () => {
+  redditEmbedOverlay.classList.remove('active');
+});
+
+redditEmbedOverlay.addEventListener('click', (e) => {
+  if (e.target === redditEmbedOverlay) redditEmbedOverlay.classList.remove('active');
+});
+
+document.getElementById('redditEmbedInsert').addEventListener('click', () => {
+  const raw = redditEmbedInput.value.trim();
+  if (!raw) return;
+
+  const match = raw.match(/<blockquote\s+class="reddit-embed-bq"[\s\S]*?<\/blockquote>/i);
+  if (!match) {
+    showToast('No se encontr\u00f3 un blockquote de Reddit v\u00e1lido', 'error');
+    return;
+  }
+
+  let bq = match[0];
+  // Ensure dark theme and reasonable height
+  if (!bq.includes('data-embed-theme')) bq = bq.replace('<blockquote', '<blockquote data-embed-theme="dark"');
+  if (!bq.includes('data-embed-height')) bq = bq.replace('<blockquote', '<blockquote data-embed-height="500"');
+
+  const html = '<div class="reddit-embed-wrap">' + bq + '</div>';
+
+  const htmlEditor = document.getElementById('htmlEditor');
+  if (htmlEditor && htmlEditor.style.display !== 'none') {
+    const start = htmlEditor.selectionStart;
+    const before = htmlEditor.value.substring(0, start);
+    const after = htmlEditor.value.substring(htmlEditor.selectionEnd);
+    const sep = before && !before.endsWith('\n') ? '\n' : '';
+    htmlEditor.value = before + sep + html + '\n' + after;
+    htmlEditor.selectionStart = htmlEditor.selectionEnd = start + sep.length + html.length + 1;
+    redditEmbedOverlay.classList.remove('active');
+    return;
+  }
+
+  if (!quill) return;
+  const range = quill.getSelection(true);
+  quill.clipboard.dangerouslyPasteHTML(range ? range.index : quill.getLength(), '\n' + html + '\n', 'html');
+  quill.setSelection(range ? range.index + html.length + 2 : quill.getLength(), 0);
+  redditEmbedOverlay.classList.remove('active');
+  showToast('Embed de Reddit insertado');
 });
 
 // ===== PREVIEW MODAL =====

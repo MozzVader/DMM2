@@ -289,6 +289,9 @@ body {
 .callout-btn-x { border-color: rgba(255,255,255,0.15); color: var(--text-primary); font-weight: 500; }
 .callout-btn-x:hover { background: rgba(255,255,255,0.05); }
 
+.callout-btn-reddit { border-color: rgba(255,69,0,0.3); color: #ff4500; }
+.callout-btn-reddit:hover { background: rgba(255,69,0,0.08); }
+
 .callout-bar-sep {
   width: 1px;
   height: 20px;

@@ -95,6 +95,20 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
           </script>
         )}
 
+        {/* Load Reddit widgets.js only if the post contains reddit embeds */}
+        {post.content && post.content.includes('reddit-embed-bq') && (
+          <script is:inline>
+            if (!document.getElementById('reddit-embed-js')) {
+              const s = document.createElement('script');
+              s.id = 'reddit-embed-js';
+              s.src = 'https://embed.reddit.com/widgets.js';
+              s.charset = 'UTF-8';
+              s.async = true;
+              document.head.appendChild(s);
+            }
+          </script>
+        )}
+
         <!-- Post footer: tags, likes, share -->
         <div class="post-footer">
           <div class="post-footer-tags">
@@ -461,6 +475,21 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
   }
 
   .post-content :global(.twitter-tweet-wrap blockquote) {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-style: normal !important;
+    color: inherit !important;
+    overflow: visible;
+  }
+
+  /* ===== Reddit Embed ===== */
+  .post-content :global(.reddit-embed-wrap) {
+    margin: 24px auto;
+    max-width: 600px;
+  }
+
+  .post-content :global(.reddit-embed-wrap blockquote) {
     border: none !important;
     padding: 0 !important;
     margin: 0 !important;

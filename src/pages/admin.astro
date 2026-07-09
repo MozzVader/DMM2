@@ -292,6 +292,7 @@ const adminJs = import.meta.env.PROD ? 'admin.min.js' : 'admin.js';
               <button class="callout-btn callout-btn-tool" data-type="tool" title="Tool">🛠️ Tool</button>
               <span class="callout-bar-sep"></span>
               <button class="callout-btn callout-btn-x" id="embedXBtn" title="Embed X/Twitter post">𝕏 Embed</button>
+              <button class="callout-btn callout-btn-reddit" id="embedRedditBtn" title="Embed Reddit post">Reddit</button>
             </div>
             <div id="editor-container" style="flex:1;overflow:visible;"></div>
             <textarea id="htmlEditor" class="html-editor" style="display:none;flex:1;resize:none;"></textarea>
@@ -388,6 +389,19 @@ const adminJs = import.meta.env.PROD ? 'admin.min.js' : 'admin.js';
       <div class="img-url-modal-actions">
         <button class="btn btn-sm" id="xEmbedCancel">Cancelar</button>
         <button class="btn btn-sm btn-primary" id="xEmbedInsert">Insertar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reddit Embed Modal -->
+  <div class="img-url-modal-overlay" id="redditEmbedOverlay">
+    <div class="img-url-modal" style="max-width:520px;">
+      <h4>Embed post de Reddit</h4>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin:0 0 10px;">Pegá el código de embed que te da Reddit (embed post → copy).</p>
+      <textarea id="redditEmbedInput" placeholder='<blockquote class="reddit-embed-bq"...\n...>\n</blockquote> <script async ...>' rows="6" style="width:100%;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:5px;color:var(--text-primary);padding:10px;font-size:0.8rem;font-family:'Inter',sans-serif;resize:vertical;box-sizing:border-box;"></textarea>
+      <div class="img-url-modal-actions">
+        <button class="btn btn-sm" id="redditEmbedCancel">Cancelar</button>
+        <button class="btn btn-sm btn-primary" id="redditEmbedInsert">Insertar</button>
       </div>
     </div>
   </div>
