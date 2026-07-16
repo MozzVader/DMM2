@@ -3,7 +3,8 @@
 // All logic is client-side (Supabase Auth, Quill editor, image upload)
 import '../styles/admin.css';
 
-const adminJs = import.meta.env.PROD ? 'admin.min.js' : 'admin.js';
+const CACHE_BUST = 'v7';
+const adminJs = import.meta.env.PROD ? `admin.min.js?${CACHE_BUST}` : 'admin.js';
 ---
 
 <!DOCTYPE html>
