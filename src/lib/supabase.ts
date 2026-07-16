@@ -58,11 +58,24 @@ function normalizePost(p: any): Post {
   return { ...p, tags: normalizeTags(p.tags) };
 }
 
-/** Base query: published, non-draft posts ordered newest first */
+/** Columns to exclude when content is not needed (saves ~90% of egress per row) */
+const LIGHT_SELECT = 'id, slug, title, excerpt, featured_image, badge, badge_color, is_featured, published_at, created_at, updated_at, likes, word_count, tags:post_tags(tags(id, name, slug))';
+
+/** Base query: published, non-draft posts ordered newest first (full content) */
 function basePostsQuery() {
   return supabase
     .from('posts')
     .select('*, tags:post_tags(tags(id, name, slug))')
+    .eq('is_draft', false)
+    .lte('published_at', new Date().toISOString())
+    .order('published_at', { ascending: false });
+}
+
+/** Base query: published, non-draft posts — NO content column */
+function basePostsQueryLight() {
+  return supabase
+    .from('posts')
+    .select(LIGHT_SELECT)
     .eq('is_draft', false)
     .lte('published_at', new Date().toISOString())
     .order('published_at', { ascending: false });
@@ -75,7 +88,7 @@ async function fetchPosts(query: any): Promise<Post[]> {
   return ((data as Post[]) || []).map(normalizePost);
 }
 
-/** Get all published non-featured posts, newest first */
+/** Get all published non-featured posts (full content) — only for individual post pages */
 export async function getAllPosts(): Promise<Post[]> {
   try {
     return await fetchPosts(basePostsQuery().eq('is_featured', false));
@@ -85,30 +98,40 @@ export async function getAllPosts(): Promise<Post[]> {
   }
 }
 
-/** Get all posts (featured + regular) for pagination, newest first */
+/** Get all published non-featured posts — NO content (for lists, prev/next, related) */
+export async function getAllPostsLight(): Promise<Post[]> {
+  try {
+    return await fetchPosts(basePostsQueryLight().eq('is_featured', false));
+  } catch (err) {
+    console.warn('[supabase] getAllPostsLight failed — using demo data', err);
+    return DEMO_POSTS.map(p => ({ ...p, content: '' }));
+  }
+}
+
+/** Get all posts (featured + regular) for pagination, newest first — NO content */
 export async function getAllPostsForPagination(): Promise<Post[]> {
   try {
-    return await fetchPosts(basePostsQuery());
+    return await fetchPosts(basePostsQueryLight());
   } catch (err) {
     console.warn('[supabase] getAllPostsForPagination failed — using demo data', err);
     return [DEMO_FEATURED, ...DEMO_POSTS];
   }
 }
 
-/** Get museo posts (badge = 'Museo') for pagination, newest first */
+/** Get museo posts (badge = 'Museo') for pagination, newest first — NO content */
 export async function getMuseoPostsForPagination(): Promise<Post[]> {
   try {
-    return await fetchPosts(basePostsQuery().eq('badge', 'Museo'));
+    return await fetchPosts(basePostsQueryLight().eq('badge', 'Museo'));
   } catch (err) {
     console.warn('[supabase] getMuseoPostsForPagination failed — using demo data', err);
     return [];
   }
 }
 
-/** Get the featured post (newest) */
+/** Get the featured post (newest) — NO content */
 export async function getFeaturedPost(): Promise<Post | null> {
   try {
-    const { data, error } = await basePostsQuery()
+    const { data, error } = await basePostsQueryLight()
       .eq('is_featured', true)
       .limit(1)
       .single();
@@ -165,9 +188,9 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
     const postIds = (relations || []).map((r) => r.post_id);
     if (postIds.length === 0) return [];
 
-    // Query 3: fetch posts with their tags (include featured posts in tag listings)
+    // Query 3: fetch posts with their tags — NO content (include featured posts in tag listings)
     return await fetchPosts(
-      basePostsQuery().in('id', postIds)
+      basePostsQueryLight().in('id', postIds)
     );
   } catch (err) {
     console.warn(`[supabase] getPostsByTag("${tagSlug}") failed — using demo data`, err);
@@ -201,14 +224,30 @@ export async function getArchiveData(): Promise<{ year: number; count: number }[
   }
 }
 
-/** Get all posts published in a given year */
+/** Get all posts published in a given year — NO content */
 export async function getPostsByYear(year: number): Promise<Post[]> {
   const start = new Date(year, 0, 1).toISOString();
   const end = new Date(year + 1, 0, 1).toISOString();
   try {
-    return await fetchPosts(basePostsQuery().gte('published_at', start).lt('published_at', end));
+    return await fetchPosts(basePostsQueryLight().gte('published_at', start).lt('published_at', end));
   } catch (err) {
     console.warn(`[supabase] getPostsByYear(${year}) failed — using demo data`, err);
     return DEMO_POSTS;
+  }
+}
+
+/** Get a single post by slug — full content (the ONLY place that loads content at build time) */
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  try {
+    const { data, error } = await basePostsQuery()
+      .eq('slug', slug)
+      .limit(1)
+      .single();
+    if (error && error.code !== 'PGRST116') throw error;
+    if (!data) return null;
+    return normalizePost(data);
+  } catch (err) {
+    console.warn(`[supabase] getPostBySlug("${slug}") failed`, err);
+    return null;
   }
 }

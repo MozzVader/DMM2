@@ -5,15 +5,16 @@ import Footer from '../../components/Footer.astro';
 import BottomGrid from '../../components/BottomGrid.astro';
 import SectionDivider from '../../components/SectionDivider.astro';
 import MiniPosts from '../../components/MiniPosts.astro';
-import { getAllPosts, getFeaturedPost } from '../../lib/supabase';
+import { getAllPostsLight, getFeaturedPost, getPostBySlug } from '../../lib/supabase';
 import { BASE_URL, AUTHOR } from '../../lib/constants';
 import { sanitizeHTML, formatDate, stripHTML, readingTime } from '../../lib/utils';
 import type { Post } from '../../lib/supabase';
 import '../../styles/snippets.css';
 
 export async function getStaticPaths() {
+  // Light queries: no content — just slugs, titles, tags for prev/next
   const [regularPosts, featuredPost] = await Promise.all([
-    getAllPosts(),
+    getAllPostsLight(),
     getFeaturedPost(),
   ]);
 
@@ -24,17 +25,22 @@ export async function getStaticPaths() {
   return allPosts.map((post, index) => ({
     params: { slug: post.slug },
     props: {
-      post,
+      post, // light post (no content)
       prevPost: index < allPosts.length - 1 ? allPosts[index + 1] : null,
       nextPost: index > 0 ? allPosts[index - 1] : null,
     },
   }));
 }
 
-const { post, prevPost, nextPost } = Astro.props;
+// Fetch full content ONLY for the current post
+const fullPost = await getPostBySlug(Astro.params.slug!);
+if (!fullPost) return Astro.redirect('/404');
 
-// --- Related posts: by shared tags, fallback to recent ---
-const allPostsData: Post[] = (await getAllPosts()).concat((await getFeaturedPost()) || []);
+const post = fullPost;
+const { prevPost, nextPost } = Astro.props;
+
+// Related posts: light query (no content needed)
+const allPostsData: Post[] = (await getAllPostsLight()).concat((await getFeaturedPost()) || []);
 const currentTagSlugs = new Set((post.tags || []).map(t => t.slug));
 const relatedPosts = allPostsData
   .filter(p => p.id !== post.id)

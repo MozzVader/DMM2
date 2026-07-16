@@ -9,12 +9,12 @@ import MiniPosts from '../components/MiniPosts.astro';
 import BottomGrid from '../components/BottomGrid.astro';
 import {
   getFeaturedPost,
-  getAllPosts,
+  getAllPostsLight,
 } from '../lib/supabase';
 import { BASE_URL } from '../lib/constants';
 
 const featured = await getFeaturedPost();
-const allPosts = await getAllPosts();
+const allPosts = await getAllPostsLight();
 
 // Next 3 posts as horizontal cards
 const standardPosts = allPosts.slice(0, 3);

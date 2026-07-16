@@ -11,19 +11,12 @@ export async function GET(context: APIContext) {
     title: 'Dos Minutos Más',
     description: 'Escribiendo sobre cosas que pasan cuando te quedas dos minutos más.',
     site: context.site!,
-    items: posts.map((post) => {
-      const imgTag = post.featured_image
-        ? `<p><img src="${post.featured_image}" alt="${post.title}" style="max-width:100%;height:auto;" /></p>`
-        : '';
-      const excerpt = post.excerpt || stripHTML(post.content).slice(0, 300);
-      return {
-        title: post.title,
-        pubDate: new Date(post.published_at),
-        description: excerpt,
-        content: imgTag + post.content,
-        link: new URL(`${base}post/${post.slug}`, context.site!).href,
-      };
-    }),
+    items: posts.map((post) => ({
+      title: post.title,
+      pubDate: new Date(post.published_at),
+      description: post.excerpt || stripHTML(post.content || '').slice(0, 300),
+      link: new URL(`${base}post/${post.slug}`, context.site!).href,
+    })),
     customData: '<language>es-ar</language>',
   });
 }
