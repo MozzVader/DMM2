@@ -12,7 +12,7 @@ const { post } = Astro.props;
 const dateStr = formatDate(post.published_at);
 const link = `${BASE_URL}post/${post.slug}`;
 const excerpt = post.excerpt || (post.content ? stripHTML(post.content).slice(0, 160) + '...' : '');
-const mins = readingTime(post.content);
+const mins = readingTime(post.content, post.word_count);
 ---
 
 <a href={link} class="post-standard-link">

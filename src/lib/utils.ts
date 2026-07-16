@@ -3,7 +3,8 @@
  */
 
 /** Strip HTML tags and decode common HTML entities */
-export function stripHTML(html: string): string {
+export function stripHTML(html: string | undefined | null): string {
+  if (!html) return '';
   return html
     .replace(/<[^>]*>/g, '')
     .replace(/&nbsp;/g, ' ')
@@ -44,7 +45,8 @@ export function formatDate(dateStr: string, options?: Intl.DateTimeFormatOptions
 }
 
 /** Estimate reading time from HTML content (~200 words/min for Spanish) */
-export function readingTime(html: string): number {
+export function readingTime(html?: string, wordCount?: number): number {
+  if (wordCount && wordCount > 0) return Math.max(1, Math.ceil(wordCount / 200));
   const text = stripHTML(html);
   const words = text.split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.ceil(words / 200));

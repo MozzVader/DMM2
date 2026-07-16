@@ -55,7 +55,7 @@ const relatedPosts = allPostsData
 const dateStr = formatDate(post.published_at);
 const safeContent = sanitizeHTML(post.content);
 const metaDescription = post.excerpt || stripHTML(post.content).slice(0, 160);
-const mins = readingTime(post.content);
+const mins = readingTime(post.content, post.word_count);
 
 const supabaseUrl = import.meta.env.SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';

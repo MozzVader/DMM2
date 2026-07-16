@@ -23,7 +23,7 @@ export interface Post {
   slug: string;
   title: string;
   excerpt: string | null;
-  content: string;
+  content: string | undefined;
   featured_image: string | null;
   badge: string;
   badge_color: 'purple' | 'red' | 'yellow' | 'green' | 'cyan';
@@ -33,6 +33,7 @@ export interface Post {
   updated_at: string;
   tags?: Tag[];
   likes?: number;
+  word_count?: number;
 }
 
 export interface Tag {
