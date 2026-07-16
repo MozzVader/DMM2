@@ -351,9 +351,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 6px;
   margin-top: 16px;
   padding: 8px 0;
+  flex-wrap: wrap;
 }
 
 .pagination-btn {
@@ -368,7 +369,7 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-.pagination-btn:hover:not(:disabled) {
+.pagination-btn:hover:not(:disabled):not(.active) {
   border-color: var(--neon-purple, #a855f7);
   color: var(--neon-purple, #a855f7);
 }
@@ -378,11 +379,32 @@ body {
   cursor: default;
 }
 
+.pagination-num {
+  min-width: 36px;
+  padding: 6px 10px;
+  text-align: center;
+}
+
+.pagination-num.active {
+  background: var(--neon-purple, #a855f7);
+  border-color: var(--neon-purple, #a855f7);
+  color: #fff;
+  font-weight: 600;
+}
+
+.pagination-ellipsis {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 0 2px;
+  user-select: none;
+}
+
 .pagination-info {
   color: var(--text-secondary);
   font-size: 0.8rem;
-  min-width: 120px;
+  min-width: 110px;
   text-align: center;
+  margin-left: 8px;
 }
 
 .posts-table {

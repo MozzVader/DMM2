@@ -14,7 +14,7 @@ let currentFilter = 'all';
 let allPosts = [];
 let currentSection = 'posts';
 let currentPage = 1;
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 10;
 let selectedTags = new Set();
 let quill = null;
 
@@ -208,13 +208,37 @@ if (totalPages <= 1) {
 
 const from = start + 1;
 const to = Math.min(start + PAGE_SIZE, filtered.length);
+
+// Build page number buttons (with ellipsis for large sets)
+let pagesHtml = '';
+const maxVisible = 5;
+let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
+
+if (startPage > 1) {
+  pagesHtml += `<button class="pagination-btn pagination-num" data-page="1">1</button>`;
+  if (startPage > 2) pagesHtml += `<span class="pagination-ellipsis">…</span>`;
+}
+for (let i = startPage; i <= endPage; i++) {
+  pagesHtml += `<button class="pagination-btn pagination-num ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+}
+if (endPage < totalPages) {
+  if (endPage < totalPages - 1) pagesHtml += `<span class="pagination-ellipsis">…</span>`;
+  pagesHtml += `<button class="pagination-btn pagination-num" data-page="${totalPages}">${totalPages}</button>`;
+}
+
 paginationEl.innerHTML = `
   <button class="pagination-btn" id="pagPrev" ${currentPage === 1 ? 'disabled' : ''}>← Anterior</button>
-  <span class="pagination-info">${from}–${to} de ${filtered.length}</span>
-  <button class="pagination-btn" id="pagNext" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente →</button>`;
+  ${pagesHtml}
+  <button class="pagination-btn" id="pagNext" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente →</button>
+  <span class="pagination-info">${from}–${to} de ${filtered.length}</span>`;
 
-document.getElementById('pagPrev').addEventListener('click', () => { currentPage--; renderPosts(); });
-document.getElementById('pagNext').addEventListener('click', () => { currentPage++; renderPosts(); });
+paginationEl.querySelector('#pagPrev').addEventListener('click', () => { currentPage--; renderPosts(); });
+paginationEl.querySelector('#pagNext').addEventListener('click', () => { currentPage++; renderPosts(); });
+paginationEl.querySelectorAll('.pagination-num').forEach(btn => {
+  btn.addEventListener('click', () => { currentPage = parseInt(btn.dataset.page); renderPosts(); });
+});
 }
 
 // ===== FILTERS =====
