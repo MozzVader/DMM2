@@ -29,6 +29,19 @@ function countWords(html) {
   return t ? t.split(/\s+/).filter(w => w.length > 0).length : 0;
 }
 
+function generateExcerpt(html, maxLen = 200) {
+  const t = (html || '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .trim();
+  if (!t) return null;
+  return t.length > maxLen ? t.slice(0, maxLen) + '...' : t;
+}
+
 function slugify(text) {
 return text
   .toLowerCase()
@@ -439,8 +452,8 @@ const badge = document.getElementById('postBadge').value;
 const badge_color = document.getElementById('postBadgeColor').value;
 const is_featured = document.getElementById('toggleFeatured').classList.contains('active');
 const featured_image = document.getElementById('postImageUrl').value.trim() || null;
-const excerpt = document.getElementById('postExcerpt').value.trim() || null;
 const content = getContent();
+const excerpt = document.getElementById('postExcerpt').value.trim() || generateExcerpt(content);
 const dateInput = document.getElementById('postDate').value;
 const published_at = dateInput ? new Date(dateInput).toISOString() : new Date().toISOString();
 
@@ -512,8 +525,8 @@ const slug = document.getElementById('postSlug').value.trim();
 const badge = document.getElementById('postBadge').value;
 const badge_color = document.getElementById('postBadgeColor').value;
 const featured_image = document.getElementById('postImageUrl').value.trim() || null;
-const excerpt = document.getElementById('postExcerpt').value.trim() || null;
 const content = getContent();
+const excerpt = document.getElementById('postExcerpt').value.trim() || generateExcerpt(content);
 
 if (!title) { showToast('El título es obligatorio para guardar borrador', 'error'); return; }
 const finalSlug = slug || slugify(title);
