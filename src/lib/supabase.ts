@@ -119,6 +119,23 @@ export async function getAllPostsForPagination(): Promise<Post[]> {
   }
 }
 
+/** Get all posts for RSS feed — includes content and featured_image, NO tags */
+export async function getAllPostsForRSS(): Promise<Post[]> {
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('id, slug, title, excerpt, content, featured_image, published_at')
+      .eq('is_draft', false)
+      .lte('published_at', new Date().toISOString())
+      .order('published_at', { ascending: false });
+    if (error) throw error;
+    return (data || []).map(normalizePost);
+  } catch (err) {
+    console.warn('[supabase] getAllPostsForRSS failed — using demo data', err);
+    return [DEMO_FEATURED, ...DEMO_POSTS];
+  }
+}
+
 /** Get museo posts (badge = 'Museo') for pagination, newest first — NO content */
 export async function getMuseoPostsForPagination(): Promise<Post[]> {
   try {
