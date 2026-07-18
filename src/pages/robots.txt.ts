@@ -5,6 +5,7 @@ export async function GET(context: APIContext) {
   const body = [
     'User-agent: *',
     'Allow: /',
+    'Disallow: /admin/',
     '',
     `Sitemap: ${site}/sitemap-index.xml`,
   ].join('\n');

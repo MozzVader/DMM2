@@ -11,6 +11,10 @@ export default defineConfig({
     defaultStrategy: 'viewport',
   },
   integrations: [
-    sitemap(),
+    sitemap({
+      filter: (page) => !page.includes('/admin'),
+      changefreq: 'weekly',
+      priority: 0.7,
+    }),
   ],
 });
