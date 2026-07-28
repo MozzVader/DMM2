@@ -61,7 +61,7 @@ const supabaseUrl = import.meta.env.SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
 ---
 
-<BaseLayout title={`${post.title} — Dos Minutos Más`} description={metaDescription} ogImage={post.featured_image || undefined} ogType="article">
+<BaseLayout title={`${post.title} — Dos Minutos Más`} description={metaDescription} ogImage={post.featured_image || undefined} ogType="article" canonicalUrl={`${BASE_URL}post/${post.slug}`}>
   <Header slot="header" />
 
   <div class="container">

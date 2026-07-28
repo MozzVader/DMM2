@@ -6,6 +6,7 @@ interface Props {
   description?: string;
   ogImage?: string;
   ogType?: string;
+  canonicalUrl?: string;
 }
 
 const {
@@ -13,9 +14,12 @@ const {
   description = 'Escribiendo sobre cosas que pasan cuando te quedas dos minutos más.',
   ogImage,
   ogType = 'website',
+  canonicalUrl: propCanonical,
 } = Astro.props;
 
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const siteOrigin = Astro.site?.origin || 'https://blog.mozzdev.com';
+const pathname = Astro.url.pathname;
+const canonical = propCanonical || `${siteOrigin}${pathname}`;
 const resolvedOgImage = ogImage || `${Astro.site}logo.png`;
 ---
 
@@ -26,13 +30,13 @@ const resolvedOgImage = ogImage || `${Astro.site}logo.png`;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalUrl.href} />
+    <link rel="canonical" href={canonical} />
 
     <!-- Open Graph -->
     <meta property="og:type" content={ogType} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalUrl.href} />
+    <meta property="og:url" content={canonical} />
     <meta property="og:image" content={resolvedOgImage} />
 
     <!-- Twitter Card -->
