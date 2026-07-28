@@ -789,6 +789,16 @@ tr.draft-row {
 .ql-snow .ql-tooltip input[type=text] { background: var(--bg-input); border: 1px solid var(--border-input); color: var(--text-primary); }
 .ql-snow .ql-tooltip a { color: var(--neon-purple); }
 .ql-editor img { max-width: 100%; height: auto; margin: 8px 0; cursor: pointer; }
+.ql-editor iframe,
+.preview-modal-body iframe {
+  display: block;
+  margin: 16px auto;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9;
+  max-width: 100%;
+  border-radius: 8px;
+}
 .ql-editor .ql-align-center { text-align: center; }
 .ql-editor .ql-align-right { text-align: right; }
 .ql-editor .ql-align-justify { text-align: justify; }

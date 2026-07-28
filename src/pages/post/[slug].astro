@@ -508,7 +508,10 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
   .post-content :global(iframe) {
     display: block;
     margin: 24px auto;
-    max-width: 100%;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    max-width: 720px;
     border-radius: 8px;
   }
 
