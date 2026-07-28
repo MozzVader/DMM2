@@ -504,6 +504,14 @@ const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
     overflow: visible;
   }
 
+  /* ===== Video Embeds (YouTube, Vimeo, etc.) ===== */
+  .post-content :global(iframe) {
+    display: block;
+    margin: 24px auto;
+    max-width: 100%;
+    border-radius: 8px;
+  }
+
   /* Related posts section */
   .related-section {
     margin-top: 40px;
